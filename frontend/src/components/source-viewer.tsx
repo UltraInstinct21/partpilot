@@ -152,21 +152,24 @@ export function SourceViewer({
                   {page.width ?? "?"} × {page.height ?? "?"} px
                   {page.is_image_only ? " · scanned page without a text layer" : ""}
                 </p>
-                {isPdf && source ? (
+                {page.image_url ? (
+                  // The API renders the page as a PNG. This always works, also
+                  // when the PDF itself is on a server the browser may not
+                  // reach (the vendor site).
+                  <img
+                    src={page.image_url}
+                    alt={`Page ${pageNumber} of the datasheet`}
+                    className="max-h-72 w-auto border border-border"
+                    data-testid="source-page-image"
+                  />
+                ) : isPdf && source ? (
                   <SourceDocument file={source.url} pageNumber={pageNumber} />
                 ) : (
                   <div className="rounded-lg border border-border p-3">
                     <p className="text-sm text-muted-foreground">
-                      The page image and the extracted text are shown below. The PDF renderer is
-                      used when the source is a PDF file.
+                      The extracted text of the page is shown below. The page image is
+                      rendered by the API when the source is a stored PDF.
                     </p>
-                    {page.image_url && (
-                      <img
-                        src={page.image_url}
-                        alt={`Page ${pageNumber} of the datasheet`}
-                        className="mt-2 max-h-72 w-auto border border-border"
-                      />
-                    )}
                   </div>
                 )}
                 {page.text && (

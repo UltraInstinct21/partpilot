@@ -156,11 +156,15 @@ def load_seed(
 
     parts_loaded = 0
     values_loaded = 0
+    offers_loaded = 0
     for item in parts:
         part, values = _part_record(item)
         for source_id in part.source_ids:
             repository.add_source(_source_ref(source_id, part.mpn))
         repository.add_part(part.model_copy(update={"parameters": values}))
+        for offer in item.get("offers") or []:
+            repository.add_offer(part.part_id, offer)
+            offers_loaded += 1
         parts_loaded += 1
         values_loaded += len(values)
 
@@ -183,6 +187,7 @@ def load_seed(
     return {
         "parts": parts_loaded,
         "parameters": values_loaded,
+        "offers": offers_loaded,
         "name_map": mappings_loaded,
     }
 
@@ -210,6 +215,7 @@ def main(argv: list[str] | None = None) -> int:
         "seeded "
         f"{summary['parts']} parts, "
         f"{summary['parameters']} values, "
+        f"{summary['offers']} offers, "
         f"{summary['name_map']} name map entries"
     )
     return 0

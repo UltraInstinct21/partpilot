@@ -84,6 +84,7 @@ packages = [
   "validation",
   "db",
   "services",
+  "integration",
 ]
 
 [tool.setuptools.package-data]

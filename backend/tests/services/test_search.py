@@ -158,14 +158,74 @@ def test_a_broken_llm_still_returns_results() -> None:
     assert len(response.results) == 30
 
 
-def test_a_service_without_an_llm_only_supports_filters() -> None:
+def test_a_service_without_an_llm_falls_back_to_the_rule_based_filter() -> None:
     repo = FakePartsRepository()
     service = SearchService(repo)
 
     response = service.search("mosfet")
 
     assert response.llm_used is False
-    assert response.total == 30
+    # The deterministic fallback still recognises the family.
+    assert response.filter.family is Family.MOSFET
+    assert response.total == 15
+
+
+def test_the_fallback_builds_a_filter_without_a_model() -> None:
+    repo = FakePartsRepository()
+    service = SearchService(repo)
+
+    response = service.search("100 V N-channel MOSFET, Rds(on) below 5 mOhm, in stock")
+
+    assert response.llm_used is False
+    constraints = {c.name: c for c in response.filter.parameters}
+    assert "rds_on" in constraints
+    assert constraints["rds_on"].unit == "mohm"
+    assert constraints["rds_on"].max == 5.0
+    assert response.filter.family is Family.MOSFET
+    assert response.filter.in_stock is True
+
+
+def test_a_broken_llm_falls_back_to_the_rule_based_filter() -> None:
+    class BrokenLLM:
+        def build_search_filter(self, query: str):
+            raise RuntimeError("the provider is down")
+
+    repo = FakePartsRepository()
+    service = SearchService(repo, BrokenLLM())
+
+    response = service.search("mosfet")
+
+    assert response.llm_used is False
+    assert response.filter.family is Family.MOSFET
+    assert response.total == 15
+
+
+def test_the_fallback_never_guesses_an_unknown_constraint() -> None:
+    from services.search import fallback_filter
+
+    filt = fallback_filter("a part with a very strange property of 42")
+    assert filt.parameters == []
+
+
+def test_a_slow_model_does_not_hold_the_request() -> None:
+    """NFR-04: a search answers in 5 seconds or less."""
+    import time
+
+    class SlowLLM:
+        def build_search_filter(self, query: str):
+            time.sleep(5)
+            raise AssertionError("the model must not be waited for")
+
+    repo = FakePartsRepository()
+    service = SearchService(repo, SlowLLM(), llm_budget_seconds=0.2)
+
+    started = time.perf_counter()
+    response = service.search("mosfet")
+    elapsed = time.perf_counter() - started
+
+    assert elapsed < 3.0, f"the search waited {elapsed:.1f} s for the model"
+    assert response.llm_used is False
+    assert response.filter.family is Family.MOSFET
 
 
 def test_the_pagination_is_clamped() -> None:

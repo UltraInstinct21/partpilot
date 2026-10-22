@@ -96,7 +96,10 @@ class DigiKeyCollector:
     # Authentication
     # ----------------------------------------------------------------------------------
     def _require_credentials(self) -> None:
-        if not self.settings.digikey_client_id or not self.settings.digikey_client_secret:
+        if (
+            not self.settings.digikey_client_id
+            or not self.settings.digikey_client_secret.get_secret_value()
+        ):
             raise MissingCredentialsError(
                 "DigiKey credentials are missing "
                 "(PARTPILOT_DIGIKEY_CLIENT_ID / PARTPILOT_DIGIKEY_CLIENT_SECRET)"
@@ -111,7 +114,7 @@ class DigiKeyCollector:
         url = f"{self.settings.digikey_base_url.rstrip('/')}/v1/oauth2/token"
         payload = {
             "client_id": self.settings.digikey_client_id,
-            "client_secret": self.settings.digikey_client_secret,
+            "client_secret": self.settings.digikey_client_secret.get_secret_value(),
             "grant_type": "client_credentials",
         }
         async with http_client(self.settings, self._client) as client:

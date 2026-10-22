@@ -60,11 +60,15 @@ def _real_repository(settings: Settings, **_: Any) -> Any:
     from db.repository import SqlAlchemyPartsRepository
     from db.seed import load_seed
     from db.session import create_engine_for_url, init_db
+    from integration.datasheet_seed import seed_datasheet_parts
 
     settings.ensure_dirs()
     engine = create_engine_for_url(settings.database_url, echo=settings.sql_echo)
     init_db(engine)
     summary = load_seed(engine)
+    # The parts whose values are read from a datasheet. They are extracted
+    # with the real pipeline, so the source viewer has a page to show.
+    seed_datasheet_parts(engine, settings)
     logger.info(
         "database ready: %s parts, %s parameters",
         summary.get("parts"),

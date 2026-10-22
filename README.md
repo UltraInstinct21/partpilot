@@ -173,6 +173,28 @@ cp .env.example .env
 | `PARTPILOT_MOUSER_API_KEY` | <https://www.mouser.com/api-search/> - request a Search API key. | The second price and stock source, and the cross-check of the values. |
 | `OPENAI_API_KEY` (or `ANTHROPIC_API_KEY`, or `GOOGLE_API_KEY`) | The portal of the provider that you choose in `PARTPILOT_LLM_PROVIDER`. | The tier 2 and tier 3 extraction, the name mapping, the filter builder and the explanation of the alternatives. |
 
+### Any OpenAI compatible endpoint
+
+The LangChain **OpenAI** provider works with every OpenAI compatible gateway.
+To use one - for example OpenCode Zen, which serves free models - set three
+more values in `.env`:
+
+```bash
+PARTPILOT_LLM_PROVIDER=openai
+PARTPILOT_LLM_BASE_URL=http://127.0.0.1:1337/v1
+PARTPILOT_LLM_MODEL=moonshotai/kimi-k2.6:free
+PARTPILOT_LLM_API_KEY=your-zen-key
+```
+
+`PARTPILOT_LLM_BASE_URL` and `PARTPILOT_LLM_API_KEY` are optional. Leave them
+empty and the provider uses its own default URL and the key from its own
+environment variable. `PARTPILOT_LLM_VISION_BASE_URL` points tier 3 at
+another endpoint when the vision model lives elsewhere.
+
+When the endpoint cannot be reached, the search still works: the query is
+parsed by a deterministic fallback that only builds a filter. The database
+always chooses the rows.
+
 The values of `.env.example` are the safe defaults: no key, the rate limits
 below the documented limits, the delay of 1 s and the User-Agent with a
 contact address. **Change the contact address to the address of your team

@@ -181,7 +181,10 @@ class NexarCollector:
     # Authentication
     # ----------------------------------------------------------------------------------
     def _require_credentials(self) -> None:
-        if not self.settings.nexar_client_id or not self.settings.nexar_client_secret:
+        if (
+            not self.settings.nexar_client_id
+            or not self.settings.nexar_client_secret.get_secret_value()
+        ):
             raise MissingCredentialsError(
                 "Nexar credentials are missing "
                 "(PARTPILOT_NEXAR_CLIENT_ID / PARTPILOT_NEXAR_CLIENT_SECRET)"
@@ -196,7 +199,7 @@ class NexarCollector:
         payload = {
             "grant_type": "client_credentials",
             "client_id": self.settings.nexar_client_id,
-            "client_secret": self.settings.nexar_client_secret,
+            "client_secret": self.settings.nexar_client_secret.get_secret_value(),
             "scope": self.settings.nexar_scope,
         }
         async with http_client(self.settings, self._client) as client:

@@ -13,16 +13,23 @@ repository and a fake LLM extractor (no network, no model call).
 
 from __future__ import annotations
 
+import logging
+import re
 import time
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FuturesTimeoutError
 from typing import Any, Final
 
 from shared.interfaces import LLMExtractor, PartsRepository
 from shared.schemas import (
     Family,
+    LifecycleStatus,
     ParameterConstraint,
     SearchFilter,
     SearchResponse,
 )
+
+logger = logging.getLogger("partpilot.services")
 
 __all__ = [
     "ALLOWED_PARAMETERS",
@@ -32,12 +39,18 @@ __all__ = [
     "MOSFET_PARAMETERS",
     "SearchService",
     "describe_filter",
+    "fallback_filter",
     "validate_filter",
 ]
 
 #: Hard pagination limits (NFR-04: a search must answer in <= 5 s).
 MAX_LIMIT: Final[int] = 200
 MAX_OFFSET: Final[int] = 10_000
+
+#: The budget of the model call inside a search (NFR-04). When the model does
+#: not answer in time - the endpoint is down, the network is slow - the
+#: deterministic fallback builds the filter instead.
+LLM_BUDGET_SECONDS: Final[float] = 4.0
 
 #: Standard parameter names per family. A constraint on anything else is
 #: dropped before the filter reaches the database.
@@ -118,6 +131,122 @@ def _constraint_text(constraint: ParameterConstraint) -> str:
     if bound is None:
         bound = constraint.typ
     return f"{constraint.name} {symbol} {_num(bound)}{unit}"
+
+
+def fallback_filter(query: str) -> SearchFilter:
+    """Build a filter from a query without a model.
+
+    This is the offline path. It is used when the model is not available: no
+    API key, no network, the provider is down, or the model returned
+    something that is not a filter.
+
+    It recognises the constraints a user writes most often - the family, a
+    voltage, an on-resistance, a charge, a package, "in stock" and a
+    manufacturer - and it only ever *builds* a filter. The database still
+    chooses the rows, so the rule of the plan ("the LLM must not choose the
+    results") holds for the fallback as well.
+
+    A pattern that is not recognised is left out. The fallback never guesses.
+    """
+    text = (query or "").lower()
+    if not text.strip():
+        return SearchFilter()
+
+    filt = SearchFilter()
+
+    if "mosfet" in text or "fet" in text:
+        filt.family = Family.MOSFET
+    elif "driver" in text or "gate driver" in text:
+        filt.family = Family.GATE_DRIVER
+
+    if "in stock" in text or "instock" in text or "available" in text:
+        filt.in_stock = True
+    if "out of stock" in text or "nrnd" in text:
+        filt.lifecycle_status = [LifecycleStatus.NRND]
+
+    # A voltage. "100 V N-channel MOSFET" asks for exactly 100 V, while
+    # "below 100 V" asks for at most 100 V.
+    exact = re.search(
+        r"(\d+(?:\.\d+)?)\s*v(?:olts?)?\s*(?:[\w-]+\s+){0,3}?(?:mosfet|fet|driver)\b",
+        text,
+    )
+    if exact:
+        filt.parameters.append(
+            ParameterConstraint(
+                name="vds_max",
+                unit="V",
+                typ=float(exact.group(1)),
+                operator="eq",
+            )
+        )
+    else:
+        match = re.search(r"(\d+(?:\.\d+)?)\s*v(?:olts?)?\b", text)
+        if match:
+            filt.parameters.append(
+                ParameterConstraint(
+                    name="vds_max",
+                    unit="V",
+                    max=float(match.group(1)),
+                    operator="lte",
+                )
+            )
+
+    # An on-resistance, for example "Rds(on) below 5 mOhm".
+    match = re.search(
+        r"rds\s*\(?\s*on\s*\)?[^0-9]{0,20}(\d+(?:\.\d+)?)\s*(milli-?ohms?|mohm|mω|mΩ)?",
+        text,
+    )
+    if match:
+        value = float(match.group(1))
+        unit = "mohm" if match.group(2) else "ohm"
+        filt.parameters.append(
+            ParameterConstraint(
+                name="rds_on",
+                unit=unit,
+                max=value,
+                operator="lte",
+            )
+        )
+
+    # A total gate charge, for example "Qg below 80 nC".
+    match = re.search(r"(?:qg|gate charge)[^0-9]{0,20}(\d+(?:\.\d+)?)\s*(nc)?", text)
+    if match:
+        value = float(match.group(1))
+        unit = "nC" if match.group(2) else "C"
+        filt.parameters.append(
+            ParameterConstraint(
+                name="total_gate_charge_qg",
+                unit=unit,
+                max=value,
+                operator="lte",
+            )
+        )
+
+    # A supply voltage of a gate driver, for example "35 V driver" or
+    # "gate driver with a 35 V supply".
+    if filt.family is Family.GATE_DRIVER:
+        match = re.search(
+            r"(\d+(?:\.\d+)?)\s*v(?:olts?)?\s*(?:[\w-]+\s+){0,3}?(?:supply|driver)\b",
+            text,
+        ) or re.search(r"driver[^0-9]{0,20}(\d+(?:\.\d+)?)\s*v(?:olts?)?", text)
+        if match:
+            filt.parameters.append(
+                ParameterConstraint(
+                    name="supply_voltage_max",
+                    unit="V",
+                    max=float(match.group(1)),
+                    operator="lte",
+                )
+            )
+
+    # A package, for example "in TO-220".
+    match = re.search(
+        r"\b(to-2[23]0[a-z]*|so-?ic-?\d+|so-?8|tssop-?\d+|sot-?23|d2pak|d2pak-\d+)\b", text
+    )
+    if match:
+        filt.package = match.group(1).upper()
+
+    return validate_filter(filt)
 
 
 def describe_filter(filt: SearchFilter) -> str:
@@ -243,11 +372,13 @@ class SearchService:
         *,
         max_limit: int = MAX_LIMIT,
         max_offset: int = MAX_OFFSET,
+        llm_budget_seconds: float = LLM_BUDGET_SECONDS,
     ) -> None:
         self._repository = repository
         self._llm = llm
         self._max_limit = max(1, int(max_limit))
         self._max_offset = max(0, int(max_offset))
+        self._llm_budget_seconds = max(0.0, float(llm_budget_seconds))
 
     # -- helpers ----------------------------------------------------------------
 
@@ -265,21 +396,73 @@ class SearchService:
         return limit_value, offset_value
 
     def _build_filter(self, query: str) -> tuple[SearchFilter, bool]:
-        """Ask the LLM for a filter. Never raises."""
+        """Ask the LLM for a filter. Never raises.
+
+        When the model is not available - no key, no network, the provider is
+        down - the query is parsed by the deterministic fallback in
+        :func:`fallback_filter`. The fallback only ever *builds* a filter, the
+        repository still chooses the rows, so the safety property of the plan
+        (the LLM never chooses the results) is kept.
+
+        The model call has a budget (NFR-04: a search answers in 5 seconds or
+        less), so a slow or unreachable endpoint does not hold the request.
+        """
         if self._llm is None:
-            return SearchFilter(), False
+            return fallback_filter(query), False
         try:
-            raw: Any = self._llm.build_search_filter(query)
-        except Exception:
+            raw: Any = self._call_with_budget(query)
+        except TimeoutError:
+            logger.warning(
+                "The filter builder did not answer within %.1f s; the query is "
+                "parsed by the deterministic fallback.",
+                self._llm_budget_seconds,
+            )
+            return fallback_filter(query), False
+        except Exception as exc:
             # The LLM must never break a search request.
-            return SearchFilter(), False
+            logger.warning(
+                "The filter builder failed (%s: %s); the query is parsed by the "
+                "deterministic fallback.",
+                type(exc).__name__,
+                exc,
+            )
+            return fallback_filter(query), False
         if raw is None:
-            return SearchFilter(), False
+            return fallback_filter(query), False
         try:
             filt = SearchFilter.model_validate(raw)
-        except Exception:
-            return SearchFilter(), False
+        except Exception as exc:
+            logger.warning(
+                "The filter builder returned an invalid filter (%s: %s); the query "
+                "is parsed by the deterministic fallback.",
+                type(exc).__name__,
+                exc,
+            )
+            return fallback_filter(query), False
         return validate_filter(filt), True
+
+    def _call_with_budget(self, query: str) -> Any:
+        """Call the filter builder with a time budget.
+
+        The call is synchronous, so it runs in a worker thread. When the budget
+        is over, the thread is left to finish on its own - the request does
+        not wait for it.
+        """
+        budget = self._llm_budget_seconds
+        if budget <= 0:
+            return self._llm.build_search_filter(query)
+        pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="partpilot-llm")
+        try:
+            future = pool.submit(self._llm.build_search_filter, query)
+            try:
+                return future.result(timeout=budget)
+            except FuturesTimeoutError as exc:
+                future.cancel()
+                raise TimeoutError("the filter builder ran out of time") from exc
+        finally:
+            # The thread is left to finish on its own; the request does not
+            # wait for it.
+            pool.shutdown(wait=False, cancel_futures=True)
 
     def _execute(
         self,

@@ -61,9 +61,9 @@ def search_parts(
         response.llm_used = False
         return response
 
-    response = service.search(payload.query, limit=payload.limit, offset=payload.offset)
-    response.llm_used = True
-    return response
+    # The service knows whether the model built the filter or the
+    # deterministic fallback did, so the flag is not overwritten here.
+    return service.search(payload.query, limit=payload.limit, offset=payload.offset)
 
 
 __all__ = ["client_key", "router"]

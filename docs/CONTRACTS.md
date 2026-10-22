@@ -66,6 +66,35 @@ Provider strings accepted by `init_chat_model`: `openai`, `anthropic`,
 `mistralai`, `xai`, `deepseek`, `fireworks`, `together`, `huggingface`.
 Use the config value `Settings.llm_provider`; never hardcode a provider.
 
+### The endpoint, the model and the key
+
+The LangChain **OpenAI** provider talks to any OpenAI compatible endpoint, so
+an OpenAI compatible gateway (for example OpenCode Zen, which serves free
+models) works by changing three values in `.env`:
+
+```bash
+PARTPILOT_LLM_PROVIDER=openai
+PARTPILOT_LLM_BASE_URL=http://127.0.0.1:1337/v1
+PARTPILOT_LLM_MODEL=moonshotai/kimi-k2.6:free
+PARTPILOT_LLM_API_KEY=your-zen-key
+```
+
+`PARTPILOT_LLM_BASE_URL` and `PARTPILOT_LLM_API_KEY` are **optional**. When
+they are empty the provider uses its own default URL and the key from its own
+environment variable (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, ...). A separate
+`PARTPILOT_LLM_VISION_BASE_URL` points tier 3 at another endpoint when the
+vision model lives elsewhere.
+
+The secrets are `pydantic.SecretStr`, so their value never appears in a
+`repr()`, a log line or a traceback (NFR-02). Read them with
+`settings.llm_api_key.get_secret_value()`.
+
+When the endpoint is unreachable or the key is missing, the search service
+falls back to the deterministic filter builder in
+`services/search.py:fallback_filter`. The fallback only ever *builds* a
+filter - the database still chooses the rows - and it never guesses a
+constraint it does not recognise.
+
 ## Distributor endpoints (verified against the vendor docs, 2026-10)
 
 ### DigiKey Product Information v4

@@ -104,6 +104,10 @@ def get_source_page(
         raise HTTPException(
             status_code=404, detail=f"Page {page_number} of source '{source_id}' was not found."
         )
+    if not page.image_url:
+        # The URL of the rendered page is an API concern, so the route fills
+        # it in. The frontend shows it next to the value (FR-12).
+        page.image_url = f"/api/sources/{source_id}/page/{page_number}?format=image"
     return page
 
 

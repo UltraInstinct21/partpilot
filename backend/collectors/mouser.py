@@ -141,7 +141,7 @@ class MouserCollector:
     # Authentication
     # ----------------------------------------------------------------------------------
     def _require_credentials(self) -> None:
-        if not self.settings.mouser_api_key:
+        if not self.settings.mouser_api_key.get_secret_value():
             raise MissingCredentialsError(
                 "Mouser credentials are missing (PARTPILOT_MOUSER_API_KEY)"
             )
@@ -167,7 +167,7 @@ class MouserCollector:
             if cached is not None:
                 logger.debug("cache hit for the Mouser request %s", path)
                 return cached
-        params = {"apiKey": self.settings.mouser_api_key}
+        params = {"apiKey": self.settings.mouser_api_key.get_secret_value()}
         self.limiter.acquire()
         async with http_client(self.settings, self._client) as client:
             response = await request_with_retry(

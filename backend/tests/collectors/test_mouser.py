@@ -8,6 +8,7 @@ import json as jsonlib
 import httpx
 import pytest
 import respx
+from pydantic import SecretStr
 
 from collectors.base import MissingCredentialsError
 from collectors.mouser import MouserCollector, parse_bool
@@ -156,7 +157,7 @@ async def test_a_429_is_retried(settings: Settings, load) -> None:
 
 
 def test_the_collector_works_without_credentials(settings: Settings) -> None:
-    settings.mouser_api_key = ""
+    settings.mouser_api_key = SecretStr("")
     collector = _collector(settings)
     with pytest.raises(MissingCredentialsError):
         collector.search_by_mpn("UCC27511")

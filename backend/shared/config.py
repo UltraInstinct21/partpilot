@@ -13,9 +13,10 @@ from __future__ import annotations
 import os
 from functools import lru_cache
 from pathlib import Path
+from typing import Annotated
 
-from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field, SecretStr, field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 # Repository root: backend/shared/config.py -> backend/shared -> backend -> root
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -50,7 +51,10 @@ class Settings(BaseSettings):
     api_host: str = "127.0.0.1"
     api_port: int = 8000
     api_base_url: str = "http://127.0.0.1:8000"
-    cors_origins: list[str] = Field(
+    # A comma separated list of allowed browser origins. ``NoDecode`` keeps
+    # pydantic-settings from trying to JSON decode the raw string, so the
+    # validator below can split it.
+    cors_origins: Annotated[list[str], NoDecode] = Field(
         default_factory=lambda: [
             "http://localhost:5173",
             "http://127.0.0.1:5173",
@@ -60,9 +64,17 @@ class Settings(BaseSettings):
     max_upload_bytes: int = 5 * 1024 * 1024  # 5 MiB, plan WP6 "limit the size of file uploads"
 
     # --- LLM -------------------------------------------------------------------
+    # The provider is chosen by config. The base URL and the key are optional:
+    # when they are empty the provider uses its own default URL and the key
+    # from its own environment variable (OPENAI_API_KEY, ANTHROPIC_API_KEY,
+    # ...). Set them to point at an OpenAI compatible gateway, for example
+    # OpenCode Zen, which serves free models.
     llm_provider: str = "openai"
     llm_model: str = "gpt-4o-mini"
     llm_vision_model: str = "gpt-4o-mini"
+    llm_base_url: str = ""
+    llm_vision_base_url: str = ""
+    llm_api_key: SecretStr = SecretStr("")
     llm_temperature: float = 0.0
     llm_max_retries: int = 3
     llm_requests_per_second: float = 1.0
@@ -73,20 +85,22 @@ class Settings(BaseSettings):
     llm_cost_per_million_output: float = 0.60
 
     # --- Collector credentials (server side only, NFR-02) ---------------------
+    # The secrets are ``SecretStr``, so their value never shows up in a
+    # ``repr()``, in a log line or in a traceback.
     digikey_client_id: str = ""
-    digikey_client_secret: str = ""
+    digikey_client_secret: SecretStr = SecretStr("")
     digikey_base_url: str = "https://api.digikey.com"
     digikey_locale_site: str = "US"
     digikey_locale_language: str = "en"
     digikey_locale_currency: str = "USD"
 
     nexar_client_id: str = ""
-    nexar_client_secret: str = ""
+    nexar_client_secret: SecretStr = SecretStr("")
     nexar_token_url: str = "https://identity.nexar.com/connect/token"
     nexar_graphql_url: str = "https://api.nexar.com/graphql"
     nexar_scope: str = "supply.domain"
 
-    mouser_api_key: str = ""
+    mouser_api_key: SecretStr = SecretStr("")
     mouser_base_url: str = "https://api.mouser.com/api/v1"
 
     # --- Rate limits -----------------------------------------------------------

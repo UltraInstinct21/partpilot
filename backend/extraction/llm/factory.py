@@ -64,7 +64,20 @@ def build_chat_model(
         max_bucket_size=5,
     )
     kwargs.setdefault("temperature", settings.llm_temperature)
-    logger.info("building chat model %s:%s", provider, model_name)
+    # The base URL and the key are optional. When they are empty the provider
+    # uses its own default URL and its own environment variable, so nothing
+    # has to be configured for the standard providers.
+    base_url = settings.llm_vision_base_url if vision else settings.llm_base_url
+    if base_url:
+        kwargs.setdefault("base_url", base_url)
+    if settings.llm_api_key.get_secret_value():
+        kwargs.setdefault("api_key", settings.llm_api_key.get_secret_value())
+    logger.info(
+        "building chat model %s:%s%s",
+        provider,
+        model_name,
+        f" via {base_url}" if base_url else "",
+    )
     chat = init_chat_model(f"{provider}:{model_name}", rate_limiter=limiter, **kwargs)
     return chat.with_retry(stop_after_attempt=settings.llm_max_retries)
 

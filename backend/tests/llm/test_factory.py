@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
 from langchain_core.runnables.retry import RunnableRetry
+from pydantic import SecretStr
 
 from extraction.llm import factory
 from extraction.llm.factory import (
@@ -50,6 +51,76 @@ def test_build_chat_model_uses_the_vision_model(monkeypatch, settings) -> None:
     monkeypatch.setattr(factory, "init_chat_model", fake_init)
     build_chat_model(settings=settings, vision=True)
     assert calls == [f"{settings.llm_provider}:{settings.llm_vision_model}"]
+
+
+def test_the_base_url_and_the_key_reach_the_model(monkeypatch, settings) -> None:
+    """The endpoint and the key are configurable, so a gateway can be used."""
+    seen: dict[str, object] = {}
+
+    def fake_init(model, **kwargs):
+        seen.update(kwargs)
+        return FakeToolChatModel(responses=[tool_message({})])
+
+    monkeypatch.setattr(factory, "init_chat_model", fake_init)
+    settings.llm_base_url = "http://127.0.0.1:1337/v1"
+    settings.llm_api_key = SecretStr("a-test-key")
+
+    build_chat_model(settings=settings)
+
+    assert seen["base_url"] == "http://127.0.0.1:1337/v1"
+    assert seen["api_key"] == "a-test-key"
+
+
+def test_the_vision_model_has_its_own_base_url(monkeypatch, settings) -> None:
+    seen: dict[str, object] = {}
+
+    def fake_init(model, **kwargs):
+        seen.update(kwargs)
+        return FakeToolChatModel(responses=[tool_message({})])
+
+    monkeypatch.setattr(factory, "init_chat_model", fake_init)
+    settings.llm_base_url = "http://text/v1"
+    settings.llm_vision_base_url = "http://vision/v1"
+
+    build_chat_model(settings=settings, vision=True)
+
+    assert seen["base_url"] == "http://vision/v1"
+
+
+def test_no_base_url_and_no_key_are_passed_when_they_are_empty(monkeypatch, settings) -> None:
+    """The provider then uses its own default URL and its own key."""
+    seen: dict[str, object] = {}
+
+    def fake_init(model, **kwargs):
+        seen.update(kwargs)
+        return FakeToolChatModel(responses=[tool_message({})])
+
+    monkeypatch.setattr(factory, "init_chat_model", fake_init)
+    settings.llm_base_url = ""
+    settings.llm_vision_base_url = ""
+    settings.llm_api_key = SecretStr("")
+
+    build_chat_model(settings=settings)
+
+    assert "base_url" not in seen
+    assert "api_key" not in seen
+
+
+def test_the_key_is_never_logged(monkeypatch, settings, caplog) -> None:
+    """A key must not end up in the log (NFR-02)."""
+    import logging
+
+    def fake_init(model, **kwargs):
+        return FakeToolChatModel(responses=[tool_message({})])
+
+    monkeypatch.setattr(factory, "init_chat_model", fake_init)
+    settings.llm_api_key = SecretStr("super-secret-key")
+    settings.llm_base_url = "http://gateway/v1"
+
+    with caplog.at_level(logging.INFO):
+        build_chat_model(settings=settings)
+
+    assert "super-secret-key" not in caplog.text
 
 
 def test_chat_model_core_unwraps_the_retry_wrapper() -> None:
