@@ -13,7 +13,7 @@ and `backend/tests/validation/`.
 | `backend/validation/namemap.py` | `NameMatcher` (rapidfuzz), `DEFAULT_ALIASES`, `normalize_name()`. |
 | `backend/validation/validator.py` | `ParameterValidator` (implements the frozen `Validator` protocol), `ValidationOutcome`, `get_validator()`. |
 | `backend/validation/__init__.py` | Public exports of the package. |
-| `backend/tests/validation/` | 196 tests, of which **59 are deliberately wrong values** (the acceptance test of WP5). |
+| `backend/tests/validation/` | 197 tests, of which **59 are deliberately wrong values** (the acceptance test of WP5). |
 
 Nothing outside `backend/validation/` and `backend/tests/validation/` was
 touched.  The frozen files (`shared/schemas.py`, `shared/interfaces.py`,
@@ -137,7 +137,7 @@ Status:
 
 ```bash
 cd backend
-.venv/bin/python -m pytest -q                 # 215 tests (196 of them mine)
+.venv/bin/python -m pytest -q                 # 216 tests (197 of them mine)
 .venv/bin/python -m pytest tests/validation -q
 .venv/bin/python -m ruff check .
 .venv/bin/python -m black --check .
