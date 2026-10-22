@@ -1,0 +1,10 @@
+{
+  "source_id": "pdf-synthetic-scanned",
+  "family": "mosfet",
+  "page": 1,
+  "title": "Electrical Characteristics (scanned)",
+  "text": "",
+  "tables": [],
+  "is_image_only": true,
+  "note": "Scanned datasheet page: no text layer. Tier 1 must not return values."
+}

@@ -1,0 +1,43 @@
+{
+  "source_id": "pdf-synthetic-mosfet",
+  "family": "mosfet",
+  "page": 1,
+  "title": "Absolute Maximum Ratings",
+  "text": "PARTPILOT SYNTHETIC DATASHEET\nPMP100N08 - 100 V N-Channel Power MOSFET\n\n1. Absolute Maximum Ratings\nTA = 25 C unless otherwise noted.\n(Tj = 125 C maximum continuous)\n",
+  "tables": [
+    {
+      "bbox": [
+        54,
+        200,
+        558,
+        300
+      ],
+      "rows": [
+        [
+          "Parameter",
+          "Symbol",
+          "Value",
+          "Unit"
+        ],
+        [
+          "Drain-Source Voltage",
+          "VDS",
+          "100",
+          "V"
+        ],
+        [
+          "Continuous Drain Current",
+          "ID",
+          "25",
+          "A"
+        ],
+        [
+          "Maximum Junction Temperature",
+          "TJ",
+          "175",
+          "C"
+        ]
+      ]
+    }
+  ]
+}

@@ -1,0 +1,864 @@
+{
+  "parts": [
+    {
+      "part_id": "gate-driver-ucc27511",
+      "mpn": "UCC27511",
+      "manufacturer": "Texas Instruments",
+      "family": "gate_driver",
+      "package": "SOT-23-6",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/UCC27511.pdf",
+      "description": "Texas Instruments UCC27511 high-side gate driver, 8 V",
+      "source_ids": [
+        "api-digikey-ucc27511",
+        "api-mouser-ucc27511"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 5.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 13.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 6.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 3.6,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.52,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 42.2,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "13.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 23.3,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 34.1,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 7.52,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-ucc27524",
+      "mpn": "UCC27524",
+      "manufacturer": "Texas Instruments",
+      "family": "gate_driver",
+      "package": "HTSSOP-16",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/UCC27524.pdf",
+      "description": "Texas Instruments UCC27524 high-side gate driver, 10 V",
+      "source_ids": [
+        "api-digikey-ucc27524",
+        "api-mouser-ucc27524"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 5.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 15.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 2.1,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 5.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.81,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 168.0,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "15.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 102.6,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 20.3,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 9.37,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-ucc27531",
+      "mpn": "UCC27531",
+      "manufacturer": "Texas Instruments",
+      "family": "gate_driver",
+      "package": "SOT-23-6",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/UCC27531.pdf",
+      "description": "Texas Instruments UCC27531 high-side gate driver, 5 V",
+      "source_ids": [
+        "api-digikey-ucc27531",
+        "api-mouser-ucc27531"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 6.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 11.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 4.0,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 7.9,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.41,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 48.3,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "11.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 106.1,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 91.9,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 11.4,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-el7158",
+      "mpn": "EL7158",
+      "manufacturer": "Renesas Electronics",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/EL7158.pdf",
+      "description": "Renesas Electronics EL7158 high-side gate driver, 8 V",
+      "source_ids": [
+        "api-digikey-el7158",
+        "api-mouser-el7158"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 15.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 7.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 5.9,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 0.82,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 211.0,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "15.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 20.3,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 36.2,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 10.52,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-6n137",
+      "mpn": "6N137",
+      "manufacturer": "onsemi",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/6N137.pdf",
+      "description": "onsemi 6N137 high-side gate driver, 10 V",
+      "source_ids": [
+        "api-digikey-6n137",
+        "api-mouser-6n137"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 17.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 2.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 1.1,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.53,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 37.6,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "17.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 22.3,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 75.7,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 5.44,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-max4428",
+      "mpn": "MAX4428",
+      "manufacturer": "Analog Devices / Maxim",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/MAX4428.pdf",
+      "description": "Analog Devices / Maxim MAX4428 high-side gate driver, 2 V",
+      "source_ids": [
+        "api-digikey-max4428",
+        "api-mouser-max4428"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 9.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 3.8,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 5.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.1,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 196.7,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "9.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 77.1,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 41.2,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 8.1,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-max4429",
+      "mpn": "MAX4429",
+      "manufacturer": "Analog Devices / Maxim",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/MAX4429.pdf",
+      "description": "Analog Devices / Maxim MAX4429 high-side gate driver, 2 V",
+      "source_ids": [
+        "api-digikey-max4429",
+        "api-mouser-max4429"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 5.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 7.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 2.7,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.93,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 206.7,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "7.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 85.7,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 84.0,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 7.97,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-si9121",
+      "mpn": "Si9121",
+      "manufacturer": "Vishay Siliconix",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/Si9121.pdf",
+      "description": "Vishay Siliconix Si9121 high-side gate driver, 2 V",
+      "source_ids": [
+        "api-digikey-si9121",
+        "api-mouser-si9121"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 4.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 6.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 2.0,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 1.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.63,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 57.9,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "6.5 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 95.8,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 91.8,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 7.3,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-ncp51820",
+      "mpn": "NCP51820",
+      "manufacturer": "onsemi",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/NCP51820.pdf",
+      "description": "onsemi NCP51820 high-side gate driver, 8 V",
+      "source_ids": [
+        "api-digikey-ncp51820",
+        "api-mouser-ncp51820"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 15.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 5.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 2.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.16,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 131.5,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "15.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 56.5,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 39.5,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 9.77,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-lm5109b",
+      "mpn": "LM5109B",
+      "manufacturer": "Texas Instruments",
+      "family": "gate_driver",
+      "package": "HTSSOP-16",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/LM5109B.pdf",
+      "description": "Texas Instruments LM5109B high-side gate driver, 1 V",
+      "source_ids": [
+        "api-digikey-lm5109b",
+        "api-mouser-lm5109b"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 4.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 5.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 1.8,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 3.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.28,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 41.4,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "5.5 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 102.9,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 81.8,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 5.02,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "Products": [
+    {
+      "ManufacturerProductNumber": "IRF3205S",
+      "Manufacturer": {
+        "Id": 1234,
+        "Name": "International Rectifier"
+      },
+      "Description": "International Rectifier IRF3205S N-channel power MOSFET, 56 V",
+      "ProductUrl": "https://www.digikey.com/en/products/detail/x/IRF3205S/1234567",
+      "DatasheetUrl": "https://example.invalid/datasheets/IRF3205S.pdf",
+      "UnitPrice": 0.89,
+      "QuantityAvailable": 48213
+    },
+    {
+      "ManufacturerProductNumber": "IRF540N",
+      "Manufacturer": {
+        "Id": 1234,
+        "Name": "International Rectifier"
+      },
+      "Description": "International Rectifier IRF540N N-channel power MOSFET, 100 V",
+      "ProductUrl": "https://www.digikey.com/en/products/detail/x/IRF540N/1234567",
+      "DatasheetUrl": "https://example.invalid/datasheets/IRF540N.pdf",
+      "UnitPrice": 0.89,
+      "QuantityAvailable": 48213
+    },
+    {
+      "ManufacturerProductNumber": "IRLZ44N",
+      "Manufacturer": {
+        "Id": 1234,
+        "Name": "International Rectifier"
+      },
+      "Description": "International Rectifier IRLZ44N N-channel power MOSFET, 55 V",
+      "ProductUrl": "https://www.digikey.com/en/products/detail/x/IRLZ44N/1234567",
+      "DatasheetUrl": "https://example.invalid/datasheets/IRLZ44N.pdf",
+      "UnitPrice": 0.89,
+      "QuantityAvailable": 48213
+    },
+    {
+      "ManufacturerProductNumber": "BSC030N08NS5",
+      "Manufacturer": {
+        "Id": 1234,
+        "Name": "Infineon Technologies"
+      },
+      "Description": "Infineon Technologies BSC030N08NS5 N-channel power MOSFET, 80 V",
+      "ProductUrl": "https://www.digikey.com/en/products/detail/x/BSC030N08NS5/1234567",
+      "DatasheetUrl": "https://example.invalid/datasheets/BSC030N08NS5.pdf",
+      "UnitPrice": 0.89,
+      "QuantityAvailable": 48213
+    },
+    {
+      "ManufacturerProductNumber": "BSZ084N08NS5",
+      "Manufacturer": {
+        "Id": 1234,
+        "Name": "Infineon Technologies"
+      },
+      "Description": "Infineon Technologies BSZ084N08NS5 N-channel power MOSFET, 80 V",
+      "ProductUrl": "https://www.digikey.com/en/products/detail/x/BSZ084N08NS5/1234567",
+      "DatasheetUrl": "https://example.invalid/datasheets/BSZ084N08NS5.pdf",
+      "UnitPrice": 0.89,
+      "QuantityAvailable": 48213
+    }
+  ],
+  "ProductsCount": 5,
+  "ProductsTotalCount": 10
+}

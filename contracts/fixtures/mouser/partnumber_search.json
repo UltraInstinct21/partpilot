@@ -1,0 +1,608 @@
+{
+  "Errors": [],
+  "SearchResults": {
+    "NumberOfResult": 10,
+    "Parts": [
+      {
+        "MouserPartNumber": "81-UCC27511",
+        "ManufacturerPartNumber": "UCC27511",
+        "Manufacturer": "Texas Instruments",
+        "Description": "Texas Instruments UCC27511 high-side gate driver, 8 V",
+        "Category": "PMIC - Gate Drivers",
+        "DataSheetUrl": "https://example.invalid/datasheets/UCC27511.pdf",
+        "ProductDetailUrl": "https://www.mouser.com/ProductDetail/Texas Instruments/UCC27511",
+        "ImagePath": "https://www.mouser.com/images/UCC27511.jpg",
+        "Availability": "48213 In Stock",
+        "AvailabilityInStock": "48213",
+        "LeadTime": "84 Days",
+        "LifecycleStatus": "New Product",
+        "IsDiscontinued": "false",
+        "SuggestedReplacement": "",
+        "Min": "1",
+        "Mult": "1",
+        "Reeling": true,
+        "ROHSStatus": "RoHS Compliant",
+        "PriceBreaks": [
+          {
+            "Quantity": 1,
+            "Price": "0.89",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 10,
+            "Price": "0.674",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 100,
+            "Price": "0.5223",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 1000,
+            "Price": "0.4121",
+            "Currency": "USD"
+          }
+        ],
+        "ProductAttributes": [
+          {
+            "AttributeName": "Drain to Source Voltage (Vdss)",
+            "AttributeValue": "100 V"
+          },
+          {
+            "AttributeName": "Continuous Drain Current (Id)",
+            "AttributeValue": "25 A"
+          },
+          {
+            "AttributeName": "RDS(on) @ Id, Vgs",
+            "AttributeValue": "5.5 mOhm"
+          },
+          {
+            "AttributeName": "Package / Case",
+            "AttributeValue": "SOT-23-6"
+          }
+        ]
+      },
+      {
+        "MouserPartNumber": "81-UCC27524",
+        "ManufacturerPartNumber": "UCC27524",
+        "Manufacturer": "Texas Instruments",
+        "Description": "Texas Instruments UCC27524 high-side gate driver, 10 V",
+        "Category": "PMIC - Gate Drivers",
+        "DataSheetUrl": "https://example.invalid/datasheets/UCC27524.pdf",
+        "ProductDetailUrl": "https://www.mouser.com/ProductDetail/Texas Instruments/UCC27524",
+        "ImagePath": "https://www.mouser.com/images/UCC27524.jpg",
+        "Availability": "48213 In Stock",
+        "AvailabilityInStock": "48213",
+        "LeadTime": "84 Days",
+        "LifecycleStatus": "New Product",
+        "IsDiscontinued": "false",
+        "SuggestedReplacement": "",
+        "Min": "1",
+        "Mult": "1",
+        "Reeling": true,
+        "ROHSStatus": "RoHS Compliant",
+        "PriceBreaks": [
+          {
+            "Quantity": 1,
+            "Price": "0.89",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 10,
+            "Price": "0.674",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 100,
+            "Price": "0.5223",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 1000,
+            "Price": "0.4121",
+            "Currency": "USD"
+          }
+        ],
+        "ProductAttributes": [
+          {
+            "AttributeName": "Drain to Source Voltage (Vdss)",
+            "AttributeValue": "100 V"
+          },
+          {
+            "AttributeName": "Continuous Drain Current (Id)",
+            "AttributeValue": "25 A"
+          },
+          {
+            "AttributeName": "RDS(on) @ Id, Vgs",
+            "AttributeValue": "5.5 mOhm"
+          },
+          {
+            "AttributeName": "Package / Case",
+            "AttributeValue": "HTSSOP-16"
+          }
+        ]
+      },
+      {
+        "MouserPartNumber": "81-UCC27531",
+        "ManufacturerPartNumber": "UCC27531",
+        "Manufacturer": "Texas Instruments",
+        "Description": "Texas Instruments UCC27531 high-side gate driver, 5 V",
+        "Category": "PMIC - Gate Drivers",
+        "DataSheetUrl": "https://example.invalid/datasheets/UCC27531.pdf",
+        "ProductDetailUrl": "https://www.mouser.com/ProductDetail/Texas Instruments/UCC27531",
+        "ImagePath": "https://www.mouser.com/images/UCC27531.jpg",
+        "Availability": "48213 In Stock",
+        "AvailabilityInStock": "48213",
+        "LeadTime": "84 Days",
+        "LifecycleStatus": "New Product",
+        "IsDiscontinued": "false",
+        "SuggestedReplacement": "",
+        "Min": "1",
+        "Mult": "1",
+        "Reeling": true,
+        "ROHSStatus": "RoHS Compliant",
+        "PriceBreaks": [
+          {
+            "Quantity": 1,
+            "Price": "0.89",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 10,
+            "Price": "0.674",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 100,
+            "Price": "0.5223",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 1000,
+            "Price": "0.4121",
+            "Currency": "USD"
+          }
+        ],
+        "ProductAttributes": [
+          {
+            "AttributeName": "Drain to Source Voltage (Vdss)",
+            "AttributeValue": "100 V"
+          },
+          {
+            "AttributeName": "Continuous Drain Current (Id)",
+            "AttributeValue": "25 A"
+          },
+          {
+            "AttributeName": "RDS(on) @ Id, Vgs",
+            "AttributeValue": "5.5 mOhm"
+          },
+          {
+            "AttributeName": "Package / Case",
+            "AttributeValue": "SOT-23-6"
+          }
+        ]
+      },
+      {
+        "MouserPartNumber": "81-EL7158",
+        "ManufacturerPartNumber": "EL7158",
+        "Manufacturer": "Renesas Electronics",
+        "Description": "Renesas Electronics EL7158 high-side gate driver, 8 V",
+        "Category": "PMIC - Gate Drivers",
+        "DataSheetUrl": "https://example.invalid/datasheets/EL7158.pdf",
+        "ProductDetailUrl": "https://www.mouser.com/ProductDetail/Renesas Electronics/EL7158",
+        "ImagePath": "https://www.mouser.com/images/EL7158.jpg",
+        "Availability": "48213 In Stock",
+        "AvailabilityInStock": "48213",
+        "LeadTime": "84 Days",
+        "LifecycleStatus": "New Product",
+        "IsDiscontinued": "false",
+        "SuggestedReplacement": "",
+        "Min": "1",
+        "Mult": "1",
+        "Reeling": true,
+        "ROHSStatus": "RoHS Compliant",
+        "PriceBreaks": [
+          {
+            "Quantity": 1,
+            "Price": "0.89",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 10,
+            "Price": "0.674",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 100,
+            "Price": "0.5223",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 1000,
+            "Price": "0.4121",
+            "Currency": "USD"
+          }
+        ],
+        "ProductAttributes": [
+          {
+            "AttributeName": "Drain to Source Voltage (Vdss)",
+            "AttributeValue": "100 V"
+          },
+          {
+            "AttributeName": "Continuous Drain Current (Id)",
+            "AttributeValue": "25 A"
+          },
+          {
+            "AttributeName": "RDS(on) @ Id, Vgs",
+            "AttributeValue": "5.5 mOhm"
+          },
+          {
+            "AttributeName": "Package / Case",
+            "AttributeValue": "SOIC-8"
+          }
+        ]
+      },
+      {
+        "MouserPartNumber": "81-6N137",
+        "ManufacturerPartNumber": "6N137",
+        "Manufacturer": "onsemi",
+        "Description": "onsemi 6N137 high-side gate driver, 10 V",
+        "Category": "PMIC - Gate Drivers",
+        "DataSheetUrl": "https://example.invalid/datasheets/6N137.pdf",
+        "ProductDetailUrl": "https://www.mouser.com/ProductDetail/onsemi/6N137",
+        "ImagePath": "https://www.mouser.com/images/6N137.jpg",
+        "Availability": "48213 In Stock",
+        "AvailabilityInStock": "48213",
+        "LeadTime": "84 Days",
+        "LifecycleStatus": "New Product",
+        "IsDiscontinued": "false",
+        "SuggestedReplacement": "",
+        "Min": "1",
+        "Mult": "1",
+        "Reeling": true,
+        "ROHSStatus": "RoHS Compliant",
+        "PriceBreaks": [
+          {
+            "Quantity": 1,
+            "Price": "0.89",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 10,
+            "Price": "0.674",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 100,
+            "Price": "0.5223",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 1000,
+            "Price": "0.4121",
+            "Currency": "USD"
+          }
+        ],
+        "ProductAttributes": [
+          {
+            "AttributeName": "Drain to Source Voltage (Vdss)",
+            "AttributeValue": "100 V"
+          },
+          {
+            "AttributeName": "Continuous Drain Current (Id)",
+            "AttributeValue": "25 A"
+          },
+          {
+            "AttributeName": "RDS(on) @ Id, Vgs",
+            "AttributeValue": "5.5 mOhm"
+          },
+          {
+            "AttributeName": "Package / Case",
+            "AttributeValue": "SOIC-8"
+          }
+        ]
+      },
+      {
+        "MouserPartNumber": "81-MAX4428",
+        "ManufacturerPartNumber": "MAX4428",
+        "Manufacturer": "Analog Devices / Maxim",
+        "Description": "Analog Devices / Maxim MAX4428 high-side gate driver, 2 V",
+        "Category": "PMIC - Gate Drivers",
+        "DataSheetUrl": "https://example.invalid/datasheets/MAX4428.pdf",
+        "ProductDetailUrl": "https://www.mouser.com/ProductDetail/Analog Devices / Maxim/MAX4428",
+        "ImagePath": "https://www.mouser.com/images/MAX4428.jpg",
+        "Availability": "48213 In Stock",
+        "AvailabilityInStock": "48213",
+        "LeadTime": "84 Days",
+        "LifecycleStatus": "New Product",
+        "IsDiscontinued": "false",
+        "SuggestedReplacement": "",
+        "Min": "1",
+        "Mult": "1",
+        "Reeling": true,
+        "ROHSStatus": "RoHS Compliant",
+        "PriceBreaks": [
+          {
+            "Quantity": 1,
+            "Price": "0.89",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 10,
+            "Price": "0.674",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 100,
+            "Price": "0.5223",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 1000,
+            "Price": "0.4121",
+            "Currency": "USD"
+          }
+        ],
+        "ProductAttributes": [
+          {
+            "AttributeName": "Drain to Source Voltage (Vdss)",
+            "AttributeValue": "100 V"
+          },
+          {
+            "AttributeName": "Continuous Drain Current (Id)",
+            "AttributeValue": "25 A"
+          },
+          {
+            "AttributeName": "RDS(on) @ Id, Vgs",
+            "AttributeValue": "5.5 mOhm"
+          },
+          {
+            "AttributeName": "Package / Case",
+            "AttributeValue": "SOIC-8"
+          }
+        ]
+      },
+      {
+        "MouserPartNumber": "81-MAX4429",
+        "ManufacturerPartNumber": "MAX4429",
+        "Manufacturer": "Analog Devices / Maxim",
+        "Description": "Analog Devices / Maxim MAX4429 high-side gate driver, 2 V",
+        "Category": "PMIC - Gate Drivers",
+        "DataSheetUrl": "https://example.invalid/datasheets/MAX4429.pdf",
+        "ProductDetailUrl": "https://www.mouser.com/ProductDetail/Analog Devices / Maxim/MAX4429",
+        "ImagePath": "https://www.mouser.com/images/MAX4429.jpg",
+        "Availability": "48213 In Stock",
+        "AvailabilityInStock": "48213",
+        "LeadTime": "84 Days",
+        "LifecycleStatus": "New Product",
+        "IsDiscontinued": "false",
+        "SuggestedReplacement": "",
+        "Min": "1",
+        "Mult": "1",
+        "Reeling": true,
+        "ROHSStatus": "RoHS Compliant",
+        "PriceBreaks": [
+          {
+            "Quantity": 1,
+            "Price": "0.89",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 10,
+            "Price": "0.674",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 100,
+            "Price": "0.5223",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 1000,
+            "Price": "0.4121",
+            "Currency": "USD"
+          }
+        ],
+        "ProductAttributes": [
+          {
+            "AttributeName": "Drain to Source Voltage (Vdss)",
+            "AttributeValue": "100 V"
+          },
+          {
+            "AttributeName": "Continuous Drain Current (Id)",
+            "AttributeValue": "25 A"
+          },
+          {
+            "AttributeName": "RDS(on) @ Id, Vgs",
+            "AttributeValue": "5.5 mOhm"
+          },
+          {
+            "AttributeName": "Package / Case",
+            "AttributeValue": "SOIC-8"
+          }
+        ]
+      },
+      {
+        "MouserPartNumber": "81-Si9121",
+        "ManufacturerPartNumber": "Si9121",
+        "Manufacturer": "Vishay Siliconix",
+        "Description": "Vishay Siliconix Si9121 high-side gate driver, 2 V",
+        "Category": "PMIC - Gate Drivers",
+        "DataSheetUrl": "https://example.invalid/datasheets/Si9121.pdf",
+        "ProductDetailUrl": "https://www.mouser.com/ProductDetail/Vishay Siliconix/Si9121",
+        "ImagePath": "https://www.mouser.com/images/Si9121.jpg",
+        "Availability": "48213 In Stock",
+        "AvailabilityInStock": "48213",
+        "LeadTime": "84 Days",
+        "LifecycleStatus": "New Product",
+        "IsDiscontinued": "false",
+        "SuggestedReplacement": "",
+        "Min": "1",
+        "Mult": "1",
+        "Reeling": true,
+        "ROHSStatus": "RoHS Compliant",
+        "PriceBreaks": [
+          {
+            "Quantity": 1,
+            "Price": "0.89",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 10,
+            "Price": "0.674",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 100,
+            "Price": "0.5223",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 1000,
+            "Price": "0.4121",
+            "Currency": "USD"
+          }
+        ],
+        "ProductAttributes": [
+          {
+            "AttributeName": "Drain to Source Voltage (Vdss)",
+            "AttributeValue": "100 V"
+          },
+          {
+            "AttributeName": "Continuous Drain Current (Id)",
+            "AttributeValue": "25 A"
+          },
+          {
+            "AttributeName": "RDS(on) @ Id, Vgs",
+            "AttributeValue": "5.5 mOhm"
+          },
+          {
+            "AttributeName": "Package / Case",
+            "AttributeValue": "SOIC-8"
+          }
+        ]
+      },
+      {
+        "MouserPartNumber": "81-NCP51820",
+        "ManufacturerPartNumber": "NCP51820",
+        "Manufacturer": "onsemi",
+        "Description": "onsemi NCP51820 high-side gate driver, 8 V",
+        "Category": "PMIC - Gate Drivers",
+        "DataSheetUrl": "https://example.invalid/datasheets/NCP51820.pdf",
+        "ProductDetailUrl": "https://www.mouser.com/ProductDetail/onsemi/NCP51820",
+        "ImagePath": "https://www.mouser.com/images/NCP51820.jpg",
+        "Availability": "48213 In Stock",
+        "AvailabilityInStock": "48213",
+        "LeadTime": "84 Days",
+        "LifecycleStatus": "New Product",
+        "IsDiscontinued": "false",
+        "SuggestedReplacement": "",
+        "Min": "1",
+        "Mult": "1",
+        "Reeling": true,
+        "ROHSStatus": "RoHS Compliant",
+        "PriceBreaks": [
+          {
+            "Quantity": 1,
+            "Price": "0.89",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 10,
+            "Price": "0.674",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 100,
+            "Price": "0.5223",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 1000,
+            "Price": "0.4121",
+            "Currency": "USD"
+          }
+        ],
+        "ProductAttributes": [
+          {
+            "AttributeName": "Drain to Source Voltage (Vdss)",
+            "AttributeValue": "100 V"
+          },
+          {
+            "AttributeName": "Continuous Drain Current (Id)",
+            "AttributeValue": "25 A"
+          },
+          {
+            "AttributeName": "RDS(on) @ Id, Vgs",
+            "AttributeValue": "5.5 mOhm"
+          },
+          {
+            "AttributeName": "Package / Case",
+            "AttributeValue": "SOIC-8"
+          }
+        ]
+      },
+      {
+        "MouserPartNumber": "81-LM5109B",
+        "ManufacturerPartNumber": "LM5109B",
+        "Manufacturer": "Texas Instruments",
+        "Description": "Texas Instruments LM5109B high-side gate driver, 1 V",
+        "Category": "PMIC - Gate Drivers",
+        "DataSheetUrl": "https://example.invalid/datasheets/LM5109B.pdf",
+        "ProductDetailUrl": "https://www.mouser.com/ProductDetail/Texas Instruments/LM5109B",
+        "ImagePath": "https://www.mouser.com/images/LM5109B.jpg",
+        "Availability": "48213 In Stock",
+        "AvailabilityInStock": "48213",
+        "LeadTime": "84 Days",
+        "LifecycleStatus": "New Product",
+        "IsDiscontinued": "false",
+        "SuggestedReplacement": "",
+        "Min": "1",
+        "Mult": "1",
+        "Reeling": true,
+        "ROHSStatus": "RoHS Compliant",
+        "PriceBreaks": [
+          {
+            "Quantity": 1,
+            "Price": "0.89",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 10,
+            "Price": "0.674",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 100,
+            "Price": "0.5223",
+            "Currency": "USD"
+          },
+          {
+            "Quantity": 1000,
+            "Price": "0.4121",
+            "Currency": "USD"
+          }
+        ],
+        "ProductAttributes": [
+          {
+            "AttributeName": "Drain to Source Voltage (Vdss)",
+            "AttributeValue": "100 V"
+          },
+          {
+            "AttributeName": "Continuous Drain Current (Id)",
+            "AttributeValue": "25 A"
+          },
+          {
+            "AttributeName": "RDS(on) @ Id, Vgs",
+            "AttributeValue": "5.5 mOhm"
+          },
+          {
+            "AttributeName": "Package / Case",
+            "AttributeValue": "HTSSOP-16"
+          }
+        ]
+      }
+    ]
+  }
+}

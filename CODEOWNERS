@@ -1,0 +1,49 @@
+# PartPilot - code ownership.
+#
+# One agent owns each folder exclusively. Nobody edits a folder they do not
+# own. If a change is needed in a foreign folder, write a change request to
+# docs/CHANGE_REQUESTS/<agent>-<n>.md and continue with a local adapter.
+#
+# Later patterns win, so the orchestrator exceptions come last.
+
+# --- agents -----------------------------------------------------------------
+/backend/collectors/            @a-collectors
+/backend/tests/collectors/       @a-collectors
+
+/backend/extraction/tier1/       @b-tier1
+/backend/tests/tier1/            @b-tier1
+
+/backend/extraction/llm/         @c-llm
+/backend/tests/llm/              @c-llm
+
+/backend/validation/             @d-validation
+/backend/tests/validation/        @d-validation
+
+/backend/db/                     @e-data
+/backend/tests/db/               @e-data
+
+/backend/services/               @f-services
+/backend/tests/services/         @f-services
+
+/backend/app/                    @g-api
+/backend/tests/api/              @g-api
+
+/frontend/src/                  @h-frontend
+/frontend/tests/                @h-frontend
+
+/eval/                         @i-eval-docs
+/docs/                         @i-eval-docs
+/.github/                      @i-eval-docs
+/docker/                       @i-eval-docs
+/README.md                     @i-eval-docs
+
+# --- orchestrator: the frozen contract layer --------------------------------
+# Agents may ADD files to /docs/CHANGE_REQUESTS/ but never edit existing ones.
+/backend/shared/                @orchestrator
+/backend/pyproject.toml          @orchestrator
+/backend/tools/                  @orchestrator
+/contracts/                     @orchestrator
+/frontend/package.json          @orchestrator
+/frontend/src/api/types.ts      @orchestrator
+/frontend/src/mocks/            @orchestrator
+/Makefile                       @orchestrator

@@ -1,0 +1,797 @@
+openapi: 3.1.0
+info:
+  title: PartPilot API
+  version: "1.0.0"
+  description: |
+    PartPilot - AI-assisted component data mining for power MOSFETs and gate drivers.
+
+    **Contract v1.** This file is frozen. The TypeScript types in
+    `frontend/src/api/types.ts` are generated from it and must never be edited
+    by hand.
+
+    The API never calls a distributor API or an LLM from the browser. Every
+    value returned here carries its provenance: `source_id`, `page`, `method`
+    (the extraction tier), `confidence`, `status` and the test `condition`.
+  license:
+    name: MIT
+servers:
+  - url: http://127.0.0.1:8000
+    description: Local development server
+  - url: http://localhost:8000
+
+tags:
+  - name: parts
+    description: Part catalogue and part detail
+  - name: search
+    description: Natural-language parametric search
+  - name: sources
+    description: Datasheet provenance and page rendering
+  - name: alternatives
+    description: Ranked alternative parts
+  - name: bom
+    description: Bill of materials health check
+  - name: review
+    description: Human review queue for low-confidence values
+  - name: jobs
+    description: Background extraction jobs
+  - name: stats
+    description: Dashboard counters
+
+paths:
+  /api/parts:
+    get:
+      tags: [parts]
+      operationId: listParts
+      summary: List parts with filters
+      parameters:
+        - name: family
+          in: query
+          schema: { $ref: "#/components/schemas/Family" }
+        - name: manufacturer
+          in: query
+          schema: { type: string }
+        - name: package
+          in: query
+          schema: { type: string }
+        - name: lifecycle_status
+          in: query
+          description: Comma separated list of lifecycle states.
+          schema: { type: string }
+        - name: in_stock
+          in: query
+          schema: { type: boolean }
+        - name: q
+          in: query
+          description: Free text filter over MPN, manufacturer and description.
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 500, default: 50 }
+        - name: offset
+          in: query
+          schema: { type: integer, minimum: 0, default: 0 }
+      responses:
+        "200":
+          description: A page of parts.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SearchResponse" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /api/parts/{part_id}:
+    get:
+      tags: [parts]
+      operationId: getPart
+      summary: Get one part with all of its values
+      parameters:
+        - name: part_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: The part.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PartRecord" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/parts/{part_id}/sources/{param_id}:
+    get:
+      tags: [sources]
+      operationId: getParameterSource
+      summary: Get the source of one value
+      parameters:
+        - name: part_id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: param_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: The value together with its provenance.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ParameterSource" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/sources/{source_id}/page/{n}:
+    get:
+      tags: [sources]
+      operationId: getSourcePage
+      summary: Get one page of a source
+      description: |
+        Returns the page metadata and the extracted text of page `n` (1-based).
+        The `image_url` points at a rendered PNG of the same page so the frontend
+        can show the datasheet page next to the value (FR-12).
+      parameters:
+        - name: source_id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: n
+          in: path
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - name: format
+          in: query
+          description: "meta (default) returns JSON, image returns the rendered PNG."
+          schema: { type: string, enum: [meta, image], default: meta }
+      responses:
+        "200":
+          description: The page.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SourcePage" }
+            image/png:
+              schema: { type: string, format: binary }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/search:
+    post:
+      tags: [search]
+      operationId: searchParts
+      summary: Natural-language parametric search
+      description: |
+        The query is turned into a validated `SearchFilter` by the LLM and the
+        filter is executed by the database. The LLM never chooses the result
+        rows. When `filter` is supplied the query is not sent to the LLM at all
+        (rate limited endpoint, plan WP6).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SearchRequest" }
+      responses:
+        "200":
+          description: The filter that was executed and the matching parts.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SearchResponse" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+        "429": { $ref: "#/components/responses/RateLimited" }
+
+  /api/parts/{part_id}/alternatives:
+    get:
+      tags: [alternatives]
+      operationId: getAlternatives
+      summary: Get ranked alternative parts
+      parameters:
+        - name: part_id
+          in: path
+          required: true
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 50, default: 10 }
+        - name: explain
+          in: query
+          description: Ask the LLM for a one sentence trade-off summary.
+          schema: { type: boolean, default: true }
+      responses:
+        "200":
+          description: Ranked alternatives.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AlternativeResult" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/bom/check:
+    post:
+      tags: [bom]
+      operationId: checkBom
+      summary: Upload a BOM CSV and get the risk table
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: "CSV with at least an MPN column (max 5 MiB)."
+          application/json:
+            schema: { $ref: "#/components/schemas/BomCheckRequest" }
+      responses:
+        "200":
+          description: The risk table.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BomCheckResponse" }
+        "413": { $ref: "#/components/responses/PayloadTooLarge" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /api/review:
+    get:
+      tags: [review]
+      operationId: listReviewQueue
+      summary: List the values in the review queue
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+        - name: offset
+          in: query
+          schema: { type: integer, minimum: 0, default: 0 }
+      responses:
+        "200":
+          description: The review queue.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ReviewItem" }
+
+  /api/review/{param_id}:
+    post:
+      tags: [review]
+      operationId: decideReview
+      summary: Accept, correct or reject one reviewed value
+      parameters:
+        - name: param_id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ReviewDecision" }
+      responses:
+        "200":
+          description: The new status of the value.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ReviewResponse" }
+        "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /api/jobs/extract:
+    post:
+      tags: [jobs]
+      operationId: startExtractionJob
+      summary: Start a background extraction job
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/JobRequest" }
+      responses:
+        "202":
+          description: The job was accepted.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/JobStatus" }
+        "422": { $ref: "#/components/responses/ValidationError" }
+
+  /api/jobs/{job_id}:
+    get:
+      tags: [jobs]
+      operationId: getJob
+      summary: Get the progress of a background job
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: The job status.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/JobStatus" }
+        "404": { $ref: "#/components/responses/NotFound" }
+
+  /api/stats:
+    get:
+      tags: [stats]
+      operationId: getStats
+      summary: Get counts and quality numbers
+      responses:
+        "200":
+          description: The dashboard numbers.
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/StatsResponse" }
+
+components:
+  responses:
+    NotFound:
+      description: The resource does not exist.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    ValidationError:
+      description: The request body or parameters did not validate.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    RateLimited:
+      description: Too many search requests. The LLM budget is protected.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+    PayloadTooLarge:
+      description: The upload is larger than the configured limit.
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/Error" }
+
+  schemas:
+    Error:
+      type: object
+      required: [detail]
+      properties:
+        detail: { type: string }
+        code: { type: string }
+
+    Family:
+      type: string
+      enum: [mosfet, gate_driver]
+
+    LifecycleStatus:
+      type: string
+      enum: [active, nrnd, obsolete, unknown]
+
+    SourceType:
+      type: string
+      enum: [api, pdf, manual]
+
+    ExtractionMethod:
+      type: string
+      enum: [tier1, tier2, tier3, api, manual]
+
+    ValueStatus:
+      type: string
+      enum: [accepted, review, rejected]
+
+    RiskSeverity:
+      type: string
+      enum: [info, low, medium, high, critical]
+
+    JobState:
+      type: string
+      enum: [queued, running, completed, failed, cancelled]
+
+    JobKind:
+      type: string
+      enum: [extract, collect, seed]
+
+    SourceRef:
+      type: object
+      required: [source_id, url, type, fetched_at]
+      properties:
+        source_id: { type: string }
+        url: { type: string, format: uri }
+        type: { $ref: "#/components/schemas/SourceType" }
+        fetched_at: { type: string, format: date-time }
+        file_hash: { type: [string, "null"] }
+        distributor: { type: [string, "null"] }
+        page_count: { type: [integer, "null"] }
+        local_path: { type: [string, "null"] }
+        content_type: { type: [string, "null"] }
+        note: { type: [string, "null"] }
+
+    SourcePage:
+      type: object
+      required: [source_id, page]
+      properties:
+        source_id: { type: string }
+        page: { type: integer, minimum: 1 }
+        width: { type: [integer, "null"] }
+        height: { type: [integer, "null"] }
+        text: { type: [string, "null"] }
+        image_url: { type: [string, "null"] }
+        is_image_only: { type: boolean }
+
+    Offer:
+      type: object
+      required: [distributor]
+      properties:
+        part_id: { type: [string, "null"] }
+        distributor: { type: string }
+        sku: { type: [string, "null"] }
+        stock: { type: [integer, "null"] }
+        unit_price: { type: [number, "null"] }
+        currency: { type: string, default: USD }
+        price_breaks:
+          type: array
+          items: { type: object, additionalProperties: true }
+        lead_time_days: { type: [integer, "null"] }
+        fetched_at: { type: [string, "null"], format: date-time }
+        url: { type: [string, "null"] }
+
+    ParameterValue:
+      type: object
+      required: [name]
+      properties:
+        param_id: { type: [string, "null"] }
+        part_id: { type: [string, "null"] }
+        name: { type: string }
+        value: { type: [number, "null"] }
+        value_min: { type: [number, "null"] }
+        value_typ: { type: [number, "null"] }
+        value_max: { type: [number, "null"] }
+        unit: { type: [string, "null"] }
+        condition: { type: object, additionalProperties: true }
+        source_id: { type: [string, "null"] }
+        page: { type: [integer, "null"], minimum: 1 }
+        method: { oneOf: [{ $ref: "#/components/schemas/ExtractionMethod" }, { type: "null" }] }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        status: { $ref: "#/components/schemas/ValueStatus" }
+        raw_text: { type: [string, "null"] }
+        value_text: { type: [string, "null"] }
+
+    ParameterSource:
+      type: object
+      required: [value, source]
+      properties:
+        value: { $ref: "#/components/schemas/ParameterValue" }
+        source: { $ref: "#/components/schemas/SourceRef" }
+        page_url: { type: [string, "null"] }
+        page_text: { type: [string, "null"] }
+
+    PartSummary:
+      type: object
+      required: [part_id, mpn, manufacturer, family]
+      properties:
+        part_id: { type: string }
+        mpn: { type: string }
+        manufacturer: { type: string }
+        family: { $ref: "#/components/schemas/Family" }
+        package: { type: [string, "null"] }
+        lifecycle_status: { $ref: "#/components/schemas/LifecycleStatus" }
+        datasheet_url: { type: [string, "null"] }
+        description: { type: [string, "null"] }
+        key_parameters:
+          type: object
+          additionalProperties: { type: [number, "null"] }
+        offers_count: { type: integer }
+        total_stock: { type: [integer, "null"] }
+        score: { type: [number, "null"] }
+
+    PartRecord:
+      type: object
+      required: [part_id, mpn, manufacturer, family]
+      properties:
+        part_id: { type: string }
+        mpn: { type: string }
+        manufacturer: { type: string }
+        family: { $ref: "#/components/schemas/Family" }
+        package: { type: [string, "null"] }
+        lifecycle_status: { $ref: "#/components/schemas/LifecycleStatus" }
+        datasheet_url: { type: [string, "null"] }
+        description: { type: [string, "null"] }
+        source_ids: { type: array, items: { type: string } }
+        parameters:
+          type: array
+          items: { $ref: "#/components/schemas/ParameterValue" }
+        offers:
+          type: array
+          items: { $ref: "#/components/schemas/Offer" }
+        updated_at: { type: [string, "null"], format: date-time }
+
+    SpecValue:
+      type: object
+      properties:
+        value: { type: [number, "null"] }
+        unit: { type: [string, "null"] }
+        condition: { type: object, additionalProperties: true }
+        page: { type: [integer, "null"] }
+        raw_text: { type: [string, "null"] }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        source_id: { type: [string, "null"] }
+
+    MosfetSpec:
+      type: object
+      description: Power MOSFET specification (plan section 7.1).
+      properties:
+        vds_max: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        id_continuous: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        rds_on: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        vgs_threshold: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        vgs_max: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        total_gate_charge_qg: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        gate_drain_charge_qgd: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        input_capacitance_ciss: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        output_capacitance_coss: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        max_junction_temp: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        package: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        thermal_resistance: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        reverse_recovery_qrr: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+
+    GateDriverSpec:
+      type: object
+      description: Gate driver specification (plan section 7.1).
+      properties:
+        supply_voltage_min: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        supply_voltage_max: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        peak_source_current: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        peak_sink_current: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        input_logic_level: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        propagation_delay: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        rise_time: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        fall_time: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        uvlo_threshold: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        channel_count: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        package: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        operating_temp_min: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        operating_temp_max: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+
+    ExtractionResult:
+      type: object
+      required: [method]
+      properties:
+        part_id: { type: [string, "null"] }
+        family: { oneOf: [{ $ref: "#/components/schemas/Family" }, { type: "null" }] }
+        method: { $ref: "#/components/schemas/ExtractionMethod" }
+        source_id: { type: [string, "null"] }
+        values:
+          type: array
+          items: { $ref: "#/components/schemas/ParameterValue" }
+        pages_used: { type: array, items: { type: integer } }
+        failed_fields: { type: array, items: { type: string } }
+        scanned: { type: boolean }
+        notes: { type: [string, "null"] }
+        duration_ms: { type: [integer, "null"] }
+
+    ParameterConstraint:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string }
+        unit: { type: [string, "null"] }
+        min: { type: [number, "null"] }
+        max: { type: [number, "null"] }
+        typ: { type: [number, "null"] }
+        operator:
+          type: string
+          enum: [lt, lte, gt, gte, eq, between]
+          default: between
+
+    SearchFilter:
+      type: object
+      description: A validated filter. The database executes it; the LLM only builds it.
+      properties:
+        family: { oneOf: [{ $ref: "#/components/schemas/Family" }, { type: "null" }] }
+        manufacturer: { type: [string, "null"] }
+        manufacturer_in: { type: array, items: { type: string } }
+        mpn_contains: { type: [string, "null"] }
+        package: { type: [string, "null"] }
+        package_in: { type: array, items: { type: string } }
+        lifecycle_status:
+          type: array
+          items: { $ref: "#/components/schemas/LifecycleStatus" }
+        in_stock: { type: [boolean, "null"] }
+        parameters:
+          type: array
+          items: { $ref: "#/components/schemas/ParameterConstraint" }
+        text: { type: [string, "null"] }
+
+    SearchRequest:
+      type: object
+      required: [query]
+      properties:
+        query: { type: string, minLength: 1 }
+        filter: { oneOf: [{ $ref: "#/components/schemas/SearchFilter" }, { type: "null" }] }
+        limit: { type: integer, minimum: 1, maximum: 500, default: 50 }
+        offset: { type: integer, minimum: 0, default: 0 }
+
+    SearchResponse:
+      type: object
+      required: [filter, results, total]
+      properties:
+        query: { type: [string, "null"] }
+        filter: { $ref: "#/components/schemas/SearchFilter" }
+        results:
+          type: array
+          items: { $ref: "#/components/schemas/PartSummary" }
+        total: { type: integer }
+        limit: { type: integer }
+        offset: { type: integer }
+        took_ms: { type: integer }
+        filter_explanation: { type: [string, "null"] }
+        llm_used: { type: boolean }
+
+    AlternativeResult:
+      type: object
+      required: [part, score, rank]
+      properties:
+        part: { $ref: "#/components/schemas/PartSummary" }
+        score: { type: number }
+        rank: { type: integer }
+        reason: { type: string }
+        rejected: { type: boolean }
+        rejection_reason: { type: [string, "null"] }
+        differences:
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties: { type: [number, "null"] }
+
+    BomRisk:
+      type: object
+      required: [code, severity, message]
+      properties:
+        code: { type: string }
+        severity: { $ref: "#/components/schemas/RiskSeverity" }
+        message: { type: string }
+        part_id: { type: [string, "null"] }
+        mpn: { type: [string, "null"] }
+        suggestion: { type: [string, "null"] }
+
+    BomLine:
+      type: object
+      required: [line_number, mpn]
+      properties:
+        line_number: { type: integer }
+        mpn: { type: string }
+        quantity: { type: integer, default: 1 }
+        manufacturer: { type: [string, "null"] }
+        reference: { type: [string, "null"] }
+        matched_part_id: { type: [string, "null"] }
+        matched: { type: boolean }
+        risks:
+          type: array
+          items: { $ref: "#/components/schemas/BomRisk" }
+
+    BomCheckRequest:
+      type: object
+      properties:
+        filename: { type: [string, "null"] }
+        content: { type: [string, "null"] }
+
+    BomCheckResponse:
+      type: object
+      properties:
+        filename: { type: [string, "null"] }
+        total_lines: { type: integer }
+        matched_lines: { type: integer }
+        unmatched_lines: { type: integer }
+        risk_count: { type: integer }
+        highest_severity: { oneOf: [{ $ref: "#/components/schemas/RiskSeverity" }, { type: "null" }] }
+        lines:
+          type: array
+          items: { $ref: "#/components/schemas/BomLine" }
+        risks:
+          type: array
+          items: { $ref: "#/components/schemas/BomRisk" }
+        took_ms: { type: integer }
+
+    ReviewItem:
+      type: object
+      required: [param_id, part_id, mpn, manufacturer, family, name]
+      properties:
+        param_id: { type: string }
+        part_id: { type: string }
+        mpn: { type: string }
+        manufacturer: { type: string }
+        family: { $ref: "#/components/schemas/Family" }
+        name: { type: string }
+        value: { type: [number, "null"] }
+        value_min: { type: [number, "null"] }
+        value_typ: { type: [number, "null"] }
+        value_max: { type: [number, "null"] }
+        unit: { type: [string, "null"] }
+        condition: { type: object, additionalProperties: true }
+        source_id: { type: [string, "null"] }
+        page: { type: [integer, "null"] }
+        method: { oneOf: [{ $ref: "#/components/schemas/ExtractionMethod" }, { type: "null" }] }
+        confidence: { type: number }
+        status: { $ref: "#/components/schemas/ValueStatus" }
+        reasons: { type: array, items: { type: string } }
+        raw_text: { type: [string, "null"] }
+        created_at: { type: [string, "null"], format: date-time }
+
+    ReviewDecision:
+      type: object
+      properties:
+        action: { type: string, enum: [accept, correct, reject], default: accept }
+        value: { type: [number, "null"] }
+        value_min: { type: [number, "null"] }
+        value_typ: { type: [number, "null"] }
+        value_max: { type: [number, "null"] }
+        unit: { type: [string, "null"] }
+        condition: { type: object, additionalProperties: true }
+        note: { type: [string, "null"] }
+
+    ReviewResponse:
+      type: object
+      required: [param_id, status]
+      properties:
+        param_id: { type: string }
+        status: { $ref: "#/components/schemas/ValueStatus" }
+        message: { type: string }
+        item: { oneOf: [{ $ref: "#/components/schemas/ReviewItem" }, { type: "null" }] }
+
+    JobRequest:
+      type: object
+      properties:
+        part_id: { type: [string, "null"] }
+        source_id: { type: [string, "null"] }
+        pdf_path: { type: [string, "null"] }
+        family: { oneOf: [{ $ref: "#/components/schemas/Family" }, { type: "null" }] }
+        force_tier: { type: [integer, "null"], enum: [1, 2, 3, null] }
+
+    JobStatus:
+      type: object
+      required: [job_id]
+      properties:
+        job_id: { type: string }
+        kind: { $ref: "#/components/schemas/JobKind" }
+        state: { $ref: "#/components/schemas/JobState" }
+        progress: { type: integer }
+        total: { type: integer }
+        message: { type: string }
+        part_id: { type: [string, "null"] }
+        source_id: { type: [string, "null"] }
+        result: { type: [object, "null"], additionalProperties: true }
+        error: { type: [string, "null"] }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    StatsResponse:
+      type: object
+      properties:
+        parts_total: { type: integer }
+        parts_by_family: { type: object, additionalProperties: { type: integer } }
+        parts_by_lifecycle: { type: object, additionalProperties: { type: integer } }
+        parts_by_manufacturer: { type: object, additionalProperties: { type: integer } }
+        parameters_total: { type: integer }
+        values_by_status: { type: object, additionalProperties: { type: integer } }
+        values_by_method: { type: object, additionalProperties: { type: integer } }
+        review_pending: { type: integer }
+        sources_total: { type: integer }
+        coverage_pct: { type: number }
+        mean_confidence: { type: number }
+        llm_calls_total: { type: integer }
+        llm_tokens_in: { type: integer }
+        llm_tokens_out: { type: integer }
+        llm_cost_total: { type: number }
+        avg_cost_per_datasheet: { type: number }
+        accuracy: { type: object, additionalProperties: { type: number } }
+        generated_at: { type: string, format: date-time }
+
+    LLMCallRecord:
+      type: object
+      required: [chain, model]
+      properties:
+        call_id: { type: [string, "null"] }
+        chain: { type: string }
+        model: { type: string }
+        tokens_in: { type: integer }
+        tokens_out: { type: integer }
+        cost: { type: number }
+        prompt_version: { type: string }
+        part_id: { type: [string, "null"] }
+        cached: { type: boolean }
+        duration_ms: { type: [integer, "null"] }
+        created_at: { type: string, format: date-time }

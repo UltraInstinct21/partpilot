@@ -1,0 +1,2915 @@
+{
+  "_note": "Synthetic seed data. 30 parts (15 MOSFET, 15 gate driver).",
+  "parts": [
+    {
+      "part_id": "mosfet-irf3205s",
+      "mpn": "IRF3205S",
+      "manufacturer": "International Rectifier",
+      "family": "mosfet",
+      "package": "TO-220AB",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/IRF3205S.pdf",
+      "description": "International Rectifier IRF3205S N-channel power MOSFET, 56 V",
+      "source_ids": [
+        "api-digikey-irf3205s",
+        "api-nexar-irf3205s"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 56.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 3.2,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 12.0,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 2.47,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 37.5,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 12.6,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 8750.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 1014.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 3.7,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 76.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-irf540n",
+      "mpn": "IRF540N",
+      "manufacturer": "International Rectifier",
+      "family": "mosfet",
+      "package": "TO-220AB",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/IRF540N.pdf",
+      "description": "International Rectifier IRF540N N-channel power MOSFET, 100 V",
+      "source_ids": [
+        "api-digikey-irf540n",
+        "api-nexar-irf540n"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 100.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 33.0,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 47.0,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "16 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 2.3,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 70.3,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "16 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 3.6,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "16 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 2154.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 2154.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 2.4,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 109.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-irlz44n",
+      "mpn": "IRLZ44N",
+      "manufacturer": "International Rectifier",
+      "family": "mosfet",
+      "package": "TO-220AB",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/IRLZ44N.pdf",
+      "description": "International Rectifier IRLZ44N N-channel power MOSFET, 55 V",
+      "source_ids": [
+        "api-digikey-irlz44n",
+        "api-nexar-irlz44n"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 55.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 25.0,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 48.0,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "12 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 2.38,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 80.5,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "12 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 7.1,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "12 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 5054.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 2200.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 1.4,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 40.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-bsc030n08ns5",
+      "mpn": "BSC030N08NS5",
+      "manufacturer": "Infineon Technologies",
+      "family": "mosfet",
+      "package": "SuperSO8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/BSC030N08NS5.pdf",
+      "description": "Infineon Technologies BSC030N08NS5 N-channel power MOSFET, 80 V",
+      "source_ids": [
+        "api-digikey-bsc030n08ns5",
+        "api-nexar-bsc030n08ns5"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 80.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 3.0,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 6.2,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 2.46,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 53.0,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 17.0,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 6071.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 542.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 2.1,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 287.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-bsz084n08ns5",
+      "mpn": "BSZ084N08NS5",
+      "manufacturer": "Infineon Technologies",
+      "family": "mosfet",
+      "package": "SuperSO8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/BSZ084N08NS5.pdf",
+      "description": "Infineon Technologies BSZ084N08NS5 N-channel power MOSFET, 80 V",
+      "source_ids": [
+        "api-digikey-bsz084n08ns5",
+        "api-nexar-bsz084n08ns5"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 80.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 8.4,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 11.5,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "4 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 3.46,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 44.9,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "4 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 13.8,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "4 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 6160.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 366.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 3.2,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 213.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-si7148dp",
+      "mpn": "Si7148DP",
+      "manufacturer": "Vishay Siliconix",
+      "family": "mosfet",
+      "package": "PowerPAK SO-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/Si7148DP.pdf",
+      "description": "Vishay Siliconix Si7148DP N-channel power MOSFET, 30 V",
+      "source_ids": [
+        "api-digikey-si7148dp",
+        "api-nexar-si7148dp"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 30.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 2.8,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 1.1,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 4.0,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 42.7,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 5.6,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 8910.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 770.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 2.5,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 36.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-nvmfs5c430nl",
+      "mpn": "NVMFS5C430NL",
+      "manufacturer": "onsemi",
+      "family": "mosfet",
+      "package": "DFN5X6",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/NVMFS5C430NL.pdf",
+      "description": "onsemi NVMFS5C430NL N-channel power MOSFET, 30 V",
+      "source_ids": [
+        "api-digikey-nvmfs5c430nl",
+        "api-nexar-nvmfs5c430nl"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 30.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 4.3,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 1.6,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 3.79,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 54.3,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 10.8,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 8249.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 2107.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 2.4,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 205.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-psmn2r30",
+      "mpn": "PSMN2R30",
+      "manufacturer": "Nexperia",
+      "family": "mosfet",
+      "package": "PowerPAK SO-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/PSMN2R30.pdf",
+      "description": "Nexperia PSMN2R30 N-channel power MOSFET, 30 V",
+      "source_ids": [
+        "api-digikey-psmn2r30",
+        "api-nexar-psmn2r30"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 30.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 2.3,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 1.9,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 3.96,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 55.7,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 6.9,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 2782.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 597.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 2.8,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 311.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-stp55nf06l",
+      "mpn": "STP55NF06L",
+      "manufacturer": "STMicroelectronics",
+      "family": "mosfet",
+      "package": "TO-220AB",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/STP55NF06L.pdf",
+      "description": "STMicroelectronics STP55NF06L N-channel power MOSFET, 60 V",
+      "source_ids": [
+        "api-digikey-stp55nf06l",
+        "api-nexar-stp55nf06l"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 60.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 55.0,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 8.0,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "28 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 2.88,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 17.4,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "28 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 8.3,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "28 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 9356.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 306.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 4.3,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 335.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-csd1642q5",
+      "mpn": "CSD1642Q5",
+      "manufacturer": "Infineon Technologies",
+      "family": "mosfet",
+      "package": "TO-263",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/CSD1642Q5.pdf",
+      "description": "Infineon Technologies CSD1642Q5 N-channel power MOSFET, 100 V",
+      "source_ids": [
+        "api-digikey-csd1642q5",
+        "api-nexar-csd1642q5"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 100.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 16.4,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 5.9,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "8 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 2.93,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 48.0,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "8 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 9.4,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "8 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 3620.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 1617.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 1.2,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 279.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-dmn3024u-13",
+      "mpn": "DMN3024U-13",
+      "manufacturer": "Diodes Incorporated",
+      "family": "mosfet",
+      "package": "TO-252",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/DMN3024U-13.pdf",
+      "description": "Diodes Incorporated DMN3024U-13 N-channel power MOSFET, 30 V",
+      "source_ids": [
+        "api-digikey-dmn3024u-13",
+        "api-nexar-dmn3024u-13"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 30.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 2.4,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 9.0,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 3.78,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 44.5,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 3.0,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 9323.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 639.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 0.8,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 311.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-aod4184a",
+      "mpn": "AOD4184A",
+      "manufacturer": "Alpha & Omega Semiconductor",
+      "family": "mosfet",
+      "package": "SO-8",
+      "lifecycle_status": "nrnd",
+      "datasheet_url": "https://example.invalid/datasheets/AOD4184A.pdf",
+      "description": "Alpha & Omega Semiconductor AOD4184A N-channel power MOSFET, 40 V",
+      "source_ids": [
+        "api-digikey-aod4184a",
+        "api-nexar-aod4184a"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 40.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 18.4,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 7.0,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "9 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 2.75,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 18.8,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "9 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 6.7,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "9 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 2690.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 1944.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 3.3,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 294.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-si2302cds",
+      "mpn": "SI2302CDS",
+      "manufacturer": "Vishay Siliconix",
+      "family": "mosfet",
+      "package": "SOT-23",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/SI2302CDS.pdf",
+      "description": "Vishay Siliconix SI2302CDS N-channel power MOSFET, 20 V",
+      "source_ids": [
+        "api-digikey-si2302cds",
+        "api-nexar-si2302cds"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 3.0,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 11.0,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 2.44,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 24.1,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 9.0,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 11320.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 945.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 3.1,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 330.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-dmp3010lk3",
+      "mpn": "DMP3010LK3",
+      "manufacturer": "Diodes Incorporated",
+      "family": "mosfet",
+      "package": "TO-252",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/DMP3010LK3.pdf",
+      "description": "Diodes Incorporated DMP3010LK3 N-channel power MOSFET, 30 V",
+      "source_ids": [
+        "api-digikey-dmp3010lk3",
+        "api-nexar-dmp3010lk3"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 30.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 10.1,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 22.0,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "5 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 2.41,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 20.8,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "5 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 7.6,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "5 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 1738.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 1161.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 1.3,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 98.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "mosfet-csd19536y",
+      "mpn": "CSD19536Y",
+      "manufacturer": "Texas Instruments",
+      "family": "mosfet",
+      "package": "DSBGA-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/CSD19536Y.pdf",
+      "description": "Texas Instruments CSD19536Y N-channel power MOSFET, 100 V",
+      "source_ids": [
+        "api-digikey-csd19536y",
+        "api-nexar-csd19536y"
+      ],
+      "parameters": {
+        "vds_max": {
+          "value": 100.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 0.2,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 2.4,
+          "unit": "mohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 3.33,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 64.8,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 18.5,
+          "unit": "nC",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 2200.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 2236.0,
+          "unit": "pF",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 4.2,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 179.0,
+          "unit": "nC",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-ir2110",
+      "mpn": "IR2110",
+      "manufacturer": "International Rectifier",
+      "family": "gate_driver",
+      "package": "TO-263-5",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/IR2110.pdf",
+      "description": "International Rectifier IR2110 high-side gate driver, 25 V",
+      "source_ids": [
+        "api-digikey-ir2110",
+        "api-mouser-ir2110"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 4.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 29.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 5.4,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 7.7,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.06,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 222.3,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "29.5 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 51.3,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 78.0,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 9.62,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-ir2104",
+      "mpn": "IR2104",
+      "manufacturer": "International Rectifier",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/IR2104.pdf",
+      "description": "International Rectifier IR2104 high-side gate driver, 25 V",
+      "source_ids": [
+        "api-digikey-ir2104",
+        "api-mouser-ir2104"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 5.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 30.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 7.1,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 8.0,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.94,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 209.9,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "30.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 104.5,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 58.3,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 8.05,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-ir2304",
+      "mpn": "IR2304",
+      "manufacturer": "International Rectifier",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/IR2304.pdf",
+      "description": "International Rectifier IR2304 high-side gate driver, 25 V",
+      "source_ids": [
+        "api-digikey-ir2304",
+        "api-mouser-ir2304"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 6.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 31.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 3.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 3.0,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.45,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 108.0,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "31.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 47.0,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 97.0,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 5.94,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-tc4427",
+      "mpn": "TC4427",
+      "manufacturer": "Microchip Technology",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/TC4427.pdf",
+      "description": "Microchip Technology TC4427 high-side gate driver, 25 V",
+      "source_ids": [
+        "api-digikey-tc4427",
+        "api-mouser-tc4427"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 4.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 29.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 7.8,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 3.3,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.04,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 213.0,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "29.5 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 56.8,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 105.1,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 9.04,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-tc4429",
+      "mpn": "TC4429",
+      "manufacturer": "Microchip Technology",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/TC4429.pdf",
+      "description": "Microchip Technology TC4429 high-side gate driver, 25 V",
+      "source_ids": [
+        "api-digikey-tc4429",
+        "api-mouser-tc4429"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 32.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 5.1,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 2.0,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.44,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 93.0,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "32.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 70.8,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 104.2,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 6.83,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-ucc27511",
+      "mpn": "UCC27511",
+      "manufacturer": "Texas Instruments",
+      "family": "gate_driver",
+      "package": "SOT-23-6",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/UCC27511.pdf",
+      "description": "Texas Instruments UCC27511 high-side gate driver, 8 V",
+      "source_ids": [
+        "api-digikey-ucc27511",
+        "api-mouser-ucc27511"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 5.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 13.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 6.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 3.6,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.52,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 42.2,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "13.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 23.3,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 34.1,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 7.52,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-ucc27524",
+      "mpn": "UCC27524",
+      "manufacturer": "Texas Instruments",
+      "family": "gate_driver",
+      "package": "HTSSOP-16",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/UCC27524.pdf",
+      "description": "Texas Instruments UCC27524 high-side gate driver, 10 V",
+      "source_ids": [
+        "api-digikey-ucc27524",
+        "api-mouser-ucc27524"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 5.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 15.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 2.1,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 5.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.81,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 168.0,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "15.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 102.6,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 20.3,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 9.37,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-ucc27531",
+      "mpn": "UCC27531",
+      "manufacturer": "Texas Instruments",
+      "family": "gate_driver",
+      "package": "SOT-23-6",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/UCC27531.pdf",
+      "description": "Texas Instruments UCC27531 high-side gate driver, 5 V",
+      "source_ids": [
+        "api-digikey-ucc27531",
+        "api-mouser-ucc27531"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 6.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 11.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 4.0,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 7.9,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.41,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 48.3,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "11.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 106.1,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 91.9,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 11.4,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-el7158",
+      "mpn": "EL7158",
+      "manufacturer": "Renesas Electronics",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/EL7158.pdf",
+      "description": "Renesas Electronics EL7158 high-side gate driver, 8 V",
+      "source_ids": [
+        "api-digikey-el7158",
+        "api-mouser-el7158"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 15.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 7.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 5.9,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 0.82,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 211.0,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "15.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 20.3,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 36.2,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 10.52,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-6n137",
+      "mpn": "6N137",
+      "manufacturer": "onsemi",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/6N137.pdf",
+      "description": "onsemi 6N137 high-side gate driver, 10 V",
+      "source_ids": [
+        "api-digikey-6n137",
+        "api-mouser-6n137"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 17.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 2.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 1.1,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.53,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 37.6,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "17.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 22.3,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 75.7,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 5.44,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-max4428",
+      "mpn": "MAX4428",
+      "manufacturer": "Analog Devices / Maxim",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/MAX4428.pdf",
+      "description": "Analog Devices / Maxim MAX4428 high-side gate driver, 2 V",
+      "source_ids": [
+        "api-digikey-max4428",
+        "api-mouser-max4428"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 9.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 3.8,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 5.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.1,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 196.7,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "9.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 77.1,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 41.2,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 8.1,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-max4429",
+      "mpn": "MAX4429",
+      "manufacturer": "Analog Devices / Maxim",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/MAX4429.pdf",
+      "description": "Analog Devices / Maxim MAX4429 high-side gate driver, 2 V",
+      "source_ids": [
+        "api-digikey-max4429",
+        "api-mouser-max4429"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 5.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 7.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 2.7,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.93,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 206.7,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "7.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 85.7,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 84.0,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 7.97,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-si9121",
+      "mpn": "Si9121",
+      "manufacturer": "Vishay Siliconix",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/Si9121.pdf",
+      "description": "Vishay Siliconix Si9121 high-side gate driver, 2 V",
+      "source_ids": [
+        "api-digikey-si9121",
+        "api-mouser-si9121"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 4.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 6.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 2.0,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 1.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.63,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 57.9,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "6.5 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 95.8,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 91.8,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 7.3,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-ncp51820",
+      "mpn": "NCP51820",
+      "manufacturer": "onsemi",
+      "family": "gate_driver",
+      "package": "SOIC-8",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/NCP51820.pdf",
+      "description": "onsemi NCP51820 high-side gate driver, 8 V",
+      "source_ids": [
+        "api-digikey-ncp51820",
+        "api-mouser-ncp51820"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 15.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 5.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 2.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.16,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 131.5,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "15.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 56.5,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 39.5,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 9.77,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    },
+    {
+      "part_id": "gate-driver-lm5109b",
+      "mpn": "LM5109B",
+      "manufacturer": "Texas Instruments",
+      "family": "gate_driver",
+      "package": "HTSSOP-16",
+      "lifecycle_status": "active",
+      "datasheet_url": "https://example.invalid/datasheets/LM5109B.pdf",
+      "description": "Texas Instruments LM5109B high-side gate driver, 1 V",
+      "source_ids": [
+        "api-digikey-lm5109b",
+        "api-mouser-lm5109b"
+      ],
+      "parameters": {
+        "supply_voltage_min": {
+          "value": 4.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 5.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 1.8,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 3.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.28,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 41.4,
+          "unit": "ns",
+          "condition": {
+            "Vcc": "5.5 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 102.9,
+          "unit": "ns",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 81.8,
+          "unit": "ns",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 5.02,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,1620 @@
+{
+  "data": {
+    "supSearchMpn": {
+      "hits": 10,
+      "results": [
+        {
+          "part": {
+            "id": "nexar-mosfet-dmn3024u-13",
+            "name": "Diodes Incorporated DMN3024U-13 N-channel power MOSFET, 30 V",
+            "mpn": "DMN3024U-13",
+            "manufacturer": {
+              "id": "mfr-1",
+              "name": "Diodes Incorporated"
+            },
+            "totalAvail": 48213,
+            "category": {
+              "id": "86",
+              "name": "Transistors - FETs, MOSFETs"
+            },
+            "lifecycle": {
+              "status": "ACTIVE"
+            },
+            "specs": [
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 40.0,
+                "displayValue": "40.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 20.0,
+                "displayValue": "20.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 100.0,
+                "displayValue": "100.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              }
+            ],
+            "sellers": [
+              {
+                "company": {
+                  "id": "digi",
+                  "name": "DigiKey",
+                  "isVerified": true
+                },
+                "isAuthorized": true,
+                "offers": [
+                  {
+                    "id": "offer-1",
+                    "sku": "296-DMN3024U-13-ND",
+                    "inventoryLevel": 48213,
+                    "moq": 1,
+                    "prices": [
+                      {
+                        "quantity": 1,
+                        "convertedPrice": 0.89,
+                        "convertedCurrency": "USD"
+                      },
+                      {
+                        "quantity": 100,
+                        "convertedPrice": 0.5223,
+                        "convertedCurrency": "USD"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "part": {
+            "id": "nexar-mosfet-aod4184a",
+            "name": "Alpha & Omega Semiconductor AOD4184A N-channel power MOSFET, 40 V",
+            "mpn": "AOD4184A",
+            "manufacturer": {
+              "id": "mfr-1",
+              "name": "Alpha & Omega Semiconductor"
+            },
+            "totalAvail": 48213,
+            "category": {
+              "id": "86",
+              "name": "Transistors - FETs, MOSFETs"
+            },
+            "lifecycle": {
+              "status": "NRND"
+            },
+            "specs": [
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 40.0,
+                "displayValue": "40.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 20.0,
+                "displayValue": "20.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 100.0,
+                "displayValue": "100.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              }
+            ],
+            "sellers": [
+              {
+                "company": {
+                  "id": "digi",
+                  "name": "DigiKey",
+                  "isVerified": true
+                },
+                "isAuthorized": true,
+                "offers": [
+                  {
+                    "id": "offer-1",
+                    "sku": "296-AOD4184A-ND",
+                    "inventoryLevel": 48213,
+                    "moq": 1,
+                    "prices": [
+                      {
+                        "quantity": 1,
+                        "convertedPrice": 0.89,
+                        "convertedCurrency": "USD"
+                      },
+                      {
+                        "quantity": 100,
+                        "convertedPrice": 0.5223,
+                        "convertedCurrency": "USD"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "part": {
+            "id": "nexar-mosfet-si2302cds",
+            "name": "Vishay Siliconix SI2302CDS N-channel power MOSFET, 20 V",
+            "mpn": "SI2302CDS",
+            "manufacturer": {
+              "id": "mfr-1",
+              "name": "Vishay Siliconix"
+            },
+            "totalAvail": 48213,
+            "category": {
+              "id": "86",
+              "name": "Transistors - FETs, MOSFETs"
+            },
+            "lifecycle": {
+              "status": "ACTIVE"
+            },
+            "specs": [
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 40.0,
+                "displayValue": "40.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 20.0,
+                "displayValue": "20.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 100.0,
+                "displayValue": "100.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              }
+            ],
+            "sellers": [
+              {
+                "company": {
+                  "id": "digi",
+                  "name": "DigiKey",
+                  "isVerified": true
+                },
+                "isAuthorized": true,
+                "offers": [
+                  {
+                    "id": "offer-1",
+                    "sku": "296-SI2302CDS-ND",
+                    "inventoryLevel": 48213,
+                    "moq": 1,
+                    "prices": [
+                      {
+                        "quantity": 1,
+                        "convertedPrice": 0.89,
+                        "convertedCurrency": "USD"
+                      },
+                      {
+                        "quantity": 100,
+                        "convertedPrice": 0.5223,
+                        "convertedCurrency": "USD"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "part": {
+            "id": "nexar-mosfet-dmp3010lk3",
+            "name": "Diodes Incorporated DMP3010LK3 N-channel power MOSFET, 30 V",
+            "mpn": "DMP3010LK3",
+            "manufacturer": {
+              "id": "mfr-1",
+              "name": "Diodes Incorporated"
+            },
+            "totalAvail": 48213,
+            "category": {
+              "id": "86",
+              "name": "Transistors - FETs, MOSFETs"
+            },
+            "lifecycle": {
+              "status": "ACTIVE"
+            },
+            "specs": [
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 40.0,
+                "displayValue": "40.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 20.0,
+                "displayValue": "20.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 100.0,
+                "displayValue": "100.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              }
+            ],
+            "sellers": [
+              {
+                "company": {
+                  "id": "digi",
+                  "name": "DigiKey",
+                  "isVerified": true
+                },
+                "isAuthorized": true,
+                "offers": [
+                  {
+                    "id": "offer-1",
+                    "sku": "296-DMP3010LK3-ND",
+                    "inventoryLevel": 48213,
+                    "moq": 1,
+                    "prices": [
+                      {
+                        "quantity": 1,
+                        "convertedPrice": 0.89,
+                        "convertedCurrency": "USD"
+                      },
+                      {
+                        "quantity": 100,
+                        "convertedPrice": 0.5223,
+                        "convertedCurrency": "USD"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "part": {
+            "id": "nexar-mosfet-csd19536y",
+            "name": "Texas Instruments CSD19536Y N-channel power MOSFET, 100 V",
+            "mpn": "CSD19536Y",
+            "manufacturer": {
+              "id": "mfr-1",
+              "name": "Texas Instruments"
+            },
+            "totalAvail": 48213,
+            "category": {
+              "id": "86",
+              "name": "Transistors - FETs, MOSFETs"
+            },
+            "lifecycle": {
+              "status": "ACTIVE"
+            },
+            "specs": [
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 40.0,
+                "displayValue": "40.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 20.0,
+                "displayValue": "20.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 100.0,
+                "displayValue": "100.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              }
+            ],
+            "sellers": [
+              {
+                "company": {
+                  "id": "digi",
+                  "name": "DigiKey",
+                  "isVerified": true
+                },
+                "isAuthorized": true,
+                "offers": [
+                  {
+                    "id": "offer-1",
+                    "sku": "296-CSD19536Y-ND",
+                    "inventoryLevel": 48213,
+                    "moq": 1,
+                    "prices": [
+                      {
+                        "quantity": 1,
+                        "convertedPrice": 0.89,
+                        "convertedCurrency": "USD"
+                      },
+                      {
+                        "quantity": 100,
+                        "convertedPrice": 0.5223,
+                        "convertedCurrency": "USD"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "part": {
+            "id": "nexar-gate-driver-ir2110",
+            "name": "International Rectifier IR2110 high-side gate driver, 25 V",
+            "mpn": "IR2110",
+            "manufacturer": {
+              "id": "mfr-1",
+              "name": "International Rectifier"
+            },
+            "totalAvail": 48213,
+            "category": {
+              "id": "86",
+              "name": "Transistors - FETs, MOSFETs"
+            },
+            "lifecycle": {
+              "status": "ACTIVE"
+            },
+            "specs": [
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 40.0,
+                "displayValue": "40.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 20.0,
+                "displayValue": "20.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 100.0,
+                "displayValue": "100.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              }
+            ],
+            "sellers": [
+              {
+                "company": {
+                  "id": "digi",
+                  "name": "DigiKey",
+                  "isVerified": true
+                },
+                "isAuthorized": true,
+                "offers": [
+                  {
+                    "id": "offer-1",
+                    "sku": "296-IR2110-ND",
+                    "inventoryLevel": 48213,
+                    "moq": 1,
+                    "prices": [
+                      {
+                        "quantity": 1,
+                        "convertedPrice": 0.89,
+                        "convertedCurrency": "USD"
+                      },
+                      {
+                        "quantity": 100,
+                        "convertedPrice": 0.5223,
+                        "convertedCurrency": "USD"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "part": {
+            "id": "nexar-gate-driver-ir2104",
+            "name": "International Rectifier IR2104 high-side gate driver, 25 V",
+            "mpn": "IR2104",
+            "manufacturer": {
+              "id": "mfr-1",
+              "name": "International Rectifier"
+            },
+            "totalAvail": 48213,
+            "category": {
+              "id": "86",
+              "name": "Transistors - FETs, MOSFETs"
+            },
+            "lifecycle": {
+              "status": "ACTIVE"
+            },
+            "specs": [
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 40.0,
+                "displayValue": "40.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 20.0,
+                "displayValue": "20.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 100.0,
+                "displayValue": "100.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              }
+            ],
+            "sellers": [
+              {
+                "company": {
+                  "id": "digi",
+                  "name": "DigiKey",
+                  "isVerified": true
+                },
+                "isAuthorized": true,
+                "offers": [
+                  {
+                    "id": "offer-1",
+                    "sku": "296-IR2104-ND",
+                    "inventoryLevel": 48213,
+                    "moq": 1,
+                    "prices": [
+                      {
+                        "quantity": 1,
+                        "convertedPrice": 0.89,
+                        "convertedCurrency": "USD"
+                      },
+                      {
+                        "quantity": 100,
+                        "convertedPrice": 0.5223,
+                        "convertedCurrency": "USD"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "part": {
+            "id": "nexar-gate-driver-ir2304",
+            "name": "International Rectifier IR2304 high-side gate driver, 25 V",
+            "mpn": "IR2304",
+            "manufacturer": {
+              "id": "mfr-1",
+              "name": "International Rectifier"
+            },
+            "totalAvail": 48213,
+            "category": {
+              "id": "86",
+              "name": "Transistors - FETs, MOSFETs"
+            },
+            "lifecycle": {
+              "status": "ACTIVE"
+            },
+            "specs": [
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 40.0,
+                "displayValue": "40.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 20.0,
+                "displayValue": "20.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 100.0,
+                "displayValue": "100.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              }
+            ],
+            "sellers": [
+              {
+                "company": {
+                  "id": "digi",
+                  "name": "DigiKey",
+                  "isVerified": true
+                },
+                "isAuthorized": true,
+                "offers": [
+                  {
+                    "id": "offer-1",
+                    "sku": "296-IR2304-ND",
+                    "inventoryLevel": 48213,
+                    "moq": 1,
+                    "prices": [
+                      {
+                        "quantity": 1,
+                        "convertedPrice": 0.89,
+                        "convertedCurrency": "USD"
+                      },
+                      {
+                        "quantity": 100,
+                        "convertedPrice": 0.5223,
+                        "convertedCurrency": "USD"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "part": {
+            "id": "nexar-gate-driver-tc4427",
+            "name": "Microchip Technology TC4427 high-side gate driver, 25 V",
+            "mpn": "TC4427",
+            "manufacturer": {
+              "id": "mfr-1",
+              "name": "Microchip Technology"
+            },
+            "totalAvail": 48213,
+            "category": {
+              "id": "86",
+              "name": "Transistors - FETs, MOSFETs"
+            },
+            "lifecycle": {
+              "status": "ACTIVE"
+            },
+            "specs": [
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 40.0,
+                "displayValue": "40.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 20.0,
+                "displayValue": "20.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 100.0,
+                "displayValue": "100.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              }
+            ],
+            "sellers": [
+              {
+                "company": {
+                  "id": "digi",
+                  "name": "DigiKey",
+                  "isVerified": true
+                },
+                "isAuthorized": true,
+                "offers": [
+                  {
+                    "id": "offer-1",
+                    "sku": "296-TC4427-ND",
+                    "inventoryLevel": 48213,
+                    "moq": 1,
+                    "prices": [
+                      {
+                        "quantity": 1,
+                        "convertedPrice": 0.89,
+                        "convertedCurrency": "USD"
+                      },
+                      {
+                        "quantity": 100,
+                        "convertedPrice": 0.5223,
+                        "convertedCurrency": "USD"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "part": {
+            "id": "nexar-gate-driver-tc4429",
+            "name": "Microchip Technology TC4429 high-side gate driver, 25 V",
+            "mpn": "TC4429",
+            "manufacturer": {
+              "id": "mfr-1",
+              "name": "Microchip Technology"
+            },
+            "totalAvail": 48213,
+            "category": {
+              "id": "86",
+              "name": "Transistors - FETs, MOSFETs"
+            },
+            "lifecycle": {
+              "status": "ACTIVE"
+            },
+            "specs": [
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 40.0,
+                "displayValue": "40.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 20.0,
+                "displayValue": "20.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 30.0,
+                "displayValue": "30.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": 100.0,
+                "displayValue": "100.0 V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              },
+              {
+                "attribute": {
+                  "id": "attr-vds",
+                  "name": "Drain Source Voltage (Vdss)",
+                  "shortname": "vds"
+                },
+                "value": null,
+                "displayValue": "None V",
+                "unitsName": "V",
+                "unitsSymbol": "V"
+              }
+            ],
+            "sellers": [
+              {
+                "company": {
+                  "id": "digi",
+                  "name": "DigiKey",
+                  "isVerified": true
+                },
+                "isAuthorized": true,
+                "offers": [
+                  {
+                    "id": "offer-1",
+                    "sku": "296-TC4429-ND",
+                    "inventoryLevel": 48213,
+                    "moq": 1,
+                    "prices": [
+                      {
+                        "quantity": 1,
+                        "convertedPrice": 0.89,
+                        "convertedCurrency": "USD"
+                      },
+                      {
+                        "quantity": 100,
+                        "convertedPrice": 0.5223,
+                        "convertedCurrency": "USD"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "errors": []
+}

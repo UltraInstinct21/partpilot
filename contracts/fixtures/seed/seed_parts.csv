@@ -1,0 +1,31 @@
+part_id,mpn,manufacturer,family,package,lifecycle_status,datasheet_url
+mosfet-irf3205s,IRF3205S,International Rectifier,mosfet,TO-220AB,active,https://example.invalid/datasheets/IRF3205S.pdf
+mosfet-irf540n,IRF540N,International Rectifier,mosfet,TO-220AB,active,https://example.invalid/datasheets/IRF540N.pdf
+mosfet-irlz44n,IRLZ44N,International Rectifier,mosfet,TO-220AB,active,https://example.invalid/datasheets/IRLZ44N.pdf
+mosfet-bsc030n08ns5,BSC030N08NS5,Infineon Technologies,mosfet,SuperSO8,active,https://example.invalid/datasheets/BSC030N08NS5.pdf
+mosfet-bsz084n08ns5,BSZ084N08NS5,Infineon Technologies,mosfet,SuperSO8,active,https://example.invalid/datasheets/BSZ084N08NS5.pdf
+mosfet-si7148dp,Si7148DP,Vishay Siliconix,mosfet,PowerPAK SO-8,active,https://example.invalid/datasheets/Si7148DP.pdf
+mosfet-nvmfs5c430nl,NVMFS5C430NL,onsemi,mosfet,DFN5X6,active,https://example.invalid/datasheets/NVMFS5C430NL.pdf
+mosfet-psmn2r30,PSMN2R30,Nexperia,mosfet,PowerPAK SO-8,active,https://example.invalid/datasheets/PSMN2R30.pdf
+mosfet-stp55nf06l,STP55NF06L,STMicroelectronics,mosfet,TO-220AB,active,https://example.invalid/datasheets/STP55NF06L.pdf
+mosfet-csd1642q5,CSD1642Q5,Infineon Technologies,mosfet,TO-263,active,https://example.invalid/datasheets/CSD1642Q5.pdf
+mosfet-dmn3024u-13,DMN3024U-13,Diodes Incorporated,mosfet,TO-252,active,https://example.invalid/datasheets/DMN3024U-13.pdf
+mosfet-aod4184a,AOD4184A,Alpha & Omega Semiconductor,mosfet,SO-8,nrnd,https://example.invalid/datasheets/AOD4184A.pdf
+mosfet-si2302cds,SI2302CDS,Vishay Siliconix,mosfet,SOT-23,active,https://example.invalid/datasheets/SI2302CDS.pdf
+mosfet-dmp3010lk3,DMP3010LK3,Diodes Incorporated,mosfet,TO-252,active,https://example.invalid/datasheets/DMP3010LK3.pdf
+mosfet-csd19536y,CSD19536Y,Texas Instruments,mosfet,DSBGA-8,active,https://example.invalid/datasheets/CSD19536Y.pdf
+gate-driver-ir2110,IR2110,International Rectifier,gate_driver,TO-263-5,active,https://example.invalid/datasheets/IR2110.pdf
+gate-driver-ir2104,IR2104,International Rectifier,gate_driver,SOIC-8,active,https://example.invalid/datasheets/IR2104.pdf
+gate-driver-ir2304,IR2304,International Rectifier,gate_driver,SOIC-8,active,https://example.invalid/datasheets/IR2304.pdf
+gate-driver-tc4427,TC4427,Microchip Technology,gate_driver,SOIC-8,active,https://example.invalid/datasheets/TC4427.pdf
+gate-driver-tc4429,TC4429,Microchip Technology,gate_driver,SOIC-8,active,https://example.invalid/datasheets/TC4429.pdf
+gate-driver-ucc27511,UCC27511,Texas Instruments,gate_driver,SOT-23-6,active,https://example.invalid/datasheets/UCC27511.pdf
+gate-driver-ucc27524,UCC27524,Texas Instruments,gate_driver,HTSSOP-16,active,https://example.invalid/datasheets/UCC27524.pdf
+gate-driver-ucc27531,UCC27531,Texas Instruments,gate_driver,SOT-23-6,active,https://example.invalid/datasheets/UCC27531.pdf
+gate-driver-el7158,EL7158,Renesas Electronics,gate_driver,SOIC-8,active,https://example.invalid/datasheets/EL7158.pdf
+gate-driver-6n137,6N137,onsemi,gate_driver,SOIC-8,active,https://example.invalid/datasheets/6N137.pdf
+gate-driver-max4428,MAX4428,Analog Devices / Maxim,gate_driver,SOIC-8,active,https://example.invalid/datasheets/MAX4428.pdf
+gate-driver-max4429,MAX4429,Analog Devices / Maxim,gate_driver,SOIC-8,active,https://example.invalid/datasheets/MAX4429.pdf
+gate-driver-si9121,Si9121,Vishay Siliconix,gate_driver,SOIC-8,active,https://example.invalid/datasheets/Si9121.pdf
+gate-driver-ncp51820,NCP51820,onsemi,gate_driver,SOIC-8,active,https://example.invalid/datasheets/NCP51820.pdf
+gate-driver-lm5109b,LM5109B,Texas Instruments,gate_driver,HTSSOP-16,active,https://example.invalid/datasheets/LM5109B.pdf

@@ -1,0 +1,43 @@
+{
+  "source_id": "pdf-synthetic-gate-driver",
+  "family": "gate_driver",
+  "page": 2,
+  "title": "Absolute Maximum Ratings",
+  "text": "2. Absolute Maximum Ratings\nTA = 25 C unless otherwise noted.\n",
+  "tables": [
+    {
+      "bbox": [
+        54,
+        200,
+        558,
+        320
+      ],
+      "rows": [
+        [
+          "Parameter",
+          "Symbol",
+          "Value",
+          "Unit"
+        ],
+        [
+          "Supply Voltage",
+          "VCC",
+          "35",
+          "V"
+        ],
+        [
+          "Output Current, Source",
+          "IO+",
+          "2",
+          "A"
+        ],
+        [
+          "Output Current, Sink",
+          "IO-",
+          "2",
+          "A"
+        ]
+      ]
+    }
+  ]
+}

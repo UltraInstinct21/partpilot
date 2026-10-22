@@ -1,0 +1,50 @@
+# PartPilot - git ignore rules
+#
+# Never commit secrets. `.env` holds the API keys and is ignored.
+# Never commit full datasheet PDFs (ethics note, plan section 12).
+
+# --- secrets ----------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+
+# --- Python -----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# --- Node -------------------------------------------------------------------
+node_modules/
+dist/
+dist-ssr/
+.vite/
+coverage/
+
+# --- data (raw PDFs and API responses are not in Git) ------------------------
+data/
+!data/.gitkeep
+
+# --- evaluation results -----------------------------------------------------
+eval/results/*.json
+eval/results/*.csv
+!eval/results/.gitkeep
+
+# --- misc -------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+!.vscode/extensions.json

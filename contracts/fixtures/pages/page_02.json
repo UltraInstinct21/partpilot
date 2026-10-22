@@ -1,0 +1,109 @@
+{
+  "source_id": "pdf-synthetic-mosfet",
+  "family": "mosfet",
+  "page": 2,
+  "title": "Electrical Characteristics",
+  "text": "2. Electrical Characteristics\nTA = 25 C unless otherwise noted.\n",
+  "tables": [
+    {
+      "bbox": [
+        54,
+        180,
+        558,
+        560
+      ],
+      "rows": [
+        [
+          "Parameter",
+          "Symbol",
+          "Min",
+          "Typ",
+          "Max",
+          "Unit",
+          "Conditions"
+        ],
+        [
+          "Drain-Source On-Resistance",
+          "RDS(on)",
+          "-",
+          "5.5",
+          "7",
+          "mOhm",
+          "VGS = 10 V, ID = 10 A, TJ = 25 C"
+        ],
+        [
+          "Gate-Source Threshold Voltage",
+          "VGS(th)",
+          "2",
+          "3.5",
+          "4.5",
+          "V",
+          "ID = 250 uA"
+        ],
+        [
+          "Gate-Source Voltage",
+          "VGS",
+          "-",
+          "-",
+          "20",
+          "V",
+          ""
+        ],
+        [
+          "Total Gate Charge",
+          "QG",
+          "-",
+          "62",
+          "-",
+          "nC",
+          "VGS = 10 V, ID = 10 A"
+        ],
+        [
+          "Gate-Drain Charge",
+          "QGD",
+          "-",
+          "12",
+          "-",
+          "nC",
+          "VGS = 10 V, ID = 10 A"
+        ],
+        [
+          "Input Capacitance",
+          "CISS",
+          "-",
+          "4900",
+          "-",
+          "pF",
+          "VDS = 50 V, VGS = 0 V, f = 1 MHz"
+        ],
+        [
+          "Output Capacitance",
+          "COSS",
+          "-",
+          "900",
+          "-",
+          "pF",
+          "VDS = 50 V, VGS = 0 V, f = 1 MHz"
+        ],
+        [
+          "Thermal Resistance, Junction-to-Case",
+          "RthJC",
+          "-",
+          "1.2",
+          "-",
+          "C/W",
+          ""
+        ],
+        [
+          "Reverse Recovery Charge",
+          "Qrr",
+          "-",
+          "120",
+          "-",
+          "nC",
+          "ID = 10 A, di/dt = 100 A/us"
+        ]
+      ]
+    }
+  ]
+}

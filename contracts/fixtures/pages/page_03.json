@@ -1,0 +1,109 @@
+{
+  "source_id": "pdf-synthetic-gate-driver",
+  "family": "gate_driver",
+  "page": 1,
+  "title": "Electrical Characteristics",
+  "text": "PARTPILOT SYNTHETIC DATASHEET\nPGD35 - 35 V High-Side Gate Driver\n\n1. Electrical Characteristics\nTA = 25 C unless otherwise noted.\n",
+  "tables": [
+    {
+      "bbox": [
+        54,
+        180,
+        558,
+        480
+      ],
+      "rows": [
+        [
+          "Parameter",
+          "Symbol",
+          "Min",
+          "Typ",
+          "Max",
+          "Unit",
+          "Conditions"
+        ],
+        [
+          "Supply Voltage",
+          "VCC",
+          "4.5",
+          "-",
+          "35",
+          "V",
+          ""
+        ],
+        [
+          "Peak Source Current",
+          "IO+",
+          "-",
+          "2",
+          "-",
+          "A",
+          ""
+        ],
+        [
+          "Peak Sink Current",
+          "IO-",
+          "-",
+          "2",
+          "-",
+          "A",
+          ""
+        ],
+        [
+          "Input Low Level Voltage",
+          "VIL",
+          "-",
+          "-",
+          "0.8",
+          "V",
+          ""
+        ],
+        [
+          "Propagation Delay",
+          "tPD",
+          "-",
+          "20",
+          "-",
+          "ns",
+          "VCC = 15 V, RL = 10 kohm"
+        ],
+        [
+          "Rise Time",
+          "tR",
+          "-",
+          "15",
+          "-",
+          "ns",
+          "CL = 1000 pF"
+        ],
+        [
+          "Fall Time",
+          "tF",
+          "-",
+          "14",
+          "-",
+          "ns",
+          "CL = 1000 pF"
+        ],
+        [
+          "UVLO Threshold",
+          "UVLO",
+          "-",
+          "8",
+          "-",
+          "V",
+          ""
+        ],
+        [
+          "Operating Temperature",
+          "TOPR",
+          "-40",
+          "-",
+          "125",
+          "C",
+          ""
+        ]
+      ]
+    }
+  ]
+}

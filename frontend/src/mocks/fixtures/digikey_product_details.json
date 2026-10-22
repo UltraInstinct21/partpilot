@@ -1,0 +1,91 @@
+{
+  "Product": {
+    "ManufacturerProductNumber": "IRF3205S",
+    "Manufacturer": {
+      "Id": 1234,
+      "Name": "International Rectifier"
+    },
+    "Description": "International Rectifier IRF3205S N-channel power MOSFET, 56 V",
+    "ProductUrl": "https://www.digikey.com/en/products/detail/International Rectifier/IRF3205S/1234567",
+    "DatasheetUrl": "https://example.invalid/datasheets/IRF3205S.pdf",
+    "Family": "mosfet",
+    "Category": {
+      "Id": 86,
+      "Name": "Transistors - FETs, MOSFETs"
+    },
+    "Status": {
+      "LifecycleStatus": "active",
+      "ObsoleteReason": ""
+    },
+    "UnitPrice": 0.89,
+    "QuantityAvailable": 48213,
+    "ProductVariations": [
+      {
+        "DigiKeyProductNumber": "296-IRF3205S-ND",
+        "PackageType": {
+          "Id": 1,
+          "Name": "Tube"
+        },
+        "StandardPricing": [
+          {
+            "BreakQuantity": 1,
+            "UnitPrice": 0.89,
+            "TotalPrice": 0.89
+          },
+          {
+            "BreakQuantity": 10,
+            "UnitPrice": 0.674,
+            "TotalPrice": 6.74
+          },
+          {
+            "BreakQuantity": 100,
+            "UnitPrice": 0.5223,
+            "TotalPrice": 52.23
+          },
+          {
+            "BreakQuantity": 1000,
+            "UnitPrice": 0.4121,
+            "TotalPrice": 412.1
+          }
+        ],
+        "MinimumOrderQuantity": 1,
+        "StandardPackage": 100,
+        "QuantityAvailableforPackageType": 48213
+      }
+    ],
+    "Parameters": {
+      "Parameter": [
+        {
+          "ParameterId": 1001,
+          "Text": "Drain to Source Voltage (Vdss)",
+          "Value": "56.0 V"
+        },
+        {
+          "ParameterId": 1002,
+          "Text": "Continuous Drain Current (Id) @ 25\u00b0C",
+          "Value": "3.2 A"
+        },
+        {
+          "ParameterId": 1003,
+          "Text": "RDS(on) @ Id, Vgs",
+          "Value": "12.0 mOhm"
+        },
+        {
+          "ParameterId": 1004,
+          "Text": "Gate Threshold Voltage (Vgs(th))",
+          "Value": "2.47 V"
+        },
+        {
+          "ParameterId": 1005,
+          "Text": "Total Gate Charge (Qg)",
+          "Value": "37.5 nC"
+        },
+        {
+          "ParameterId": 1006,
+          "Text": "Package / Case",
+          "Value": "TO-220AB"
+        }
+      ]
+    }
+  }
+}

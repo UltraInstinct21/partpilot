@@ -1,0 +1,196 @@
+{
+  "_note": "The exact values inside the synthetic PDFs. Tier 1 tests assert against this.",
+  "pdfs/synthetic_mosfet.pdf": {
+    "source_id": "pdf-synthetic-mosfet",
+    "family": "mosfet",
+    "pages": {
+      "1": {
+        "title": "Absolute Maximum Ratings"
+      },
+      "2": {
+        "title": "Electrical Characteristics"
+      }
+    },
+    "values": {
+      "vds_max": {
+        "value": 100.0,
+        "unit": "V",
+        "page": 1,
+        "method": "tier1"
+      },
+      "id_continuous": {
+        "value": 25.0,
+        "unit": "A",
+        "page": 1,
+        "method": "tier1"
+      },
+      "max_junction_temp": {
+        "value": 175.0,
+        "unit": "degC",
+        "page": 1,
+        "method": "tier1"
+      },
+      "rds_on": {
+        "value": 5.5,
+        "value_typ": 5.5,
+        "value_max": 7.0,
+        "unit": "mohm",
+        "page": 2,
+        "method": "tier1",
+        "condition": {
+          "Vgs": "10 V",
+          "Id": "10 A",
+          "Tj": "25 C"
+        }
+      },
+      "vgs_threshold": {
+        "value": 3.5,
+        "value_min": 2.0,
+        "value_typ": 3.5,
+        "value_max": 4.5,
+        "unit": "V",
+        "page": 2,
+        "method": "tier1",
+        "condition": {
+          "Id": "250 uA"
+        }
+      },
+      "vgs_max": {
+        "value": 20.0,
+        "unit": "V",
+        "page": 2,
+        "method": "tier1"
+      },
+      "total_gate_charge_qg": {
+        "value": 62.0,
+        "unit": "nC",
+        "page": 2,
+        "method": "tier1"
+      },
+      "gate_drain_charge_qgd": {
+        "value": 12.0,
+        "unit": "nC",
+        "page": 2,
+        "method": "tier1"
+      },
+      "input_capacitance_ciss": {
+        "value": 4900.0,
+        "unit": "pF",
+        "page": 2,
+        "method": "tier1"
+      },
+      "output_capacitance_coss": {
+        "value": 900.0,
+        "unit": "pF",
+        "page": 2,
+        "method": "tier1"
+      },
+      "thermal_resistance": {
+        "value": 1.2,
+        "unit": "degC/W",
+        "page": 2,
+        "method": "tier1"
+      },
+      "reverse_recovery_qrr": {
+        "value": 120.0,
+        "unit": "nC",
+        "page": 2,
+        "method": "tier1"
+      }
+    }
+  },
+  "pdfs/synthetic_gate_driver.pdf": {
+    "source_id": "pdf-synthetic-gate-driver",
+    "family": "gate_driver",
+    "pages": {
+      "1": {
+        "title": "Electrical Characteristics"
+      },
+      "2": {
+        "title": "Absolute Maximum Ratings"
+      }
+    },
+    "values": {
+      "supply_voltage_min": {
+        "value": 4.5,
+        "unit": "V",
+        "page": 1,
+        "method": "tier1"
+      },
+      "supply_voltage_max": {
+        "value": 35.0,
+        "unit": "V",
+        "page": 1,
+        "method": "tier1"
+      },
+      "peak_source_current": {
+        "value": 2.0,
+        "unit": "A",
+        "page": 1,
+        "method": "tier1"
+      },
+      "peak_sink_current": {
+        "value": 2.0,
+        "unit": "A",
+        "page": 1,
+        "method": "tier1"
+      },
+      "input_logic_level": {
+        "value": 0.8,
+        "value_max": 0.8,
+        "unit": "V",
+        "page": 1,
+        "method": "tier1"
+      },
+      "propagation_delay": {
+        "value": 20.0,
+        "unit": "ns",
+        "page": 1,
+        "method": "tier1"
+      },
+      "rise_time": {
+        "value": 15.0,
+        "unit": "ns",
+        "page": 1,
+        "method": "tier1"
+      },
+      "fall_time": {
+        "value": 14.0,
+        "unit": "ns",
+        "page": 1,
+        "method": "tier1"
+      },
+      "uvlo_threshold": {
+        "value": 8.0,
+        "unit": "V",
+        "page": 1,
+        "method": "tier1"
+      },
+      "operating_temp_min": {
+        "value": -40.0,
+        "unit": "degC",
+        "page": 1,
+        "method": "tier1"
+      },
+      "operating_temp_max": {
+        "value": 125.0,
+        "unit": "degC",
+        "page": 1,
+        "method": "tier1"
+      },
+      "channel_count": {
+        "value": 1,
+        "unit": null,
+        "page": 1,
+        "method": "tier1"
+      }
+    }
+  },
+  "pdfs/synthetic_scanned.pdf": {
+    "source_id": "pdf-synthetic-scanned",
+    "family": "mosfet",
+    "scanned": true,
+    "values": {},
+    "note": "No text layer. Tier 1 must return no values and mark the file as scanned."
+  }
+}
