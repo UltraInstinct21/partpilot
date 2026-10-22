@@ -60,6 +60,10 @@ confidence and the status. Every fact links to its source. The project does
 not republish a full datasheet PDF. The PDF files live in the `data/`
 folder, which is not in Git.
 
+The only PDF files in the repository are three synthetic test files of a few
+kilobytes each, in `contracts/fixtures/pdfs/`. They hold no real part data.
+The CI fails when another PDF is in the repository.
+
 ## 7. API data that may not be published
 
 The project does not publish distributor data when the terms of the
