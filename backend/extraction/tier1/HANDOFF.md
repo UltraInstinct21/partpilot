@@ -54,6 +54,18 @@ def lookup(raw_name: str) -> str | None: ...     # -> "rds_on"
 extractor = PdfTier1Extractor(name_map=NameMap(lookup))
 ```
 
+Two helpers build that callable from the database export:
+
+```python
+from extraction.tier1 import load_name_map, lookup_from_rows
+
+lookup = load_name_map("backend/db/seed_data/name_map.json")   # {"name_map": [...]}
+lookup = lookup_from_rows([{"raw_name": "Qrr", "standard_name": "reverse_recovery_qrr"}])
+```
+
+A row may carry two standard names (`"supply_voltage_min,supply_voltage_max"`)
+for a row that holds a range.
+
 Helpers that other agents may reuse:
 
 | function | purpose |
@@ -72,10 +84,10 @@ Helpers that other agents may reuse:
 
 ```bash
 cd backend
-.venv/bin/python -m pytest -q          # 135 tests, all green
+.venv/bin/python -m pytest -q          # all green (tier 1 + the other agents)
 .venv/bin/python -m ruff check .
 .venv/bin/python -m black --check .
-.venv/bin/python -m pytest tests/tier1  # only the tier-1 tests
+.venv/bin/python -m pytest tests/tier1  # only the tier-1 tests (120 tests)
 ```
 
 No network access, no LLM call, no secret: the tests read the recorded
@@ -117,11 +129,15 @@ fixtures in `contracts/fixtures/` only.
 
 ## Known gaps / assumptions
 
-* **Unit normalisation** - the frozen fixture pins `mohm`, `nC`, `pF` and
-  `ns` (value not rescaled); every other unit follows the written table of
-  the brief (`mV -> V` x 0.001, `uC -> C`, `nF -> F`, `us -> s`, `kOhm -> ohm`
-  x 1000, ...). See `docs/CHANGE_REQUESTS/b-tier1-1.md`; the validator has to
-  convert to base units.
+* **Unit normalisation** - tier 1 is the *source layer*: it stores the unit
+  exactly as the datasheet prints it (canonicalised in spelling only):
+  `mOhm -> mohm`, `nC -> nC`, `pF -> pF`, `ns -> ns`, `C -> degC`,
+  `C/W -> degC/W`. The units that the frozen fixture does not exercise are
+  converted to the canonical base unit right away (`mV -> V` x 0.001,
+  `uC -> C` x 1e-6, `nF -> F` x 1e-9, `us -> s` x 1e-6, `kOhm -> ohm` x 1000).
+  This follows the "one canonical unit convention" of `docs/CONTRACTS.md`
+  (source layer keeps the datasheet unit, everything after the validator is
+  canonical). See `docs/CHANGE_REQUESTS/b-tier1-1.md`.
 * **`channel_count`** - the fixture expects `channel_count = 1` for the
   synthetic gate driver, but that PDF has no channel cell. Tier 1 derives it
   from the `IO+` / `IO-` symbol pair with confidence 0.5 and a note (see the

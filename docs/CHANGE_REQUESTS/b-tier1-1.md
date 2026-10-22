@@ -6,6 +6,14 @@
 
 ## 1. Unit canonicalisation: `mohm -> ohm (x 0.001)` vs. the frozen fixture
 
+> **Resolved by the orchestrator in `main` (commit `262b610`, "one canonical
+> unit convention").** `docs/CONTRACTS.md` now states the rule tier 1
+> follows: *"The source layer keeps the datasheet unit ... the tier 1
+> extractor reads exactly what the document says"* and
+> `contracts/fixtures/pdfs/expected_values.json` keeps the datasheet unit.
+> The implementation below is aligned with that decision; the section is kept
+> for the record.
+
 The brief asks for the normalisation `mohm -> ohm (x 0.001)` (and the same
 style for `mV -> V`, `pF -> F`, `ns -> s`, ...), i.e. base units.
 
@@ -47,6 +55,16 @@ together.
 
 If the intent is the other way round (tier 1 rescales to base units), the
 fixture has to change - it is frozen, so please decide and tell us.
+
+**Second request (still open, same topic):** the tier-1 unit parser rescales
+the units that the fixture does *not* exercise (`mV -> V` x 0.001,
+`uC -> C` x 1e-6, `nF -> F` x 1e-9, `us -> s` x 1e-6, `kOhm -> ohm` x 1000,
+`uOhm -> ohm` x 1e-6). For the units the fixture *does* exercise
+(`mohm`, `nC`, `pF`, `ns`) the value is kept as printed, because the fixture
+pins them. With the new "one convention" rule of `main` this is exactly the
+wanted behaviour, but please double check with the validator that a tier-1
+value that already carries `mohm` is converted once and only once
+(`5.5 mohm -> 0.0055 ohm`, not `5.5e-6 ohm`).
 
 ## 2. `channel_count` for the synthetic gate driver
 

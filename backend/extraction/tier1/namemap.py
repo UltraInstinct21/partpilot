@@ -11,8 +11,11 @@ Owner: agent b-tier1.
 
 from __future__ import annotations
 
+import json
 import re
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Protocol
 
 from shared.schemas import Family, GateDriverSpec, MosfetSpec
@@ -25,6 +28,8 @@ __all__ = [
     "NameMap",
     "NameLookup",
     "STANDARD_NAMES",
+    "load_name_map",
+    "lookup_from_rows",
     "match_name",
     "normalise_label",
     "normalise_symbol",
@@ -357,6 +362,41 @@ def _fuzzy_match(
     if names is None:
         return None
     return names, top_score
+
+
+def lookup_from_rows(rows: Iterable[Mapping[str, str]]) -> NameLookup:
+    """Build a lookup callable from ``name_map`` rows.
+
+    A row is a mapping with a ``raw_name`` and a ``standard_name`` key - the
+    shape of the ``name_map`` table of the database layer.  Two standard names
+    can be given as ``"supply_voltage_min,supply_voltage_max"`` for a row that
+    carries a range.
+    """
+    table: dict[str, str] = {}
+    for row in rows:
+        raw = str(row.get("raw_name") or "").strip()
+        standard = str(row.get("standard_name") or "").strip()
+        if raw and standard:
+            table.setdefault(raw, standard)
+
+    def lookup(raw_name: str) -> str | None:
+        key = str(raw_name or "").strip()
+        if key in table:
+            return table[key]
+        return table.get(key.lower())
+
+    return lookup
+
+
+def load_name_map(path: str | Path) -> NameLookup:
+    """Load the ``name_map`` export of the database layer (a JSON file).
+
+    The file holds ``{"name_map": [{"raw_name": ..., "standard_name": ...}]}``
+    or a plain list of such rows.
+    """
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    rows = payload.get("name_map", []) if isinstance(payload, dict) else payload
+    return lookup_from_rows(rows)
 
 
 class NameMap:
