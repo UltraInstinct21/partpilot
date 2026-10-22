@@ -11,6 +11,15 @@ import page03 from "./fixtures/page_03.json";
 import page04 from "./fixtures/page_04.json";
 import page05 from "./fixtures/page_05.json";
 
+export type SeedOffer = {
+  distributor: string;
+  sku: string | null;
+  stock: number | null;
+  unit_price: number | null;
+  currency: string;
+  url: string | null;
+};
+
 export type SeedPart = {
   part_id: string;
   mpn: string;
@@ -21,6 +30,7 @@ export type SeedPart = {
   datasheet_url: string | null;
   description: string | null;
   source_ids: string[];
+  offers: SeedOffer[];
   parameters: Record<
     string,
     { value: number | null; unit: string | null; condition: Record<string, unknown> }
@@ -48,6 +58,7 @@ export function toSummary(part: SeedPart) {
       : ["supply_voltage_min", "supply_voltage_max", "peak_source_current", "propagation_delay"];
   const key_parameters: Record<string, number | null> = {};
   for (const key of keys) key_parameters[key] = part.parameters[key]?.value ?? null;
+  const offers = part.offers ?? [];
   return {
     part_id: part.part_id,
     mpn: part.mpn,
@@ -58,8 +69,8 @@ export function toSummary(part: SeedPart) {
     datasheet_url: part.datasheet_url,
     description: part.description,
     key_parameters,
-    offers_count: 2,
-    total_stock: 48213,
+    offers_count: offers.length,
+    total_stock: offers.reduce((sum, offer) => sum + (offer.stock ?? 0), 0) || null,
     score: null,
   };
 }
@@ -120,6 +131,33 @@ export function guessFilter(query: string) {
   return filter;
 }
 
+/**
+ * The factor from a datasheet unit to the canonical unit.
+ *
+ * The seed fixture stores canonical SI base units (see docs/CONTRACTS.md), so
+ * a constraint that arrives in a datasheet unit has to be converted before it
+ * is compared. The real API does the same in the database layer.
+ */
+const UNIT_FACTORS: Record<string, number> = {
+  mohm: 1e-3,
+  kohm: 1e3,
+  uohm: 1e-6,
+  nC: 1e-9,
+  uC: 1e-6,
+  pF: 1e-12,
+  nF: 1e-9,
+  ns: 1e-9,
+  us: 1e-6,
+  mV: 1e-3,
+  mA: 1e-3,
+};
+
+export function toCanonical(value: number | null, unit: string | null): number | null {
+  if (value === null || !unit) return value;
+  const factor = UNIT_FACTORS[unit];
+  return factor === undefined ? value : value * factor;
+}
+
 export function matchFilter(filter: Record<string, unknown>) {
   let result = [...parts];
   if (filter.family) result = result.filter((p) => p.family === filter.family);
@@ -142,18 +180,19 @@ export function matchFilter(filter: Record<string, unknown>) {
   }
   const constraints = (filter.parameters ?? []) as Array<{
     name: string;
+    unit?: string | null;
     min?: number | null;
     max?: number | null;
   }>;
   for (const constraint of constraints) {
+    const lower = toCanonical(constraint.min ?? null, constraint.unit ?? null);
+    const upper = toCanonical(constraint.max ?? null, constraint.unit ?? null);
     result = result.filter((p) => {
       const spec = p.parameters[constraint.name];
       if (!spec || spec.value === null) return false;
       const value = Number(spec.value);
-      if (constraint.min !== null && constraint.min !== undefined && value < constraint.min)
-        return false;
-      if (constraint.max !== null && constraint.max !== undefined && value > constraint.max)
-        return false;
+      if (lower !== null && value < lower) return false;
+      if (upper !== null && value > upper) return false;
       return true;
     });
   }

@@ -362,7 +362,8 @@ export interface components {
             input_capacitance_ciss?: components["schemas"]["SpecValue"] | null;
             output_capacitance_coss?: components["schemas"]["SpecValue"] | null;
             max_junction_temp?: components["schemas"]["SpecValue"] | null;
-            package?: components["schemas"]["SpecValue"] | null;
+            /** @description The package name, for example "TO-220AB". It is a name, not a measurement. */
+            package?: string | null;
             thermal_resistance?: components["schemas"]["SpecValue"] | null;
             reverse_recovery_qrr?: components["schemas"]["SpecValue"] | null;
         };
@@ -378,7 +379,8 @@ export interface components {
             fall_time?: components["schemas"]["SpecValue"] | null;
             uvlo_threshold?: components["schemas"]["SpecValue"] | null;
             channel_count?: components["schemas"]["SpecValue"] | null;
-            package?: components["schemas"]["SpecValue"] | null;
+            /** @description The package name, for example "SOIC-8". It is a name, not a measurement. */
+            package?: string | null;
             operating_temp_min?: components["schemas"]["SpecValue"] | null;
             operating_temp_max?: components["schemas"]["SpecValue"] | null;
         };
@@ -756,6 +758,7 @@ export interface operations {
                 };
             };
             404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
         };
     };
     searchParts: {
@@ -809,6 +812,7 @@ export interface operations {
                 };
             };
             404: components["responses"]["NotFound"];
+            422: components["responses"]["ValidationError"];
         };
     };
     checkBom: {
@@ -821,10 +825,7 @@ export interface operations {
         requestBody: {
             content: {
                 "multipart/form-data": {
-                    /**
-                     * Format: binary
-                     * @description CSV with at least an MPN column (max 5 MiB).
-                     */
+                    /** @description CSV with at least an MPN column (max 5 MiB). */
                     file: string;
                 };
                 "application/json": components["schemas"]["BomCheckRequest"];
@@ -865,6 +866,7 @@ export interface operations {
                     "application/json": components["schemas"]["ReviewItem"][];
                 };
             };
+            422: components["responses"]["ValidationError"];
         };
     };
     decideReview: {
@@ -902,9 +904,13 @@ export interface operations {
             path?: never;
             cookie?: never;
         };
+        /**
+         * @description The job to run. The body is optional: an empty request starts a job
+         *     with the default settings, so an explicit `null` is valid too.
+         */
         requestBody?: {
             content: {
-                "application/json": components["schemas"]["JobRequest"];
+                "application/json": components["schemas"]["JobRequest"] | null;
             };
         };
         responses: {

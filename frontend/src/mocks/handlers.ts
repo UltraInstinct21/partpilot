@@ -80,33 +80,21 @@ export const handlers = [
     if (!part) {
       return HttpResponse.json({ detail: `part ${params.partId} not found` }, { status: 404 });
     }
+    const offers = (part.offers ?? []).map((offer) => ({
+      part_id: part.part_id,
+      distributor: offer.distributor,
+      sku: offer.sku,
+      stock: offer.stock,
+      unit_price: offer.unit_price,
+      currency: offer.currency,
+      price_breaks: [{ quantity: 1, price: offer.unit_price }],
+      fetched_at: "2026-10-01T09:30:00Z",
+      url: offer.url,
+    }));
     return HttpResponse.json({
       ...part,
       parameters: toParameterValues(part),
-      offers: [
-        {
-          part_id: part.part_id,
-          distributor: "DigiKey",
-          sku: `296-${part.mpn}-ND`,
-          stock: 48213,
-          unit_price: 0.89,
-          currency: "USD",
-          price_breaks: [{ quantity: 1, price: 0.89 }],
-          fetched_at: "2026-10-01T09:30:00Z",
-          url: "https://www.digikey.com",
-        },
-        {
-          part_id: part.part_id,
-          distributor: "Mouser",
-          sku: `81-${part.mpn}`,
-          stock: 12000,
-          unit_price: 0.92,
-          currency: "USD",
-          price_breaks: [{ quantity: 1, price: 0.92 }],
-          fetched_at: "2026-10-01T09:30:00Z",
-          url: "https://www.mouser.com",
-        },
-      ],
+      offers,
       updated_at: "2026-10-01T09:30:00Z",
     });
   }),

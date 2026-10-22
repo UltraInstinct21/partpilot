@@ -38,7 +38,7 @@ setup-frontend: ## Install the frontend dependencies
 
 # ----------------------------------------------------------------- test ----
 
-test: test-backend test-frontend ## Run every test suite
+test: test-backend test-frontend test-eval ## Run every test suite
 
 test-backend: ## Run the backend pytest suite
 	cd $(BACKEND) && .venv/bin/python -m pytest
@@ -46,9 +46,12 @@ test-backend: ## Run the backend pytest suite
 test-frontend: ## Run the frontend vitest suite
 	cd $(FRONTEND) && npm run test
 
+test-eval: ## Run the evaluation harness test suite
+	cd $(BACKEND) && .venv/bin/python -m pytest ../eval -q
+
 # ----------------------------------------------------------------- lint ----
 
-lint: lint-backend lint-frontend ## Run every linter
+lint: lint-backend lint-frontend lint-eval ## Run every linter
 
 lint-backend: ## ruff + black --check
 	cd $(BACKEND) && .venv/bin/python -m ruff check .
@@ -58,15 +61,22 @@ lint-frontend: ## eslint + prettier --check
 	cd $(FRONTEND) && npm run lint
 	cd $(FRONTEND) && npm run format:check
 
+lint-eval: ## ruff + black --check on the evaluation harness
+	$(PY) -m ruff check eval
+	$(PY) -m black --check eval
+
 # --------------------------------------------------------------- format ----
 
-format: format-backend format-frontend ## Auto-format the code
+format: format-backend format-frontend format-eval ## Auto-format the code
 
 format-backend:
 	cd $(BACKEND) && .venv/bin/python -m ruff check --fix . && .venv/bin/python -m black .
 
 format-frontend:
 	cd $(FRONTEND) && npm run format
+
+format-eval:
+	$(PY) -m ruff check --fix eval && $(PY) -m black eval
 
 # ------------------------------------------------------------------ run ----
 

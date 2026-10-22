@@ -350,6 +350,23 @@ def spec_to_values(
         if slot is None:
             failed.append(name)
             continue
+        if isinstance(slot, str):
+            # A text field (the package name). It has no number, so it lands in
+            # the value text and the numeric value stays empty.
+            values.append(
+                ParameterValue(
+                    part_id=part_id,
+                    name=name,
+                    value=None,
+                    unit=None,
+                    condition={},
+                    method=method,
+                    confidence=base_confidence,
+                    raw_text=slot,
+                    value_text=slot,
+                )
+            )
+            continue
         spec_value = SpecValue.model_validate(slot)
         if spec_value.value is None:
             failed.append(name)

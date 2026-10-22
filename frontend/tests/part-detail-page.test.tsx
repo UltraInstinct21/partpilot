@@ -9,8 +9,8 @@ describe("the part detail page", () => {
     expect(await screen.findByRole("heading", { name: "IRF3205S" })).toBeInTheDocument();
 
     expect(await screen.findByText("Rds On")).toBeInTheDocument();
-    expect(screen.getByText("12 mohm")).toBeInTheDocument();
-    expect(screen.getAllByText("mohm").length).toBeGreaterThan(0);
+    expect(screen.getByText("0.012 ohm")).toBeInTheDocument();
+    expect(screen.getAllByText("ohm").length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Vgs: 10 V/).length).toBeGreaterThan(0);
 
     // The lifecycle badge of the part (FR-15).

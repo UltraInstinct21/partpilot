@@ -1,0 +1,23 @@
+# Tool configuration for the parts of the repository that are not the backend
+# package (the evaluation harness in `eval/` and the scripts in `backend/tools/`).
+#
+# There is deliberately NO [project] table here: this file is not a Python
+# project, it only carries the shared formatter and linter settings. The
+# backend has its own `backend/pyproject.toml` with the same values plus the
+# dependency list.
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = [".venv", "eval/results"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W"]
+ignore = ["B008", "E501", "UP042"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["E402"]

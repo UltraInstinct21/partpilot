@@ -25,6 +25,7 @@ dependencies = [
   "alembic>=1.16,<2",
   "pandas>=2.2",
   "numpy>=2.0",
+  "matplotlib>=3.9",
   # --- API ------------------------------------------------------------------
   "fastapi>=0.159,<0.160",
   "uvicorn[standard]>=0.34",
@@ -79,6 +80,7 @@ packages = [
   "extraction",
   "extraction.tier1",
   "extraction.llm",
+  "extraction.llm.manual",
   "validation",
   "db",
   "services",
@@ -87,6 +89,9 @@ packages = [
 [tool.setuptools.package-data]
 # The seed alias table lives next to the module that loads it.
 "db" = ["seed_data/*.json"]
+# The prompts are data files: `load_prompt()` resolves them next to the
+# module, so they have to survive a wheel build.
+"extraction.llm" = ["prompts/*.txt"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

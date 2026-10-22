@@ -14,7 +14,7 @@ describe("the source viewer", () => {
     expect(screen.getByText(/Source of/)).toBeInTheDocument();
 
     // The value and its provenance are shown.
-    expect(screen.getByText("12 mohm")).toBeInTheDocument();
+    expect(screen.getByText("0.012 ohm")).toBeInTheDocument();
     expect(screen.getByText("https://example.invalid/api/IRF3205S")).toBeInTheDocument();
 
     // The datasheet page section is rendered. The mock has no rendered page for

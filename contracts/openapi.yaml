@@ -536,7 +536,9 @@ components:
         input_capacitance_ciss: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
         output_capacitance_coss: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
         max_junction_temp: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
-        package: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        package:
+          type: [string, "null"]
+          description: The package name, for example "TO-220AB". It is a name, not a measurement.
         thermal_resistance: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
         reverse_recovery_qrr: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
 
@@ -554,7 +556,9 @@ components:
         fall_time: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
         uvlo_threshold: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
         channel_count: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
-        package: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
+        package:
+          type: [string, "null"]
+          description: The package name, for example "SOIC-8". It is a name, not a measurement.
         operating_temp_min: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
         operating_temp_max: { oneOf: [{ $ref: "#/components/schemas/SpecValue" }, { type: "null" }] }
 

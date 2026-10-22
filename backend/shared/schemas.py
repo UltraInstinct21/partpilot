@@ -268,7 +268,12 @@ class SpecValue(BaseModel):
 
 
 class MosfetSpec(BaseModel):
-    """Power MOSFET specification (plan section 7.1) - 13 fields."""
+    """Power MOSFET specification (plan section 7.1) - 13 fields.
+
+    Every field except ``package`` is a number. The package is a name
+    (``"TO-220AB"``), so it is a plain string and lands in the
+    ``value_text`` of the parameter, not in the numeric ``value``.
+    """
 
     model_config = ConfigDict(extra="ignore")
 
@@ -282,13 +287,17 @@ class MosfetSpec(BaseModel):
     input_capacitance_ciss: SpecValue | None = None
     output_capacitance_coss: SpecValue | None = None
     max_junction_temp: SpecValue | None = None
-    package: SpecValue | None = None
+    package: str | None = None
     thermal_resistance: SpecValue | None = None
     reverse_recovery_qrr: SpecValue | None = None
 
 
 class GateDriverSpec(BaseModel):
-    """Gate driver specification (plan section 7.1) - 12 fields."""
+    """Gate driver specification (plan section 7.1) - 13 fields.
+
+    ``package`` and ``channel_count`` are the only fields that are not a
+    measurement: the package is a name and the channel count is a count.
+    """
 
     model_config = ConfigDict(extra="ignore")
 
@@ -302,7 +311,7 @@ class GateDriverSpec(BaseModel):
     fall_time: SpecValue | None = None
     uvlo_threshold: SpecValue | None = None
     channel_count: SpecValue | None = None
-    package: SpecValue | None = None
+    package: str | None = None
     operating_temp_min: SpecValue | None = None
     operating_temp_max: SpecValue | None = None
 

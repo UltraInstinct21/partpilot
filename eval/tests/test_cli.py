@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 import pytest
+
 from eval.__main__ import main
 from eval.demo import DEMO_GOLD_SET, run_demo
 from eval.gold_set import load_gold_set
