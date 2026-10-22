@@ -1,0 +1,41 @@
+# The Docker build context. Only the files that the images need are sent
+# to the daemon. The secrets, the virtual environments and the raw data
+# never enter an image.
+
+# --- secrets ---------------------------------------------------------------
+.env
+.env.*
+!.env.example
+**/.env
+
+# --- version control -------------------------------------------------------
+.git
+.github
+.gitignore
+docs
+
+# --- Python ----------------------------------------------------------------
+**/.venv
+**/venv
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+**/*.egg-info
+
+# --- Node ------------------------------------------------------------------
+**/node_modules
+**/dist
+**/coverage
+**/.vite
+
+# --- data and results ------------------------------------------------------
+data
+eval/results/*.png
+eval/results/*.json
+
+# --- documents and logs ----------------------------------------------------
+**/*.md
+!README.md
+*.log
