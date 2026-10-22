@@ -21,13 +21,13 @@ Everything in this folder was written by agent A. The frozen contract layer
 | `collectors/seeds.py` | `build_seed_list()`, `load_bundled_seed()`, `bundled_part_records()`. |
 | `collectors/bundle.py` | `DefaultCollectorBundle` - the `CollectorBundle` protocol. |
 | `collectors/manual/collect_manual.py` | Manual script with real credentials (never executed by the test suite). |
-| `tests/collectors/` | 119 tests, all HTTP mocked with `respx`. |
+| `tests/collectors/` | 102 tests, all HTTP mocked with `respx`. |
 
 ## 2. How to run
 
 ```bash
 cd /home/sarthi/Projects/partpilot-wt/a-collectors/backend
-.venv/bin/python -m pytest -q          # 119 passed
+.venv/bin/python -m pytest -q          # 121 passed (102 of them are the collector tests)
 .venv/bin/python -m ruff check .       # clean
 .venv/bin/python -m black --check .    # clean
 ```
