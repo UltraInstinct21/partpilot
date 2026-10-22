@@ -73,6 +73,7 @@ def _summary(part: dict, score: float | None = None) -> dict:
         ],
     }[part["family"]]
     key_parameters = {k: params.get(k, {}).get("value") for k in keys}
+    offers = part.get("offers") or []
     return {
         "part_id": part["part_id"],
         "mpn": part["mpn"],
@@ -83,8 +84,8 @@ def _summary(part: dict, score: float | None = None) -> dict:
         "datasheet_url": part.get("datasheet_url"),
         "description": part.get("description"),
         "key_parameters": key_parameters,
-        "offers_count": 2,
-        "total_stock": 48213,
+        "offers_count": len(offers),
+        "total_stock": sum(int(o.get("stock") or 0) for o in offers) or None,
         "score": score,
     }
 
@@ -142,9 +143,22 @@ def _match_filter(filt: dict) -> list[dict]:
             or text in p["manufacturer"].lower()
             or text in (p.get("description") or "").lower()
         ]
+    if filt.get("in_stock") is not None:
+        want_stock = bool(filt["in_stock"])
+        parts = [
+            p
+            for p in parts
+            if bool(sum(int(o.get("stock") or 0) for o in (p.get("offers") or [])) > 0)
+            is want_stock
+        ]
     for constraint in filt.get("parameters", []) or []:
         name = constraint.get("name")
         lower, upper = _constraint_bounds(constraint)
+        unit = constraint.get("unit")
+        if lower is not None:
+            lower = _canonical_value(lower, unit, name)
+        if upper is not None:
+            upper = _canonical_value(upper, unit, name)
         kept = []
         for p in parts:
             spec = p.get("parameters", {}).get(name)
@@ -176,6 +190,65 @@ def _constraint_bounds(constraint: dict) -> tuple[float | None, float | None]:
     if op == "eq":
         return (typical, typical)
     return (minimum, maximum)
+
+
+#: canonical unit of every standard parameter name. The seed fixture stores
+#: canonical SI base units, so a constraint given in a datasheet unit has to be
+#: converted before it is compared (see docs/CONTRACTS.md).
+_CANONICAL_UNIT = {
+    "vds_max": "V",
+    "id_continuous": "A",
+    "rds_on": "ohm",
+    "vgs_threshold": "V",
+    "vgs_max": "V",
+    "total_gate_charge_qg": "C",
+    "gate_drain_charge_qgd": "C",
+    "input_capacitance_ciss": "F",
+    "output_capacitance_coss": "F",
+    "max_junction_temp": "degC",
+    "thermal_resistance": "degC/W",
+    "reverse_recovery_qrr": "C",
+    "supply_voltage_min": "V",
+    "supply_voltage_max": "V",
+    "peak_source_current": "A",
+    "peak_sink_current": "A",
+    "input_logic_level": "V",
+    "propagation_delay": "s",
+    "rise_time": "s",
+    "fall_time": "s",
+    "uvlo_threshold": "V",
+    "operating_temp_min": "degC",
+    "operating_temp_max": "degC",
+}
+
+#: factor from a datasheet unit to the canonical unit
+_UNIT_FACTOR = {
+    "mohm": ("ohm", 1e-3),
+    "kohm": ("ohm", 1e3),
+    "uohm": ("ohm", 1e-6),
+    "nC": ("C", 1e-9),
+    "uC": ("C", 1e-6),
+    "pF": ("F", 1e-12),
+    "nF": ("F", 1e-9),
+    "ns": ("s", 1e-9),
+    "us": ("s", 1e-6),
+    "mV": ("V", 1e-3),
+    "mA": ("A", 1e-3),
+}
+
+
+def _canonical_value(value: float | None, unit: str | None, name: str) -> float | None:
+    """Convert ``value`` expressed in ``unit`` into the canonical unit."""
+    if value is None:
+        return None
+    if not unit:
+        return value
+    if unit in _UNIT_FACTOR:
+        target, factor = _UNIT_FACTOR[unit]
+        return value * factor
+    if unit == _CANONICAL_UNIT.get(name):
+        return value
+    return value
 
 
 # ---------------------------------------------------------------------------
@@ -223,33 +296,28 @@ def list_parts(
 def get_part(part_id: str) -> dict:
     for part in SEED_PARTS:
         if part["part_id"] == part_id:
+            offers = []
+            for offer in part.get("offers") or []:
+                offers.append(
+                    {
+                        "part_id": part_id,
+                        "distributor": offer.get("distributor", "unknown").title(),
+                        "sku": offer.get("sku"),
+                        "stock": offer.get("stock"),
+                        "unit_price": offer.get("unit_price"),
+                        "currency": offer.get("currency", "USD"),
+                        "price_breaks": [
+                            {"quantity": 1, "price": offer.get("unit_price")},
+                            {"quantity": 100, "price": offer.get("unit_price")},
+                        ],
+                        "fetched_at": _now.isoformat(),
+                        "url": offer.get("url"),
+                    }
+                )
             return {
                 **part,
                 "parameters": _parameter_values(part),
-                "offers": [
-                    {
-                        "part_id": part_id,
-                        "distributor": "DigiKey",
-                        "sku": f"296-{part['mpn']}-ND",
-                        "stock": 48213,
-                        "unit_price": 0.89,
-                        "currency": "USD",
-                        "price_breaks": [{"quantity": 1, "price": 0.89}],
-                        "fetched_at": _now.isoformat(),
-                        "url": "https://www.digikey.com",
-                    },
-                    {
-                        "part_id": part_id,
-                        "distributor": "Mouser",
-                        "sku": f"81-{part['mpn']}",
-                        "stock": 12000,
-                        "unit_price": 0.92,
-                        "currency": "USD",
-                        "price_breaks": [{"quantity": 1, "price": 0.92}],
-                        "fetched_at": _now.isoformat(),
-                        "url": "https://www.mouser.com",
-                    },
-                ],
+                "offers": offers,
                 "updated_at": _now.isoformat(),
             }
     raise HTTPException(status_code=404, detail=f"part {part_id} not found")

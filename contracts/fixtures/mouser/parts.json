@@ -42,6 +42,78 @@
           }
         },
         "propagation_delay": {
+          "value": 4.220000000000001e-08,
+          "unit": "s",
+          "condition": {
+            "Vcc": "13.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 2.3300000000000003e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 3.41e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 7.52,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
+        "supply_voltage_min": {
+          "value": 5.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 13.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 6.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 3.6,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.52,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
           "value": 42.2,
           "unit": "ns",
           "condition": {
@@ -84,7 +156,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-UCC27511-ND",
+          "stock": 19416,
+          "unit_price": 3.8678,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/UCC27511/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-UCC27511",
+          "stock": 14714,
+          "unit_price": 4.0225,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/UCC27511"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-ucc27524",
@@ -100,6 +190,78 @@
         "api-mouser-ucc27524"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 5.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 15.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 2.1,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 5.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.81,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 1.6800000000000002e-07,
+          "unit": "s",
+          "condition": {
+            "Vcc": "15.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 1.026e-07,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 2.0300000000000003e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 9.37,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 5.0,
           "unit": "V",
@@ -170,7 +332,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-UCC27524-ND",
+          "stock": 12312,
+          "unit_price": 4.053,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/UCC27524/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-UCC27524",
+          "stock": 13942,
+          "unit_price": 4.2151,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/UCC27524"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-ucc27531",
@@ -186,6 +366,78 @@
         "api-mouser-ucc27531"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 6.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 11.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 4.0,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 7.9,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.41,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 4.83e-08,
+          "unit": "s",
+          "condition": {
+            "Vcc": "11.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 1.061e-07,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 9.190000000000001e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 11.4,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 6.0,
           "unit": "V",
@@ -256,7 +508,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-UCC27531-ND",
+          "stock": 31197,
+          "unit_price": 0.6125,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/UCC27531/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-UCC27531",
+          "stock": 2547,
+          "unit_price": 0.637,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/UCC27531"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-el7158",
@@ -272,6 +542,78 @@
         "api-mouser-el7158"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 15.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 7.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 5.9,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 0.82,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 2.1100000000000002e-07,
+          "unit": "s",
+          "condition": {
+            "Vcc": "15.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 2.0300000000000003e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 3.6200000000000007e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 10.52,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 7.0,
           "unit": "V",
@@ -342,7 +684,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-EL7158-ND",
+          "stock": 5649,
+          "unit_price": 0.9105,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/EL7158/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-EL7158",
+          "stock": 1285,
+          "unit_price": 0.9469,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/EL7158"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-6n137",
@@ -358,6 +718,78 @@
         "api-mouser-6n137"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 17.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 2.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 1.1,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.53,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 3.7600000000000006e-08,
+          "unit": "s",
+          "condition": {
+            "Vcc": "17.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 2.23e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 7.570000000000001e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 5.44,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 7.0,
           "unit": "V",
@@ -428,7 +860,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-6N137-ND",
+          "stock": 35428,
+          "unit_price": 3.3198,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/6N137/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-6N137",
+          "stock": 4227,
+          "unit_price": 3.4526,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/6N137"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-max4428",
@@ -444,6 +894,78 @@
         "api-mouser-max4428"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 9.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 3.8,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 5.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.1,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 1.967e-07,
+          "unit": "s",
+          "condition": {
+            "Vcc": "9.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 7.71e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 4.1200000000000005e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 8.1,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 7.0,
           "unit": "V",
@@ -514,7 +1036,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-MAX4428-ND",
+          "stock": 16581,
+          "unit_price": 0.5916,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/MAX4428/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-MAX4428",
+          "stock": 2751,
+          "unit_price": 0.6153,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/MAX4428"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-max4429",
@@ -530,6 +1070,78 @@
         "api-mouser-max4429"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 5.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 7.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 2.7,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.93,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 2.067e-07,
+          "unit": "s",
+          "condition": {
+            "Vcc": "7.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 8.57e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 8.400000000000001e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 7.97,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 5.0,
           "unit": "V",
@@ -600,7 +1212,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-MAX4429-ND",
+          "stock": 32824,
+          "unit_price": 0.9566,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/MAX4429/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-MAX4429",
+          "stock": 3438,
+          "unit_price": 0.9949,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/MAX4429"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-si9121",
@@ -616,6 +1246,78 @@
         "api-mouser-si9121"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 4.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 6.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 2.0,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 1.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.63,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 5.79e-08,
+          "unit": "s",
+          "condition": {
+            "Vcc": "6.5 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 9.58e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 9.18e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 7.3,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 4.5,
           "unit": "V",
@@ -686,7 +1388,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-Si9121-ND",
+          "stock": 21587,
+          "unit_price": 1.9946,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/Si9121/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-Si9121",
+          "stock": 9746,
+          "unit_price": 2.0744,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/Si9121"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-ncp51820",
@@ -702,6 +1422,78 @@
         "api-mouser-ncp51820"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 15.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 5.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 2.5,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.16,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 1.315e-07,
+          "unit": "s",
+          "condition": {
+            "Vcc": "15.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 5.65e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 3.95e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 9.77,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 7.0,
           "unit": "V",
@@ -772,7 +1564,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-NCP51820-ND",
+          "stock": 2640,
+          "unit_price": 1.9665,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/NCP51820/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-NCP51820",
+          "stock": 5573,
+          "unit_price": 2.0452,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/NCP51820"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-lm5109b",
@@ -788,6 +1598,78 @@
         "api-mouser-lm5109b"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 4.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 5.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 1.8,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 3.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.28,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 4.14e-08,
+          "unit": "s",
+          "condition": {
+            "Vcc": "5.5 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 1.0290000000000001e-07,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 8.18e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 5.02,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 4.5,
           "unit": "V",
@@ -858,7 +1740,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-LM5109B-ND",
+          "stock": 36359,
+          "unit_price": 1.0769,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/LM5109B/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-LM5109B",
+          "stock": 12813,
+          "unit_price": 1.12,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/LM5109B"
+        }
+      ]
     }
   ]
 }

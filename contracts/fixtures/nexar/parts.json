@@ -27,6 +27,100 @@
           }
         },
         "rds_on": {
+          "value": 0.009000000000000001,
+          "unit": "ohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 3.78,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 4.45e-08,
+          "unit": "C",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 3.0000000000000004e-09,
+          "unit": "C",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 9.323e-09,
+          "unit": "F",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 6.39e-10,
+          "unit": "F",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 0.8,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 3.11e-07,
+          "unit": "C",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      },
+      "_raw_parameters": {
+        "vds_max": {
+          "value": 30.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 2.4,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
           "value": 9.0,
           "unit": "mohm",
           "condition": {
@@ -106,7 +200,25 @@
             "di/dt": "100 A/us"
           }
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-DMN3024U-13-ND",
+          "stock": 17270,
+          "unit_price": 3.6398,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/DMN3024U-13/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-DMN3024U-13",
+          "stock": 15888,
+          "unit_price": 3.7854,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/DMN3024U-13"
+        }
+      ]
     },
     {
       "part_id": "mosfet-aod4184a",
@@ -122,6 +234,100 @@
         "api-nexar-aod4184a"
       ],
       "parameters": {
+        "vds_max": {
+          "value": 40.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 18.4,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 0.007,
+          "unit": "ohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "9 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 2.75,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 1.8800000000000003e-08,
+          "unit": "C",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "9 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 6.7000000000000004e-09,
+          "unit": "C",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "9 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 2.69e-09,
+          "unit": "F",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 1.944e-09,
+          "unit": "F",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 3.3,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 2.94e-07,
+          "unit": "C",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      },
+      "_raw_parameters": {
         "vds_max": {
           "value": 40.0,
           "unit": "V",
@@ -214,7 +420,17 @@
             "di/dt": "100 A/us"
           }
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-AOD4184A-ND",
+          "stock": 39025,
+          "unit_price": 3.5571,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/AOD4184A/1234567"
+        }
+      ]
     },
     {
       "part_id": "mosfet-si2302cds",
@@ -230,6 +446,100 @@
         "api-nexar-si2302cds"
       ],
       "parameters": {
+        "vds_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 3.0,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 0.011,
+          "unit": "ohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 2.44,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 2.4100000000000004e-08,
+          "unit": "C",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 9.000000000000001e-09,
+          "unit": "C",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "2 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 1.132e-08,
+          "unit": "F",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 9.45e-10,
+          "unit": "F",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 3.1,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 3.3e-07,
+          "unit": "C",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      },
+      "_raw_parameters": {
         "vds_max": {
           "value": 20.0,
           "unit": "V",
@@ -322,7 +632,25 @@
             "di/dt": "100 A/us"
           }
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-SI2302CDS-ND",
+          "stock": 32383,
+          "unit_price": 3.7365,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/SI2302CDS/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-SI2302CDS",
+          "stock": 12881,
+          "unit_price": 3.886,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/SI2302CDS"
+        }
+      ]
     },
     {
       "part_id": "mosfet-dmp3010lk3",
@@ -338,6 +666,100 @@
         "api-nexar-dmp3010lk3"
       ],
       "parameters": {
+        "vds_max": {
+          "value": 30.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 10.1,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 0.022,
+          "unit": "ohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "5 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 2.41,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 2.08e-08,
+          "unit": "C",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "5 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 7.6e-09,
+          "unit": "C",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "5 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 1.738e-09,
+          "unit": "F",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 1.161e-09,
+          "unit": "F",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 1.3,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 9.8e-08,
+          "unit": "C",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      },
+      "_raw_parameters": {
         "vds_max": {
           "value": 30.0,
           "unit": "V",
@@ -430,7 +852,25 @@
             "di/dt": "100 A/us"
           }
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-DMP3010LK3-ND",
+          "stock": 26209,
+          "unit_price": 1.1276,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/DMP3010LK3/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-DMP3010LK3",
+          "stock": 6444,
+          "unit_price": 1.1727,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/DMP3010LK3"
+        }
+      ]
     },
     {
       "part_id": "mosfet-csd19536y",
@@ -446,6 +886,100 @@
         "api-nexar-csd19536y"
       ],
       "parameters": {
+        "vds_max": {
+          "value": 100.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "id_continuous": {
+          "value": 0.2,
+          "unit": "A",
+          "condition": {
+            "Tc": "25 C"
+          }
+        },
+        "rds_on": {
+          "value": 0.0024,
+          "unit": "ohm",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A",
+            "Tj": "25 C"
+          }
+        },
+        "vgs_threshold": {
+          "value": 3.33,
+          "unit": "V",
+          "condition": {
+            "Id": "250 uA"
+          }
+        },
+        "vgs_max": {
+          "value": 20.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "total_gate_charge_qg": {
+          "value": 6.48e-08,
+          "unit": "C",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A"
+          }
+        },
+        "gate_drain_charge_qgd": {
+          "value": 1.85e-08,
+          "unit": "C",
+          "condition": {
+            "Vgs": "10 V",
+            "Id": "1 A"
+          }
+        },
+        "input_capacitance_ciss": {
+          "value": 2.2e-09,
+          "unit": "F",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "output_capacitance_coss": {
+          "value": 2.236e-09,
+          "unit": "F",
+          "condition": {
+            "Vds": "50 V",
+            "Vgs": "0 V",
+            "f": "1 MHz"
+          }
+        },
+        "max_junction_temp": {
+          "value": 175.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "thermal_resistance": {
+          "value": 4.2,
+          "unit": "degC/W",
+          "condition": {
+            "RthJC": "junction to case"
+          }
+        },
+        "reverse_recovery_qrr": {
+          "value": 1.79e-07,
+          "unit": "C",
+          "condition": {
+            "Id": "10 A",
+            "di/dt": "100 A/us"
+          }
+        }
+      },
+      "_raw_parameters": {
         "vds_max": {
           "value": 100.0,
           "unit": "V",
@@ -538,7 +1072,25 @@
             "di/dt": "100 A/us"
           }
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-CSD19536Y-ND",
+          "stock": 3611,
+          "unit_price": 3.7002,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/CSD19536Y/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-CSD19536Y",
+          "stock": 7489,
+          "unit_price": 3.8482,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/CSD19536Y"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-ir2110",
@@ -554,6 +1106,78 @@
         "api-mouser-ir2110"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 4.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 29.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 5.4,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 7.7,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.06,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 2.2230000000000003e-07,
+          "unit": "s",
+          "condition": {
+            "Vcc": "29.5 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 5.13e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 7.800000000000001e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 9.62,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 4.5,
           "unit": "V",
@@ -624,7 +1248,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-IR2110-ND",
+          "stock": 31268,
+          "unit_price": 1.7962,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/IR2110/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-IR2110",
+          "stock": 326,
+          "unit_price": 1.868,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/IR2110"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-ir2104",
@@ -640,6 +1282,78 @@
         "api-mouser-ir2104"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 5.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 30.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 7.1,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 8.0,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.94,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 2.0990000000000002e-07,
+          "unit": "s",
+          "condition": {
+            "Vcc": "30.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 1.045e-07,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 5.83e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 8.05,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 5.0,
           "unit": "V",
@@ -710,7 +1424,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-IR2104-ND",
+          "stock": 16874,
+          "unit_price": 4.3303,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/IR2104/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-IR2104",
+          "stock": 4853,
+          "unit_price": 4.5035,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/IR2104"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-ir2304",
@@ -726,6 +1458,78 @@
         "api-mouser-ir2304"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 6.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 31.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 3.2,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 3.0,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.45,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 1.08e-07,
+          "unit": "s",
+          "condition": {
+            "Vcc": "31.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 4.7000000000000004e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 9.700000000000001e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 5.94,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 6.0,
           "unit": "V",
@@ -796,7 +1600,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-IR2304-ND",
+          "stock": 26541,
+          "unit_price": 0.5444,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/IR2304/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-IR2304",
+          "stock": 18843,
+          "unit_price": 0.5662,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/IR2304"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-tc4427",
@@ -812,6 +1634,78 @@
         "api-mouser-tc4427"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 4.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 29.5,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 7.8,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 3.3,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.04,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 2.1300000000000001e-07,
+          "unit": "s",
+          "condition": {
+            "Vcc": "29.5 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 5.68e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 1.051e-07,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 9.04,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 4.5,
           "unit": "V",
@@ -882,7 +1776,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-TC4427-ND",
+          "stock": 35727,
+          "unit_price": 1.1697,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/TC4427/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-TC4427",
+          "stock": 1141,
+          "unit_price": 1.2165,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/TC4427"
+        }
+      ]
     },
     {
       "part_id": "gate-driver-tc4429",
@@ -898,6 +1810,78 @@
         "api-mouser-tc4429"
       ],
       "parameters": {
+        "supply_voltage_min": {
+          "value": 7.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "supply_voltage_max": {
+          "value": 32.0,
+          "unit": "V",
+          "condition": {}
+        },
+        "peak_source_current": {
+          "value": 5.1,
+          "unit": "A",
+          "condition": {}
+        },
+        "peak_sink_current": {
+          "value": 2.0,
+          "unit": "A",
+          "condition": {}
+        },
+        "input_logic_level": {
+          "value": 1.44,
+          "unit": "V",
+          "condition": {
+            "VIL": "maximum low level input voltage"
+          }
+        },
+        "propagation_delay": {
+          "value": 9.300000000000001e-08,
+          "unit": "s",
+          "condition": {
+            "Vcc": "32.0 V",
+            "Rl": "10 kohm"
+          }
+        },
+        "rise_time": {
+          "value": 7.08e-08,
+          "unit": "s",
+          "condition": {}
+        },
+        "fall_time": {
+          "value": 1.042e-07,
+          "unit": "s",
+          "condition": {}
+        },
+        "uvlo_threshold": {
+          "value": 6.83,
+          "unit": "V",
+          "condition": {}
+        },
+        "channel_count": {
+          "value": 1,
+          "unit": null,
+          "condition": {}
+        },
+        "package": {
+          "value": null,
+          "unit": null,
+          "condition": {}
+        },
+        "operating_temp_min": {
+          "value": -40.0,
+          "unit": "degC",
+          "condition": {}
+        },
+        "operating_temp_max": {
+          "value": 125.0,
+          "unit": "degC",
+          "condition": {}
+        }
+      },
+      "_raw_parameters": {
         "supply_voltage_min": {
           "value": 7.0,
           "unit": "V",
@@ -968,7 +1952,25 @@
           "unit": "degC",
           "condition": {}
         }
-      }
+      },
+      "offers": [
+        {
+          "distributor": "digikey",
+          "sku": "296-TC4429-ND",
+          "stock": 15693,
+          "unit_price": 1.4577,
+          "currency": "USD",
+          "url": "https://www.digikey.com/en/products/detail/x/TC4429/1234567"
+        },
+        {
+          "distributor": "mouser",
+          "sku": "81-TC4429",
+          "stock": 18323,
+          "unit_price": 1.516,
+          "currency": "USD",
+          "url": "https://www.mouser.com/ProductDetail/x/TC4429"
+        }
+      ]
     }
   ]
 }

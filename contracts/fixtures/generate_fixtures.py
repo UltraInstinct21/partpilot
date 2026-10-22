@@ -118,6 +118,58 @@ PARAM_NAMES_GATE_DRIVER = [
     "operating_temp_max",
 ]
 
+#: The seed fixture stores CANONICAL SI base units, exactly like the database
+#: and the validator (see docs/CONTRACTS.md). The datasheet units are only
+#: used inside the raw API fixtures and the synthetic PDFs, because that is
+#: what the source document says.
+#:
+#: The factors are applied with ``pint`` so the stored value is bit identical
+#: to what ``db.units.canonicalize()`` produces.
+_SEED_UNIT_FACTORS: dict[str, tuple[str, float]] = {
+    "mohm": ("ohm", 1e-3),
+    "nC": ("C", 1e-9),
+    "uC": ("C", 1e-6),
+    "pF": ("F", 1e-12),
+    "nF": ("F", 1e-9),
+    "ns": ("s", 1e-9),
+    "us": ("s", 1e-6),
+    "mV": ("V", 1e-3),
+    "mA": ("A", 1e-3),
+}
+
+
+def to_canonical(value, unit):
+    """Return ``(value, unit)`` in the canonical SI base unit."""
+    if value is None or not unit:
+        return value, unit
+    if unit not in _SEED_UNIT_FACTORS:
+        return value, unit
+    target, factor = _SEED_UNIT_FACTORS[unit]
+    return value * factor, target
+
+
+#: The inverse of :func:`to_canonical`. The RAW API fixtures keep the unit the
+#: vendor writes on the page ("12 mOhm", "37.5 nC", "8750 pF"), because that is
+#: what a real API response contains. Only the seed fixture, which represents
+#: data that has already passed the validator, is canonical.
+_CANONICAL_TO_DATASHEET: dict[str, tuple[str, float]] = {
+    "ohm": ("mohm", 1e3),
+    "C": ("nC", 1e9),
+    "F": ("pF", 1e12),
+    "s": ("ns", 1e9),
+}
+
+
+def to_datasheet(value, unit):
+    """Return ``(value, unit)`` in the unit a vendor writes on the page."""
+    if value is None or not unit:
+        return value, unit
+    if unit not in _CANONICAL_TO_DATASHEET:
+        return value, unit
+    target, factor = _CANONICAL_TO_DATASHEET[unit]
+    return value * factor, target
+
+
 MOSFET_FAMILY_ID = "86"
 GATE_DRIVER_FAMILY_ID = "421"
 
@@ -214,10 +266,19 @@ def _gate_driver_params(rng: random.Random, supply: float) -> dict[str, dict]:
 
 
 def build_parts() -> list[dict]:
-    """Return 30 normalised part dictionaries (15 MOSFET, 15 gate driver)."""
+    """Return 30 normalised part dictionaries (15 MOSFET, 15 gate driver).
+
+    The parameter values are in CANONICAL SI base units and every part carries
+    distributor offers with a stock number, so the BOM health check and the
+    alternatives ranking can be exercised against the seed data.
+    """
     rng = random.Random(20261001)
+    # A separate stream for the offers, so adding an offer never changes the
+    # parameter values (and the tests that pin them stay valid).
+    offer_rng = random.Random(20261002)
     parts: list[dict] = []
     for index, (mpn, mfr, package, lifecycle, vds, idc, rds) in enumerate(MOSFETS):
+        raw_params = _mosfet_params(rng, vds, idc, rds)
         parts.append(
             {
                 "part_id": f"mosfet-{mpn.lower()}",
@@ -229,10 +290,14 @@ def build_parts() -> list[dict]:
                 "datasheet_url": f"https://example.invalid/datasheets/{mpn}.pdf",
                 "description": f"{mfr} {mpn} N-channel power MOSFET, {vds:.0f} V",
                 "source_ids": [f"api-digikey-{mpn.lower()}", f"api-nexar-{mpn.lower()}"],
-                "parameters": _mosfet_params(rng, vds, idc, rds),
+                "parameters": _canonicalise_params(raw_params),
+                # The raw API fixtures use the unit the vendor writes.
+                "_raw_parameters": raw_params,
+                "offers": _offers(mpn, offer_rng, lifecycle),
             }
         )
     for index, (mpn, mfr, package, _charge, supply) in enumerate(GATE_DRIVERS):
+        raw_params = _gate_driver_params(rng, supply)
         parts.append(
             {
                 "part_id": f"gate-driver-{mpn.lower()}",
@@ -244,10 +309,65 @@ def build_parts() -> list[dict]:
                 "datasheet_url": f"https://example.invalid/datasheets/{mpn}.pdf",
                 "description": f"{mfr} {mpn} high-side gate driver, {supply:.0f} V",
                 "source_ids": [f"api-digikey-{mpn.lower()}", f"api-mouser-{mpn.lower()}"],
-                "parameters": _gate_driver_params(rng, supply),
+                "parameters": _canonicalise_params(raw_params),
+                "_raw_parameters": raw_params,
+                "offers": _offers(mpn, offer_rng, "active"),
             }
         )
     return parts
+
+
+def _canonicalise_params(params: dict[str, dict]) -> dict[str, dict]:
+    """Convert every parameter value to its canonical SI base unit."""
+    out: dict[str, dict] = {}
+    for name, spec in params.items():
+        value, unit = to_canonical(spec.get("value"), spec.get("unit"))
+        out[name] = {**spec, "value": value, "unit": unit}
+    return out
+
+
+def _offers(mpn: str, rng: random.Random, lifecycle: str) -> list[dict]:
+    """Return deterministic distributor offers for a part.
+
+    Rules that make the seed data useful for the BOM check:
+    * every part has at least one DigiKey offer;
+    * the NRND part is single source (no Mouser offer) -> `single_source` risk;
+    * one part has a low stock (< 1000) -> `low_stock` risk;
+    * an obsolete part would have no offers at all.
+    """
+    if lifecycle == "obsolete":
+        return []
+    digikey_stock = rng.randrange(200, 40000)
+    price = round(rng.uniform(0.35, 4.5), 4)
+    offers = [
+        {
+            "distributor": "digikey",
+            "sku": f"296-{mpn}-ND",
+            "stock": digikey_stock,
+            "unit_price": price,
+            "currency": "USD",
+            "url": f"https://www.digikey.com/en/products/detail/x/{mpn}/1234567",
+        }
+    ]
+    if lifecycle == "nrnd":
+        # Single source on purpose.
+        return offers
+    if mpn == "IRF540N":
+        # Low stock on purpose.
+        digikey_stock = 120
+        offers[0]["stock"] = digikey_stock
+        return offers
+    offers.append(
+        {
+            "distributor": "mouser",
+            "sku": f"81-{mpn}",
+            "stock": rng.randrange(50, 20000),
+            "unit_price": round(price * 1.04, 4),
+            "currency": "USD",
+            "url": f"https://www.mouser.com/ProductDetail/x/{mpn}",
+        }
+    )
+    return offers
 
 
 # ---------------------------------------------------------------------------
@@ -257,7 +377,8 @@ def build_parts() -> list[dict]:
 
 def digikey_product_details(part: dict) -> dict:
     mpn = part["mpn"]
-    params = part["parameters"]
+    # The raw API response carries the unit the vendor writes on the page.
+    params = part.get("_raw_parameters") or part["parameters"]
     return {
         "Product": {
             "ManufacturerProductNumber": mpn,
@@ -306,7 +427,7 @@ def digikey_product_details(part: dict) -> dict:
                     {
                         "ParameterId": 1003,
                         "Text": "RDS(on) @ Id, Vgs",
-                        "Value": f"{params['rds_on']['value']} mOhm",
+                        "Value": f"{params['rds_on']['value']} {params['rds_on']['unit']}",
                     },
                     {
                         "ParameterId": 1004,
@@ -316,7 +437,7 @@ def digikey_product_details(part: dict) -> dict:
                     {
                         "ParameterId": 1005,
                         "Text": "Total Gate Charge (Qg)",
-                        "Value": f"{params['total_gate_charge_qg']['value']} nC",
+                        "Value": f"{params['total_gate_charge_qg']['value']} {params['total_gate_charge_qg']['unit']}",
                     },
                     {
                         "ParameterId": 1006,
@@ -793,11 +914,19 @@ def build_scanned_pdf(path: Path) -> None:
 def write_seed(parts: list[dict]) -> None:
     seed_dir = HERE / "seed"
     seed_dir.mkdir(parents=True, exist_ok=True)
+    public = [
+        {k: v for k, v in part.items() if not k.startswith("_")} for part in parts
+    ]
     (seed_dir / "parts.json").write_text(
         json.dumps(
             {
-                "_note": "Synthetic seed data. 30 parts (15 MOSFET, 15 gate driver).",
-                "parts": parts,
+                "_note": (
+                    "Synthetic seed data. 30 parts (15 MOSFET, 15 gate driver). "
+                    "Parameter values are in CANONICAL SI base units (ohm, C, F, s, V, A, "
+                    "degC, degC/W). The raw API fixtures keep the unit the vendor writes "
+                    "(mohm, nC, pF, ns)."
+                ),
+                "parts": public,
             },
             indent=2,
         ),
@@ -815,20 +944,44 @@ def write_seed(parts: list[dict]) -> None:
                 "package",
                 "lifecycle_status",
                 "datasheet_url",
+                "distributor",
+                "stock",
+                "unit_price",
             ]
         )
         for part in parts:
-            writer.writerow(
-                [
-                    part["part_id"],
-                    part["mpn"],
-                    part["manufacturer"],
-                    part["family"],
-                    part["package"],
-                    part["lifecycle_status"],
-                    part["datasheet_url"],
-                ]
-            )
+            offers = part.get("offers") or []
+            if not offers:
+                writer.writerow(
+                    [
+                        part["part_id"],
+                        part["mpn"],
+                        part["manufacturer"],
+                        part["family"],
+                        part["package"],
+                        part["lifecycle_status"],
+                        part["datasheet_url"],
+                        "",
+                        "",
+                        "",
+                    ]
+                )
+                continue
+            for offer in offers:
+                writer.writerow(
+                    [
+                        part["part_id"],
+                        part["mpn"],
+                        part["manufacturer"],
+                        part["family"],
+                        part["package"],
+                        part["lifecycle_status"],
+                        part["datasheet_url"],
+                        offer["distributor"],
+                        offer["stock"],
+                        offer["unit_price"],
+                    ]
+                )
 
 
 def write_gold_set(parts: list[dict]) -> None:

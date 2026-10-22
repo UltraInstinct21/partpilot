@@ -75,6 +75,7 @@ packages = [
   "shared",
   "app",
   "collectors",
+  "collectors.manual",
   "extraction",
   "extraction.tier1",
   "extraction.llm",
@@ -82,6 +83,10 @@ packages = [
   "db",
   "services",
 ]
+
+[tool.setuptools.package-data]
+# The seed alias table lives next to the module that loads it.
+"db" = ["seed_data/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

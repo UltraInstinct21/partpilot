@@ -154,6 +154,68 @@ Status:
 The exact numbers are the validator agent's business, but the *categories*
 above are the contract.
 
+## Units: the one rule that matters
+
+**Every stored value is in a CANONICAL SI base unit.** There is exactly one
+convention across the whole system:
+
+| dimension | canonical unit | datasheet unit (source only) |
+| --- | --- | --- |
+| voltage | `V` | `mV` |
+| current | `A` | `mA` |
+| resistance | `ohm` | `mohm`, `kohm` |
+| charge | `C` | `nC`, `uC` |
+| capacitance | `F` | `pF`, `nF` |
+| time | `s` | `ns`, `us` |
+| temperature | `degC` | `degC` |
+| thermal resistance | `degC/W` | `degC/W` |
+
+Why: the alternatives finder compares two numbers with a relative distance.
+If one part stored `rds_on` in `mohm` and another in `ohm`, the ranking would
+be silently wrong. With one convention the comparison is always valid, and a
+`ParameterConstraint` that arrives in a datasheet unit is converted before the
+comparison.
+
+So the units differ by LAYER, and this is intentional:
+
+* **The source layer keeps the datasheet unit.** A raw DigiKey response says
+  `"RDS(on) @ Id, Vgs": "12.0 mohm"`, a PDF table says `5.5 mOhm`, and the
+  tier 1 extractor reads exactly what the document says.
+* **Everything after the validator is canonical.** The validator normalises
+  with `pint`; the database stores `0.012 ohm`; the services compare
+  `0.012 ohm`; the API returns `0.012` with `"unit": "ohm"`.
+
+The fixtures follow the same split:
+
+| Fixture | Unit |
+| --- | --- |
+| `contracts/fixtures/digikey/*.json`, `nexar/*.json`, `mouser/*.json` | datasheet unit (what the vendor returns) |
+| `contracts/fixtures/seed/parts.json` | **canonical** (it represents data that already passed the validator) |
+| `contracts/fixtures/pdfs/expected_values.json` | datasheet unit (it is what the synthetic PDF says) |
+
+`pint` and the private `db/units.py` helper produce bit-identical results for
+the linear factors, so a value never changes when it crosses the boundary.
+
+## Offers and stock
+
+`contracts/fixtures/seed/parts.json` carries an `offers` list per part:
+
+```json
+"offers": [
+  {"distributor": "digikey", "sku": "296-IRF3205S-ND", "stock": 10750,
+   "unit_price": 3.1611, "currency": "USD", "url": "..."}
+]
+```
+
+This is what the BOM health check needs for the `low_stock` and
+`single_source` risks (FR-14) and what the alternatives ranking uses for its
+stock bonus. The seed data is built so that the risks are reachable:
+
+* `AOD4184A` is `nrnd` **and** single source (only DigiKey) -> `nrnd` +
+  `single_source`.
+* `IRF540N` has a DigiKey stock of 120 -> `low_stock`.
+* every other part has two distributors.
+
 ## Fixture layout
 
 ```
@@ -173,6 +235,12 @@ contracts/fixtures/
   pdfs/synthetic_gate_driver.pdf     synthetic datasheet, known table
   pdfs/synthetic_scanned.pdf         image-only PDF (no text layer)
   pdfs/expected_values.json          the exact values inside the synthetic PDFs
+```
+
+The fixtures are regenerated with:
+
+```bash
+backend/.venv/bin/python contracts/fixtures/generate_fixtures.py
 ```
 
 ## Commands
