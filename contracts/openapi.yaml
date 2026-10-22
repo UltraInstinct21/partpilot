@@ -56,7 +56,10 @@ paths:
         - name: lifecycle_status
           in: query
           description: Comma separated list of lifecycle states.
-          schema: { type: string }
+          schema:
+            type: string
+            pattern: "^$|^(active|nrnd|obsolete|unknown)(,(active|nrnd|obsolete|unknown))*$"
+            example: "active,nrnd"
         - name: in_stock
           in: query
           schema: { type: boolean }
@@ -149,6 +152,7 @@ paths:
             image/png:
               schema: { type: string, format: binary }
         "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/ValidationError" }
 
   /api/search:
     post:
@@ -200,6 +204,7 @@ paths:
                 type: array
                 items: { $ref: "#/components/schemas/AlternativeResult" }
         "404": { $ref: "#/components/responses/NotFound" }
+        "422": { $ref: "#/components/responses/ValidationError" }
 
   /api/bom/check:
     post:
@@ -216,7 +221,7 @@ paths:
               properties:
                 file:
                   type: string
-                  format: binary
+                  contentMediaType: text/csv
                   description: "CSV with at least an MPN column (max 5 MiB)."
           application/json:
             schema: { $ref: "#/components/schemas/BomCheckRequest" }
@@ -249,6 +254,7 @@ paths:
               schema:
                 type: array
                 items: { $ref: "#/components/schemas/ReviewItem" }
+        "422": { $ref: "#/components/responses/ValidationError" }
 
   /api/review/{param_id}:
     post:
@@ -281,9 +287,15 @@ paths:
       summary: Start a background extraction job
       requestBody:
         required: false
+        description: |
+          The job to run. The body is optional: an empty request starts a job
+          with the default settings, so an explicit `null` is valid too.
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/JobRequest" }
+            schema:
+              anyOf:
+                - { $ref: "#/components/schemas/JobRequest" }
+                - { type: "null" }
       responses:
         "202":
           description: The job was accepted.

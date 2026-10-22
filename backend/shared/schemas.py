@@ -340,6 +340,21 @@ class ExtractionResult(BaseModel):
 # --------------------------------------------------------------------------------------
 
 
+def _strict_int(value: Any) -> Any:
+    """Prepare a number for a strict integer field.
+
+    JSON Schema calls ``128.0`` an integer, so the API accepts it, but a
+    boolean is not a number and must never be silently read as ``0`` or
+    ``1``. Pydantic in strict mode would reject ``128.0`` as well, so an
+    integral float is converted first.
+    """
+    if isinstance(value, bool):
+        raise ValueError("a boolean is not a valid number")
+    if isinstance(value, float) and value.is_integer():
+        return int(value)
+    return value
+
+
 class ParameterConstraint(BaseModel):
     """A numeric constraint on one standard parameter name."""
 
@@ -347,9 +362,9 @@ class ParameterConstraint(BaseModel):
 
     name: str
     unit: str | None = None
-    min: float | None = None
-    max: float | None = None
-    typ: float | None = None
+    min: float | None = Field(default=None, strict=True)
+    max: float | None = Field(default=None, strict=True)
+    typ: float | None = Field(default=None, strict=True)
     operator: Literal["lt", "lte", "gt", "gte", "eq", "between"] = "between"
 
     def bounds(self) -> tuple[float | None, float | None]:
@@ -386,20 +401,30 @@ class SearchFilter(BaseModel):
     package: str | None = None
     package_in: list[str] = Field(default_factory=list)
     lifecycle_status: list[LifecycleStatus] = Field(default_factory=list)
-    in_stock: bool | None = None
+    in_stock: bool | None = Field(default=None, strict=True)
     parameters: list[ParameterConstraint] = Field(default_factory=list)
     text: str | None = None
 
 
 class SearchRequest(BaseModel):
-    """Body of ``POST /api/search``."""
+    """Body of ``POST /api/search``.
+
+    The numbers are strict: a JSON ``false`` is not a valid ``offset``. The
+    contract says ``offset`` is an integer, and a silent coercion of a boolean
+    into zero would return the wrong page.
+    """
 
     model_config = ConfigDict(extra="ignore")
 
-    query: str
+    query: str = Field(min_length=1, description="The natural-language query.")
     filter: SearchFilter | None = None
-    limit: int = Field(default=50, ge=1, le=500)
-    offset: int = Field(default=0, ge=0)
+    limit: int = Field(default=50, ge=1, le=500, strict=True)
+    offset: int = Field(default=0, ge=0, strict=True)
+
+    @field_validator("limit", "offset", mode="before")
+    @classmethod
+    def _reject_boolean(cls, v: Any) -> Any:
+        return _strict_int(v)
 
 
 class SearchResponse(BaseModel):
@@ -533,10 +558,10 @@ class ReviewDecision(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
     action: Literal["accept", "correct", "reject"] = "accept"
-    value: float | None = None
-    value_min: float | None = None
-    value_typ: float | None = None
-    value_max: float | None = None
+    value: float | None = Field(default=None, strict=True)
+    value_min: float | None = Field(default=None, strict=True)
+    value_typ: float | None = Field(default=None, strict=True)
+    value_max: float | None = Field(default=None, strict=True)
     unit: str | None = None
     condition: dict[str, Any] = Field(default_factory=dict)
     note: str | None = None
