@@ -1,0 +1,67 @@
+# PartPilot with Docker Compose.
+#
+#   docker compose up --build              # the API on :8000 and the web on :5173
+#   docker compose --profile mock up mock-api   # the fixture backed mock on :8001
+#   docker compose down                    # stop everything
+#
+# No secret is in the image. The keys come from the `.env` file of the server.
+# The `.env` file is not in Git. Copy `.env.example` to `.env` and fill it in.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    image: partpilot-backend:local
+    container_name: partpilot-api
+    # The port is bound to the loopback. The service is not public.
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      PARTPILOT_DATA_DIR: /app/data
+      PARTPILOT_DB_PATH: /app/data/partpilot.db
+      PARTPILOT_API_HOST: 0.0.0.0
+      PARTPILOT_API_PORT: 8000
+      PARTPILOT_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+    volumes:
+      # The raw PDFs, the cached API responses and the SQLite database.
+      - ./data:/app/data
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.frontend
+    image: partpilot-frontend:local
+    container_name: partpilot-web
+    ports:
+      - "127.0.0.1:5173:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  # The fixture backed mock. It serves the recorded API responses, so the
+  # frontend can be built without a key and without a network.
+  #   docker compose --profile mock up mock-api
+  mock-api:
+    profiles: ["mock"]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.backend
+    image: partpilot-backend:local
+    container_name: partpilot-mock-api
+    command:
+      - uvicorn
+      - tools.mock_api:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8001"
+    ports:
+      - "127.0.0.1:8001:8001"
+    volumes:
+      - ./data:/app/data
+    restart: "no"
