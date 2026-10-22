@@ -28,7 +28,6 @@ import httpx
 from collectors.base import (
     CollectorError,
     DiskCache,
-    HttpStatusError,
     MissingCredentialsError,
     RateLimiter,
     RetryPolicy,
@@ -394,7 +393,9 @@ class MouserCollector:
         self._require_credentials()
         try:
             payload = await self.search_part_number([mpn])
-        except HttpStatusError as exc:
+        except MissingCredentialsError:
+            raise
+        except (CollectorError, httpx.TransportError) as exc:
             logger.warning("Mouser has no part %s (%s)", mpn, exc)
             return None
         for part in self._parts(payload):

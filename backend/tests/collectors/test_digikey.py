@@ -168,6 +168,34 @@ async def test_a_404_does_not_raise_but_returns_none(settings: Settings, load) -
     assert record is None
 
 
+@pytest.mark.asyncio
+async def test_a_network_error_is_retried(settings: Settings, load) -> None:
+    with respx.mock:
+        respx.post(TOKEN_URL).mock(return_value=httpx.Response(200, json=TOKEN_RESPONSE))
+        details = respx.get(DETAILS_URL).mock(
+            side_effect=[
+                httpx.ConnectError("connection refused"),
+                httpx.Response(200, json=load("digikey/product_details.json")),
+            ]
+        )
+        collector = _collector(settings)
+        record = await collector.search_by_mpn_async("IRF3205S")
+
+    assert details.call_count == 2
+    assert record is not None
+
+
+@pytest.mark.asyncio
+async def test_a_part_that_always_fails_does_not_raise(settings: Settings, load) -> None:
+    with respx.mock:
+        respx.post(TOKEN_URL).mock(return_value=httpx.Response(200, json=TOKEN_RESPONSE))
+        respx.get(DETAILS_URL).mock(return_value=httpx.Response(503))
+        collector = _collector(settings)
+        record = await collector.search_by_mpn_async("IRF3205S")
+
+    assert record is None
+
+
 def test_the_collector_works_without_credentials(settings: Settings, load) -> None:
     settings.digikey_client_id = ""
     settings.digikey_client_secret = ""

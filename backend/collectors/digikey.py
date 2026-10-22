@@ -30,7 +30,6 @@ import httpx
 from collectors.base import (
     CollectorError,
     DiskCache,
-    HttpStatusError,
     MissingCredentialsError,
     RateLimiter,
     RetryPolicy,
@@ -360,7 +359,9 @@ class DigiKeyCollector:
         self._require_credentials()
         try:
             product = await self.fetch_product_details(mpn)
-        except HttpStatusError as exc:
+        except MissingCredentialsError:
+            raise
+        except (CollectorError, httpx.TransportError) as exc:
             logger.warning("DigiKey has no product %s (%s)", mpn, exc)
             return None
         if not product:

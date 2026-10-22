@@ -22,7 +22,6 @@ import httpx
 from collectors.base import (
     CollectorError,
     DiskCache,
-    HttpStatusError,
     MissingCredentialsError,
     RateLimiter,
     RetryPolicy,
@@ -469,7 +468,9 @@ class NexarCollector:
         self._require_credentials()
         try:
             document = await self.search_mpn(mpn)
-        except HttpStatusError as exc:
+        except MissingCredentialsError:
+            raise
+        except (CollectorError, httpx.TransportError) as exc:
             logger.warning("Nexar has no part %s (%s)", mpn, exc)
             return None
         for part in self._results(document):
