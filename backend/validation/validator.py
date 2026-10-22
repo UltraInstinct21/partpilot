@@ -242,7 +242,7 @@ class ParameterValidator:
 
         # --------------------------------------------------------- ordering
         ordering_applicable = False
-        ordering_ok = False
+        ordering_violated = False
         if numbers_usable and not unit_mismatch:
             low = normalized.get("value_min")
             typical = normalized.get("value_typ")
@@ -250,19 +250,22 @@ class ParameterValidator:
             if low is not None and typical is not None:
                 ordering_applicable = True
                 if low > typical:
+                    ordering_violated = True
                     rejected = True
                     reasons.append(f"ordering violation: {name} min > typ ({low:g} > {typical:g})")
             if typical is not None and high is not None:
                 ordering_applicable = True
                 if typical > high:
+                    ordering_violated = True
                     rejected = True
                     reasons.append(f"ordering violation: {name} typ > max ({typical:g} > {high:g})")
             if low is not None and high is not None and typical is None:
                 ordering_applicable = True
                 if low > high:
+                    ordering_violated = True
                     rejected = True
                     reasons.append(f"ordering violation: {name} min > max ({low:g} > {high:g})")
-            ordering_ok = ordering_applicable
+        ordering_ok = ordering_applicable and not ordering_violated
 
         # -------------------------------------------------------- API check
         api_state = "none"

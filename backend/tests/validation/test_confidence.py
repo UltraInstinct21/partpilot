@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from shared.schemas import ExtractionMethod, ParameterValue
+from shared.schemas import ExtractionMethod, ParameterValue, ValueStatus
 from validation.confidence import (
     API_DISAGREEMENT_PENALTY,
     API_MATCH_BONUS,
@@ -94,3 +94,21 @@ def test_validator_confidence_subtracts_on_a_disagreement() -> None:
         ParameterValue(name="vds_max", value=56, unit="V", method=TIER1), api_value=100.0
     )
     assert outcome.confidence == pytest.approx(0.85 + 0.10 - 0.10)
+
+
+def test_a_failed_check_gives_no_bonus() -> None:
+    """The range and the ordering bonus are only given for a passed check."""
+    validator = ParameterValidator()
+    outcome = validator.validate_with_reasons(
+        ParameterValue(
+            name="vds_max",
+            value_min=100,
+            value_typ=50,
+            value_max=200,
+            unit="V",
+            method=TIER1,
+        )
+    )
+    assert outcome.status == ValueStatus.REJECTED
+    # base + range check, but no ordering bonus
+    assert outcome.confidence == pytest.approx(0.85 + 0.10)
