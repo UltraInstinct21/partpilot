@@ -1,33 +1,33 @@
 """The composition root of the API.
 
-**This is the one file that changes when the real implementations arrive.**
+This is the one file that decides which implementation of every protocol the
+API uses.
 
-Right now every collaborator is a fake from :mod:`app.fakes`, so the API runs
-standalone. In the integration phase the orchestrator replaces the entries of
-:data:`FACTORIES` with the real factories of the other agents. The routes do
-not change, because they only use the protocols of ``shared.interfaces``.
+Two wirings live here:
 
-Expected constructor signatures (derived from ``shared/interfaces.py``)::
+* :func:`build_container` - the **production** wiring. It uses the real
+  repository (SQLite), the real tier 1 extractor, the real validator and the
+  real services. The LLM extractor is built lazily, so the API starts even
+  when no API key is configured; only a search that needs the model fails.
+* :func:`build_fake_container` - the **offline** wiring. It uses the in-memory
+  fakes of :mod:`app.fakes`, so the API and the frontend can be demonstrated
+  without a database and without a key.
 
-    repository       PartsRepository(settings)               # agent E
-    llm_extractor    LLMExtractor(settings)                  # agent C
-    tier1_extractor  Tier1Extractor(settings)                # agent B
-    validator        Validator(settings)                     # agent D
-    search_service   SearchService(repository, llm_extractor)          # agent F
-    alternatives     AlternativesService(repository, llm_extractor)    # agent F
-    bom_service      BomService(repository)                  # agent F
-    review_service   ReviewService(repository)               # agent F
-    stats_service    StatsService(repository)                # agent F
-    job_runner       JobRunner(repository, tier1_extractor, validator)  # agent F
+Switch with the ``PARTPILOT_WIRING`` environment variable:
 
-A factory may accept any subset of the keyword arguments
-``settings``, ``repository``, ``llm_extractor``, ``tier1_extractor`` and
-``validator``; only the ones it declares are passed.
+* ``real`` (the default) - the production wiring.
+* ``fake`` - the in-memory fakes.
+
+Every factory may accept any subset of the keyword arguments ``settings``,
+``repository``, ``llm_extractor``, ``tier1_extractor`` and ``validator``;
+only the ones it declares are passed.
 """
 
 from __future__ import annotations
 
 import inspect
+import logging
+import os
 from collections.abc import Callable
 from typing import Any
 
@@ -47,64 +47,197 @@ from app.fakes.validator import StubValidator
 from app.rate_limit import FixedWindowRateLimiter
 from shared.config import Settings, get_settings
 
+logger = logging.getLogger("partpilot.api")
+
 Factory = Callable[..., Any]
 
 
+# ---------------------------------------------------------------- real wiring
+
+
+def _real_repository(settings: Settings, **_: Any) -> Any:
+    """The real repository on SQLite, with the seed data loaded."""
+    from db.repository import SqlAlchemyPartsRepository
+    from db.seed import load_seed
+    from db.session import create_engine_for_url, init_db
+
+    settings.ensure_dirs()
+    engine = create_engine_for_url(settings.database_url, echo=settings.sql_echo)
+    init_db(engine)
+    summary = load_seed(engine)
+    logger.info(
+        "database ready: %s parts, %s parameters",
+        summary.get("parts"),
+        summary.get("parameters"),
+    )
+    return SqlAlchemyPartsRepository(engine)
+
+
+def _real_llm(settings: Settings, repository: Any = None, **_: Any) -> Any:
+    """The real LLM extractor. The model is built on the first call."""
+    from extraction.llm.extractor import LLMExtractorImpl
+
+    return LLMExtractorImpl(settings=settings, recorder=_RepositoryRecorder(repository))
+
+
+def _real_tier1(settings: Settings, **_: Any) -> Any:
+    """The real rule based extractor."""
+    from extraction.tier1.extractor import PdfTier1Extractor
+
+    return PdfTier1Extractor()
+
+
+def _real_validator(settings: Settings, **_: Any) -> Any:
+    """The real validator."""
+    from validation.validator import ParameterValidator
+
+    return ParameterValidator()
+
+
+def _real_search_service(repository: Any, llm_extractor: Any, **_: Any) -> Any:
+    """The real search service."""
+    from services.search import SearchService
+
+    return SearchService(repository, llm_extractor)
+
+
+def _real_alternatives_service(repository: Any, llm_extractor: Any, **_: Any) -> Any:
+    """The real alternatives finder."""
+    from services.alternatives import AlternativesService
+
+    return AlternativesService(repository, llm_extractor)
+
+
+def _real_bom_service(repository: Any, **_: Any) -> Any:
+    """The real BOM health check."""
+    from services.bom import BomService
+
+    return BomService(repository)
+
+
+def _real_review_service(repository: Any, **_: Any) -> Any:
+    """The real review service."""
+    from services.review import ReviewService
+
+    return ReviewService(repository)
+
+
+def _real_stats_service(repository: Any, **_: Any) -> Any:
+    """The real statistics service."""
+    from services.stats import StatsService
+
+    return StatsService(repository)
+
+
+def _real_job_runner(
+    repository: Any,
+    tier1_extractor: Any,
+    llm_extractor: Any,
+    validator: Any,
+    **_: Any,
+) -> Any:
+    """The real background job runner."""
+    from services.jobs import BackgroundJobRunner
+
+    return BackgroundJobRunner(
+        repository,
+        tier1=tier1_extractor,
+        llm=llm_extractor,
+        validator=validator,
+    )
+
+
+class _RepositoryRecorder:
+    """Forward the LLM call records to the repository.
+
+    The LLM extractor records every call for the cost accounting of NFR-05.
+    The repository owns the ``llm_calls`` table, so the recorder is a thin
+    adapter that satisfies the recorder protocol of the LLM package.
+    """
+
+    def __init__(self, repository: Any) -> None:
+        self._repository = repository
+
+    def record(self, record: Any) -> None:
+        if self._repository is None:
+            return
+        try:
+            self._repository.record_llm_call(record)
+        except Exception:  # pragma: no cover - the accounting must never break a call
+            logger.exception("Could not record the LLM call")
+
+
+# --------------------------------------------------------------- fake wiring
+
+
 def _default_repository(settings: Settings, **_: Any) -> InMemoryPartsRepository:
-    """The fake repository (agent E replaces it)."""
+    """The fake repository."""
     return InMemoryPartsRepository(settings)
 
 
 def _default_llm(settings: Settings, **_: Any) -> StubLLMExtractor:
-    """The fake LLM extractor (agent C replaces it)."""
+    """The fake LLM extractor."""
     return StubLLMExtractor()
 
 
 def _default_tier1(settings: Settings, **_: Any) -> StubTier1Extractor:
-    """The fake tier 1 extractor (agent B replaces it)."""
+    """The fake tier 1 extractor."""
     return StubTier1Extractor()
 
 
 def _default_validator(settings: Settings, **_: Any) -> StubValidator:
-    """The fake validator (agent D replaces it)."""
+    """The fake validator."""
     return StubValidator()
 
 
 def _default_search_service(repository: Any, llm_extractor: Any, **_: Any) -> FakeSearchService:
-    """The fake search service (agent F replaces it)."""
+    """The fake search service."""
     return FakeSearchService(repository, llm_extractor)
 
 
 def _default_alternatives_service(
     repository: Any, llm_extractor: Any, **_: Any
 ) -> FakeAlternativesService:
-    """The fake alternatives service (agent F replaces it)."""
+    """The fake alternatives service."""
     return FakeAlternativesService(repository, llm_extractor)
 
 
 def _default_bom_service(repository: Any, **_: Any) -> FakeBomService:
-    """The fake BOM service (agent F replaces it)."""
+    """The fake BOM service."""
     return FakeBomService(repository)
 
 
 def _default_review_service(repository: Any, **_: Any) -> FakeReviewService:
-    """The fake review service (agent F replaces it)."""
+    """The fake review service."""
     return FakeReviewService(repository)
 
 
 def _default_stats_service(repository: Any, **_: Any) -> FakeStatsService:
-    """The fake stats service (agent F replaces it)."""
+    """The fake statistics service."""
     return FakeStatsService(repository)
 
 
 def _default_job_runner(repository: Any, tier1_extractor: Any, **_: Any) -> FakeJobRunner:
-    """The fake job runner (agent F replaces it)."""
+    """The fake job runner."""
     return FakeJobRunner(repository, tier1_extractor)
 
 
-#: The factories of the composition root. The integration phase swaps the
-#: entries here - and only here - for the real implementations.
-FACTORIES: dict[str, Factory] = {
+#: The production wiring.
+REAL_FACTORIES: dict[str, Factory] = {
+    "repository": _real_repository,
+    "llm_extractor": _real_llm,
+    "tier1_extractor": _real_tier1,
+    "validator": _real_validator,
+    "search_service": _real_search_service,
+    "alternatives_service": _real_alternatives_service,
+    "bom_service": _real_bom_service,
+    "review_service": _real_review_service,
+    "stats_service": _real_stats_service,
+    "job_runner": _real_job_runner,
+}
+
+#: The offline wiring. It is the default of the test suite.
+FAKE_FACTORIES: dict[str, Factory] = {
     "repository": _default_repository,
     "llm_extractor": _default_llm,
     "tier1_extractor": _default_tier1,
@@ -116,6 +249,10 @@ FACTORIES: dict[str, Factory] = {
     "stats_service": _default_stats_service,
     "job_runner": _default_job_runner,
 }
+
+#: The factories of the composition root. The integration phase swaps the
+#: entries here - and only here - for the real implementations.
+FACTORIES: dict[str, Factory] = dict(REAL_FACTORIES)
 
 
 def _call(factory: Factory, **kwargs: Any) -> Any:
@@ -145,6 +282,7 @@ def build_container(
     stats_service: Any | None = None,
     job_runner: Any | None = None,
     rate_limiter: FixedWindowRateLimiter | None = None,
+    factories: dict[str, Factory] | None = None,
 ) -> Container:
     """Build the application container.
 
@@ -153,48 +291,49 @@ def build_container(
     own fakes.
     """
     settings = settings or get_settings()
+    factories = FACTORIES if factories is None else factories
     kwargs: dict[str, Any] = {"settings": settings}
 
-    repository = repository if repository is not None else _call(FACTORIES["repository"], **kwargs)
+    repository = repository if repository is not None else _call(factories["repository"], **kwargs)
     kwargs["repository"] = repository
 
     llm_extractor = (
-        llm_extractor if llm_extractor is not None else _call(FACTORIES["llm_extractor"], **kwargs)
+        llm_extractor if llm_extractor is not None else _call(factories["llm_extractor"], **kwargs)
     )
     kwargs["llm_extractor"] = llm_extractor
 
     tier1_extractor = (
         tier1_extractor
         if tier1_extractor is not None
-        else _call(FACTORIES["tier1_extractor"], **kwargs)
+        else _call(factories["tier1_extractor"], **kwargs)
     )
     kwargs["tier1_extractor"] = tier1_extractor
 
-    validator = validator if validator is not None else _call(FACTORIES["validator"], **kwargs)
+    validator = validator if validator is not None else _call(factories["validator"], **kwargs)
     kwargs["validator"] = validator
 
     search_service = (
         search_service
         if search_service is not None
-        else _call(FACTORIES["search_service"], **kwargs)
+        else _call(factories["search_service"], **kwargs)
     )
     alternatives_service = (
         alternatives_service
         if alternatives_service is not None
-        else _call(FACTORIES["alternatives_service"], **kwargs)
+        else _call(factories["alternatives_service"], **kwargs)
     )
     bom_service = (
-        bom_service if bom_service is not None else _call(FACTORIES["bom_service"], **kwargs)
+        bom_service if bom_service is not None else _call(factories["bom_service"], **kwargs)
     )
     review_service = (
         review_service
         if review_service is not None
-        else _call(FACTORIES["review_service"], **kwargs)
+        else _call(factories["review_service"], **kwargs)
     )
     stats_service = (
-        stats_service if stats_service is not None else _call(FACTORIES["stats_service"], **kwargs)
+        stats_service if stats_service is not None else _call(factories["stats_service"], **kwargs)
     )
-    job_runner = job_runner if job_runner is not None else _call(FACTORIES["job_runner"], **kwargs)
+    job_runner = job_runner if job_runner is not None else _call(factories["job_runner"], **kwargs)
 
     if rate_limiter is None:
         rate_limiter = FixedWindowRateLimiter(limit=settings.search_rate_limit_per_minute)
@@ -215,4 +354,22 @@ def build_container(
     )
 
 
-__all__ = ["FACTORIES", "build_container"]
+def build_fake_container(settings: Settings | None = None, **kwargs: Any) -> Container:
+    """Build the container with the in-memory fakes."""
+    kwargs.setdefault("factories", FAKE_FACTORIES)
+    return build_container(settings, **kwargs)
+
+
+def wiring_mode() -> str:
+    """Return the wiring the environment asks for: ``real`` or ``fake``."""
+    return os.getenv("PARTPILOT_WIRING", "real").strip().lower() or "real"
+
+
+__all__ = [
+    "FACTORIES",
+    "FAKE_FACTORIES",
+    "REAL_FACTORIES",
+    "build_container",
+    "build_fake_container",
+    "wiring_mode",
+]

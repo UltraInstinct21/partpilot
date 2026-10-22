@@ -21,7 +21,7 @@ from app.errors import register_exception_handlers
 from app.rate_limit import FixedWindowRateLimiter
 from app.routes import ROUTERS
 from app.schemas import HealthResponse
-from app.wiring import build_container
+from app.wiring import build_container, build_fake_container, wiring_mode
 from shared.config import Settings, get_settings
 
 DESCRIPTION = """
@@ -126,7 +126,11 @@ def create_app(
     if container is not None:
         application.state.container = container
     else:
-        application.state.container = build_container(settings, rate_limiter=rate_limiter)
+        mode = wiring_mode()
+        if mode == "fake":
+            application.state.container = build_fake_container(settings, rate_limiter=rate_limiter)
+        else:
+            application.state.container = build_container(settings, rate_limiter=rate_limiter)
 
     def openapi() -> dict:
         """The generated OpenAPI schema, aligned with the frozen contract."""

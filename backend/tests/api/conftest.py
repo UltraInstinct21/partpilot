@@ -1,18 +1,21 @@
-"""Shared fixtures for the API tests."""
+"""Shared fixtures for the API tests.
+
+The tests use the **fake** wiring, so they never touch the database and never
+need a key. The production wiring is covered by the integration test in
+``backend/tests/integration/``.
+"""
 
 from __future__ import annotations
 
 from collections.abc import Iterator
-from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
 
 from app.main import create_app
 from app.rate_limit import FixedWindowRateLimiter
+from app.wiring import build_fake_container
 from shared.config import Settings
-
-REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 @pytest.fixture
@@ -23,8 +26,8 @@ def settings() -> Settings:
 
 @pytest.fixture
 def client(settings: Settings) -> Iterator[TestClient]:
-    """A test client for the default (fully faked) application."""
-    app = create_app(settings=settings)
+    """A test client for the application with the in-memory fakes."""
+    app = create_app(container=build_fake_container(settings))
     with TestClient(app) as test_client:
         yield test_client
 
@@ -38,10 +41,7 @@ def client_factory(settings: Settings):
     """
 
     def build(limit: int = 2) -> TestClient:
-        app = create_app(
-            settings=settings,
-            rate_limiter=FixedWindowRateLimiter(limit=limit),
-        )
-        return TestClient(app)
+        container = build_fake_container(settings, rate_limiter=FixedWindowRateLimiter(limit=limit))
+        return TestClient(create_app(container=container))
 
     return build

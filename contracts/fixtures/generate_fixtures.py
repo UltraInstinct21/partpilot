@@ -31,9 +31,8 @@ from __future__ import annotations
 
 import csv
 import json
-import math
 import random
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -42,7 +41,7 @@ HERE = Path(__file__).resolve().parent
 # Shared catalogue
 # ---------------------------------------------------------------------------
 
-NOW = datetime(2026, 10, 1, 9, 30, tzinfo=timezone.utc)
+NOW = datetime(2026, 10, 1, 9, 30, tzinfo=UTC)
 
 
 def _ts(days_ago: int = 0, hours: int = 0) -> str:
@@ -277,7 +276,7 @@ def build_parts() -> list[dict]:
     # parameter values (and the tests that pin them stay valid).
     offer_rng = random.Random(20261002)
     parts: list[dict] = []
-    for index, (mpn, mfr, package, lifecycle, vds, idc, rds) in enumerate(MOSFETS):
+    for mpn, mfr, package, lifecycle, vds, idc, rds in MOSFETS:
         raw_params = _mosfet_params(rng, vds, idc, rds)
         parts.append(
             {
@@ -296,7 +295,7 @@ def build_parts() -> list[dict]:
                 "offers": _offers(mpn, offer_rng, lifecycle),
             }
         )
-    for index, (mpn, mfr, package, _charge, supply) in enumerate(GATE_DRIVERS):
+    for mpn, mfr, package, _charge, supply in GATE_DRIVERS:
         raw_params = _gate_driver_params(rng, supply)
         parts.append(
             {
@@ -388,8 +387,12 @@ def digikey_product_details(part: dict) -> dict:
             "DatasheetUrl": part["datasheet_url"],
             "Family": part["family"],
             "Category": {
-                "Id": int(MOSFET_FAMILY_ID if part["family"] == "mosfet" else GATE_DRIVER_FAMILY_ID),
-                "Name": "Transistors - FETs, MOSFETs" if part["family"] == "mosfet" else "Gate Drivers",
+                "Id": int(
+                    MOSFET_FAMILY_ID if part["family"] == "mosfet" else GATE_DRIVER_FAMILY_ID
+                ),
+                "Name": (
+                    "Transistors - FETs, MOSFETs" if part["family"] == "mosfet" else "Gate Drivers"
+                ),
             },
             "Status": {
                 "LifecycleStatus": part["lifecycle_status"],
@@ -505,7 +508,11 @@ def nexar_response(parts: list[dict]) -> dict:
                             ],
                             "sellers": [
                                 {
-                                    "company": {"id": "digi", "name": "DigiKey", "isVerified": True},
+                                    "company": {
+                                        "id": "digi",
+                                        "name": "DigiKey",
+                                        "isVerified": True,
+                                    },
                                     "isAuthorized": True,
                                     "offers": [
                                         {
@@ -514,8 +521,16 @@ def nexar_response(parts: list[dict]) -> dict:
                                             "inventoryLevel": 48213,
                                             "moq": 1,
                                             "prices": [
-                                                {"quantity": 1, "convertedPrice": 0.89, "convertedCurrency": "USD"},
-                                                {"quantity": 100, "convertedPrice": 0.5223, "convertedCurrency": "USD"},
+                                                {
+                                                    "quantity": 1,
+                                                    "convertedPrice": 0.89,
+                                                    "convertedCurrency": "USD",
+                                                },
+                                                {
+                                                    "quantity": 100,
+                                                    "convertedPrice": 0.5223,
+                                                    "convertedCurrency": "USD",
+                                                },
                                             ],
                                         }
                                     ],
@@ -547,16 +562,20 @@ def mouser_response(parts: list[dict]) -> dict:
                     "ManufacturerPartNumber": p["mpn"],
                     "Manufacturer": p["manufacturer"],
                     "Description": p["description"],
-                    "Category": "Transistors - FETs, MOSFETs"
-                    if p["family"] == "mosfet"
-                    else "PMIC - Gate Drivers",
+                    "Category": (
+                        "Transistors - FETs, MOSFETs"
+                        if p["family"] == "mosfet"
+                        else "PMIC - Gate Drivers"
+                    ),
                     "DataSheetUrl": p["datasheet_url"],
                     "ProductDetailUrl": f"https://www.mouser.com/ProductDetail/{p['manufacturer']}/{p['mpn']}",
                     "ImagePath": f"https://www.mouser.com/images/{p['mpn']}.jpg",
                     "Availability": "48213 In Stock",
                     "AvailabilityInStock": "48213",
                     "LeadTime": "84 Days",
-                    "LifecycleStatus": "New Product" if p["lifecycle_status"] == "active" else "End of Life",
+                    "LifecycleStatus": (
+                        "New Product" if p["lifecycle_status"] == "active" else "End of Life"
+                    ),
                     "IsDiscontinued": "false" if p["lifecycle_status"] == "active" else "true",
                     "SuggestedReplacement": "",
                     "Min": "1",
@@ -570,8 +589,14 @@ def mouser_response(parts: list[dict]) -> dict:
                         {"Quantity": 1000, "Price": "0.4121", "Currency": "USD"},
                     ],
                     "ProductAttributes": [
-                        {"AttributeName": "Drain to Source Voltage (Vdss)", "AttributeValue": "100 V"},
-                        {"AttributeName": "Continuous Drain Current (Id)", "AttributeValue": "25 A"},
+                        {
+                            "AttributeName": "Drain to Source Voltage (Vdss)",
+                            "AttributeValue": "100 V",
+                        },
+                        {
+                            "AttributeName": "Continuous Drain Current (Id)",
+                            "AttributeValue": "25 A",
+                        },
                         {"AttributeName": "RDS(on) @ Id, Vgs", "AttributeValue": "5.5 mOhm"},
                         {"AttributeName": "Package / Case", "AttributeValue": p["package"]},
                     ],
@@ -619,10 +644,7 @@ def page_samples() -> list[dict]:
             "family": "mosfet",
             "page": 2,
             "title": "Electrical Characteristics",
-            "text": (
-                "2. Electrical Characteristics\n"
-                "TA = 25 C unless otherwise noted.\n"
-            ),
+            "text": ("2. Electrical Characteristics\n" "TA = 25 C unless otherwise noted.\n"),
             "tables": [
                 {
                     "bbox": [54, 180, 558, 560],
@@ -636,15 +658,63 @@ def page_samples() -> list[dict]:
                             "Unit",
                             "Conditions",
                         ],
-                        ["Drain-Source On-Resistance", "RDS(on)", "-", "5.5", "7", "mOhm", "VGS = 10 V, ID = 10 A, TJ = 25 C"],
-                        ["Gate-Source Threshold Voltage", "VGS(th)", "2", "3.5", "4.5", "V", "ID = 250 uA"],
+                        [
+                            "Drain-Source On-Resistance",
+                            "RDS(on)",
+                            "-",
+                            "5.5",
+                            "7",
+                            "mOhm",
+                            "VGS = 10 V, ID = 10 A, TJ = 25 C",
+                        ],
+                        [
+                            "Gate-Source Threshold Voltage",
+                            "VGS(th)",
+                            "2",
+                            "3.5",
+                            "4.5",
+                            "V",
+                            "ID = 250 uA",
+                        ],
                         ["Gate-Source Voltage", "VGS", "-", "-", "20", "V", ""],
                         ["Total Gate Charge", "QG", "-", "62", "-", "nC", "VGS = 10 V, ID = 10 A"],
                         ["Gate-Drain Charge", "QGD", "-", "12", "-", "nC", "VGS = 10 V, ID = 10 A"],
-                        ["Input Capacitance", "CISS", "-", "4900", "-", "pF", "VDS = 50 V, VGS = 0 V, f = 1 MHz"],
-                        ["Output Capacitance", "COSS", "-", "900", "-", "pF", "VDS = 50 V, VGS = 0 V, f = 1 MHz"],
-                        ["Thermal Resistance, Junction-to-Case", "RthJC", "-", "1.2", "-", "C/W", ""],
-                        ["Reverse Recovery Charge", "Qrr", "-", "120", "-", "nC", "ID = 10 A, di/dt = 100 A/us"],
+                        [
+                            "Input Capacitance",
+                            "CISS",
+                            "-",
+                            "4900",
+                            "-",
+                            "pF",
+                            "VDS = 50 V, VGS = 0 V, f = 1 MHz",
+                        ],
+                        [
+                            "Output Capacitance",
+                            "COSS",
+                            "-",
+                            "900",
+                            "-",
+                            "pF",
+                            "VDS = 50 V, VGS = 0 V, f = 1 MHz",
+                        ],
+                        [
+                            "Thermal Resistance, Junction-to-Case",
+                            "RthJC",
+                            "-",
+                            "1.2",
+                            "-",
+                            "C/W",
+                            "",
+                        ],
+                        [
+                            "Reverse Recovery Charge",
+                            "Qrr",
+                            "-",
+                            "120",
+                            "-",
+                            "nC",
+                            "ID = 10 A, di/dt = 100 A/us",
+                        ],
                     ],
                 }
             ],
@@ -677,7 +747,15 @@ def page_samples() -> list[dict]:
                         ["Peak Source Current", "IO+", "-", "2", "-", "A", ""],
                         ["Peak Sink Current", "IO-", "-", "2", "-", "A", ""],
                         ["Input Low Level Voltage", "VIL", "-", "-", "0.8", "V", ""],
-                        ["Propagation Delay", "tPD", "-", "20", "-", "ns", "VCC = 15 V, RL = 10 kohm"],
+                        [
+                            "Propagation Delay",
+                            "tPD",
+                            "-",
+                            "20",
+                            "-",
+                            "ns",
+                            "VCC = 15 V, RL = 10 kohm",
+                        ],
                         ["Rise Time", "tR", "-", "15", "-", "ns", "CL = 1000 pF"],
                         ["Fall Time", "tF", "-", "14", "-", "ns", "CL = 1000 pF"],
                         ["UVLO Threshold", "UVLO", "-", "8", "-", "V", ""],
@@ -691,10 +769,7 @@ def page_samples() -> list[dict]:
             "family": "gate_driver",
             "page": 2,
             "title": "Absolute Maximum Ratings",
-            "text": (
-                "2. Absolute Maximum Ratings\n"
-                "TA = 25 C unless otherwise noted.\n"
-            ),
+            "text": ("2. Absolute Maximum Ratings\n" "TA = 25 C unless otherwise noted.\n"),
             "tables": [
                 {
                     "bbox": [54, 200, 558, 320],
@@ -725,7 +800,15 @@ def page_samples() -> list[dict]:
 # ---------------------------------------------------------------------------
 
 MOSFET_ROWS = [
-    ["Drain-Source On-Resistance", "RDS(on)", "-", "5.5", "7", "mOhm", "VGS = 10 V, ID = 10 A, TJ = 25 C"],
+    [
+        "Drain-Source On-Resistance",
+        "RDS(on)",
+        "-",
+        "5.5",
+        "7",
+        "mOhm",
+        "VGS = 10 V, ID = 10 A, TJ = 25 C",
+    ],
     ["Gate-Source Threshold Voltage", "VGS(th)", "2", "3.5", "4.5", "V", "ID = 250 uA"],
     ["Gate-Source Voltage", "VGS", "-", "-", "20", "V", ""],
     ["Total Gate Charge", "QG", "-", "62", "-", "nC", "VGS = 10 V, ID = 10 A"],
@@ -776,7 +859,7 @@ def _draw_table(canvas, x, y_top, headers, rows, col_widths, row_h=20):
     canvas.setFillColorRGB(0, 0, 0)
     canvas.setFont("Helvetica-Bold", 7.5)
     cx = x
-    for head, w in zip(headers, col_widths):
+    for head, w in zip(headers, col_widths, strict=False):
         canvas.drawString(cx + 3, y - row_h + 6, str(head))
         cx += w
     canvas.setFont("Helvetica", 7.5)
@@ -784,7 +867,7 @@ def _draw_table(canvas, x, y_top, headers, rows, col_widths, row_h=20):
     for row in rows:
         canvas.rect(x, y - row_h, total_w, row_h, fill=0, stroke=1)
         cx = x
-        for cell, w in zip(row, col_widths):
+        for cell, w in zip(row, col_widths, strict=False):
             canvas.drawString(cx + 3, y - row_h + 6, str(cell))
             cx += w
         y -= row_h
@@ -807,7 +890,9 @@ def build_mosfet_pdf(path: Path) -> None:
     from reportlab.lib.pagesizes import A4
     from reportlab.pdfgen import canvas as pdfcanvas
 
-    c = pdfcanvas.Canvas(str(path), pagesize=A4)
+    # `invariant=1` keeps the output byte for byte the same, so the
+    # fixtures do not change every time they are regenerated.
+    c = pdfcanvas.Canvas(str(path), pagesize=A4, invariant=1)
     width, height = A4
 
     # --- page 1: absolute maximum ratings
@@ -818,7 +903,9 @@ def build_mosfet_pdf(path: Path) -> None:
     c.setFont("Helvetica-Bold", 12)
     c.drawString(54, height - 130, "1. Absolute Maximum Ratings")
     c.setFont("Helvetica", 9)
-    c.drawString(54, height - 146, "TA = 25 C unless otherwise noted. (Tj = 125 C maximum continuous)")
+    c.drawString(
+        54, height - 146, "TA = 25 C unless otherwise noted. (Tj = 125 C maximum continuous)"
+    )
     _draw_table(
         c,
         54,
@@ -850,7 +937,9 @@ def build_gate_driver_pdf(path: Path) -> None:
     from reportlab.lib.pagesizes import A4
     from reportlab.pdfgen import canvas as pdfcanvas
 
-    c = pdfcanvas.Canvas(str(path), pagesize=A4)
+    # `invariant=1` keeps the output byte for byte the same, so the
+    # fixtures do not change every time they are regenerated.
+    c = pdfcanvas.Canvas(str(path), pagesize=A4, invariant=1)
     width, height = A4
 
     c.setFont("Helvetica-Bold", 16)
@@ -887,6 +976,26 @@ def build_gate_driver_pdf(path: Path) -> None:
     c.save()
 
 
+def _make_deterministic(path: Path) -> None:
+    """Give the PDF a fixed ``/ID`` so the file does not change on every run.
+
+    PyMuPDF writes a random document identifier. The fixtures are committed to
+    the repository, so a stable file keeps the diffs clean.
+    """
+    import re
+
+    data = path.read_bytes()
+    fixed_id = b"0123456789ABCDEF0123456789ABCDEF"
+    replacement = b"/ID[<" + fixed_id + b"><" + fixed_id + b">]"
+    fixed = re.sub(
+        rb"/ID\s*\[\s*(<[0-9A-Fa-f]+>)\s*(<[0-9A-Fa-f]+>)\s*\]",
+        lambda _match: replacement,
+        data,
+    )
+    if fixed != data:
+        path.write_bytes(fixed)
+
+
 def build_scanned_pdf(path: Path) -> None:
     """A PDF with an image only: no text layer, so Tier 1 must not find values."""
     import pymupdf
@@ -894,16 +1003,36 @@ def build_scanned_pdf(path: Path) -> None:
     src = pymupdf.open()
     page = src.new_page(width=595, height=842)
     page.insert_text((54, 90), "1. Electrical Characteristics", fontsize=14, fontname="helv")
-    page.insert_text((54, 120), "Drain-Source On-Resistance RDS(on)  typ 5.5 max 7 mOhm", fontsize=9, fontname="helv")
-    page.insert_text((54, 140), "Gate-Source Threshold Voltage VGS(th) min 2 typ 3.5 max 4.5 V", fontsize=9, fontname="helv")
+    page.insert_text(
+        (54, 120),
+        "Drain-Source On-Resistance RDS(on)  typ 5.5 max 7 mOhm",
+        fontsize=9,
+        fontname="helv",
+    )
+    page.insert_text(
+        (54, 140),
+        "Gate-Source Threshold Voltage VGS(th) min 2 typ 3.5 max 4.5 V",
+        fontsize=9,
+        fontname="helv",
+    )
     pix = page.get_pixmap(dpi=72, colorspace=pymupdf.csGRAY)
 
     out = pymupdf.open()
+    out.set_metadata(
+        {
+            "title": "PartPilot synthetic scanned datasheet",
+            "author": "PartPilot",
+            "producer": "PartPilot fixture generator",
+            "creationDate": "D:20260101000000Z",
+            "modDate": "D:20260101000000Z",
+        }
+    )
     out_page = out.new_page(width=595, height=842)
     out_page.insert_image(out_page.rect, pixmap=pix)
-    out.save(str(path, ), deflate=True, garbage=4)
+    out.save(str(path), deflate=True, garbage=4)
     out.close()
     src.close()
+    _make_deterministic(path)
 
 
 # ---------------------------------------------------------------------------
@@ -914,9 +1043,7 @@ def build_scanned_pdf(path: Path) -> None:
 def write_seed(parts: list[dict]) -> None:
     seed_dir = HERE / "seed"
     seed_dir.mkdir(parents=True, exist_ok=True)
-    public = [
-        {k: v for k, v in part.items() if not k.startswith("_")} for part in parts
-    ]
+    public = [{k: v for k, v in part.items() if not k.startswith("_")} for part in parts]
     (seed_dir / "parts.json").write_text(
         json.dumps(
             {
@@ -1105,11 +1232,36 @@ def main() -> None:
                 },
                 "vgs_max": {"value": 20.0, "unit": "V", "page": 2, "method": "tier1"},
                 "total_gate_charge_qg": {"value": 62.0, "unit": "nC", "page": 2, "method": "tier1"},
-                "gate_drain_charge_qgd": {"value": 12.0, "unit": "nC", "page": 2, "method": "tier1"},
-                "input_capacitance_ciss": {"value": 4900.0, "unit": "pF", "page": 2, "method": "tier1"},
-                "output_capacitance_coss": {"value": 900.0, "unit": "pF", "page": 2, "method": "tier1"},
-                "thermal_resistance": {"value": 1.2, "unit": "degC/W", "page": 2, "method": "tier1"},
-                "reverse_recovery_qrr": {"value": 120.0, "unit": "nC", "page": 2, "method": "tier1"},
+                "gate_drain_charge_qgd": {
+                    "value": 12.0,
+                    "unit": "nC",
+                    "page": 2,
+                    "method": "tier1",
+                },
+                "input_capacitance_ciss": {
+                    "value": 4900.0,
+                    "unit": "pF",
+                    "page": 2,
+                    "method": "tier1",
+                },
+                "output_capacitance_coss": {
+                    "value": 900.0,
+                    "unit": "pF",
+                    "page": 2,
+                    "method": "tier1",
+                },
+                "thermal_resistance": {
+                    "value": 1.2,
+                    "unit": "degC/W",
+                    "page": 2,
+                    "method": "tier1",
+                },
+                "reverse_recovery_qrr": {
+                    "value": 120.0,
+                    "unit": "nC",
+                    "page": 2,
+                    "method": "tier1",
+                },
             },
         },
         "pdfs/synthetic_gate_driver.pdf": {
@@ -1135,8 +1287,18 @@ def main() -> None:
                 "rise_time": {"value": 15.0, "unit": "ns", "page": 1, "method": "tier1"},
                 "fall_time": {"value": 14.0, "unit": "ns", "page": 1, "method": "tier1"},
                 "uvlo_threshold": {"value": 8.0, "unit": "V", "page": 1, "method": "tier1"},
-                "operating_temp_min": {"value": -40.0, "unit": "degC", "page": 1, "method": "tier1"},
-                "operating_temp_max": {"value": 125.0, "unit": "degC", "page": 1, "method": "tier1"},
+                "operating_temp_min": {
+                    "value": -40.0,
+                    "unit": "degC",
+                    "page": 1,
+                    "method": "tier1",
+                },
+                "operating_temp_max": {
+                    "value": 125.0,
+                    "unit": "degC",
+                    "page": 1,
+                    "method": "tier1",
+                },
                 "channel_count": {"value": 1, "unit": None, "page": 1, "method": "tier1"},
             },
         },
@@ -1148,7 +1310,9 @@ def main() -> None:
             "note": "No text layer. Tier 1 must return no values and mark the file as scanned.",
         },
     }
-    (HERE / "pdfs" / "expected_values.json").write_text(json.dumps(expected, indent=2), encoding="utf-8")
+    (HERE / "pdfs" / "expected_values.json").write_text(
+        json.dumps(expected, indent=2), encoding="utf-8"
+    )
 
     print(f"fixtures written to {HERE}")
 

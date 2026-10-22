@@ -15,6 +15,7 @@ import yaml
 from fastapi.testclient import TestClient
 
 from app.main import create_app
+from app.wiring import build_fake_container
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 OPENAPI_PATH = REPO_ROOT / "contracts" / "openapi.yaml"
@@ -160,7 +161,7 @@ def before_call(ctx, case, **kwargs):
 
 
 _CONTRACT_SCHEMA = schemathesis_openapi.from_path(str(OPENAPI_PATH))
-_CONTRACT_SCHEMA.app = create_app()
+_CONTRACT_SCHEMA.app = create_app(container=build_fake_container())
 
 
 @schemathesis_pytest.parametrize(partpilot=_CONTRACT_SCHEMA)
