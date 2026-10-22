@@ -68,7 +68,7 @@
         {
           "ParameterId": 1003,
           "Text": "RDS(on) @ Id, Vgs",
-          "Value": "12.0 mOhm"
+          "Value": "12.0 mohm"
         },
         {
           "ParameterId": 1004,
