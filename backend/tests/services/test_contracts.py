@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from shared import interfaces
 from services.alternatives import AlternativesService
 from services.bom import BomService
 from services.jobs import BackgroundJobRunner
 from services.review import ReviewService
 from services.search import SearchService
 from services.stats import StatsService
+from shared import interfaces
 from tests.services.fakes import FakePartsRepository
 
 
