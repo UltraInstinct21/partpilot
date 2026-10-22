@@ -1,0 +1,4 @@
+part_id,mpn,manufacturer,family,param_name,value,unit,condition,labelled_by,second_check_by,agreement,notes
+mosfet-irf3205s,IRF3205S,International Rectifier,mosfet,vds_max,56.0,V,{},member-d,,,Absolute Maximum Ratings table on page 1
+mosfet-irf3205s,IRF3205S,International Rectifier,mosfet,rds_on,12.0,mohm,"{""Id"": ""2 A"", ""Tj"": ""25 C"", ""Vgs"": ""10 V""}",member-d,member-c,yes,Typical value at Vgs = 10 V
+gate-driver-ucc27511,ucc27511,Texas Instruments,gate_driver,supply_voltage_max,18.0,V,"{""Vcc"": ""18 V""}",member-d,,,Absolute maximum supply voltage on page 1

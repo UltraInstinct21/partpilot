@@ -1,0 +1,6 @@
+# The charts and the result files of an evaluation run are not in Git.
+# The files are large and they change with every run.
+*.png
+*.json
+*.csv
+!.gitkeep

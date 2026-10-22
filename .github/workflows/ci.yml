@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+# The CI never needs an API key. Every test runs with the recorded fixtures.
+env:
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "22"
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend (python, ruff, black, pytest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+          cache-dependency-glob: "backend/uv.lock"
+
+      - name: Install the backend dependencies
+        run: uv sync --python ${{ env.PYTHON_VERSION }}
+
+      - name: Install the chart library for the evaluation
+        # TODO: remove when matplotlib is in backend/pyproject.toml.
+        # See docs/CHANGE_REQUESTS/i-eval-docs-1.md.
+        run: uv pip install --python .venv/bin/python matplotlib
+
+      - name: ruff check
+        run: .venv/bin/python -m ruff check .
+
+      - name: black check
+        run: .venv/bin/python -m black --check .
+
+      - name: ruff check the evaluation package
+        run: .venv/bin/python -m ruff check --config pyproject.toml ../eval
+
+      - name: black check the evaluation package
+        run: .venv/bin/python -m black --check --config pyproject.toml ../eval
+
+      - name: pytest (backend)
+        run: .venv/bin/python -m pytest -q
+
+      - name: pytest (evaluation package)
+        run: .venv/bin/python -m pytest ../eval -q
+
+  frontend:
+    name: Frontend (eslint, prettier, tsc, vitest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install the frontend dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: eslint
+        run: npm run lint
+
+      - name: prettier check
+        run: npm run format:check
+
+      - name: typescript build
+        run: npm run typecheck
+
+      - name: vitest
+        run: npm run test

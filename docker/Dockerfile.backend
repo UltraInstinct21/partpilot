@@ -1,0 +1,66 @@
+# PartPilot backend image.
+#
+# Build from the root of the repository:
+#   docker build -f docker/Dockerfile.backend -t partpilot-backend .
+#
+# Run:
+#   docker run --rm -p 8000:8000 --env-file .env -v "$PWD/data:/app/data" partpilot-backend
+#
+# No secret is in the image. The keys come from the environment of the
+# container (the .env file on the server).
+
+# ---------------------------------------------------------------- base ----
+FROM python:3.12-slim AS base
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PROJECT_ENVIRONMENT=/app/backend/.venv
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# ---------------------------------------------------------------- build ----
+FROM base AS build
+
+COPY --from=ghcr.io/astral-sh/uv:0.5.11 /uv /usr/local/bin/uv
+
+WORKDIR /app/backend
+
+# The dependency layer changes less often than the code.
+COPY backend/pyproject.toml backend/uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
+
+COPY backend/ ./
+COPY contracts/ /app/contracts/
+
+# The packages of the project itself.
+RUN uv sync --frozen --no-dev
+
+# --------------------------------------------------------------- final ----
+FROM base AS final
+
+WORKDIR /app/backend
+
+COPY --from=build /app/backend/.venv /app/backend/.venv
+COPY --from=build /app/backend /app/backend
+COPY --from=build /app/contracts /app/contracts
+
+# The raw PDFs and the API responses live here. The folder is a volume.
+RUN mkdir -p /app/data && useradd --create-home --uid 10001 partpilot \
+    && chown -R partpilot:partpilot /app
+USER partpilot
+
+ENV PATH="/app/backend/.venv/bin:$PATH" \
+    PARTPILOT_DATA_DIR=/app/data \
+    PARTPILOT_DB_PATH=/app/data/partpilot.db
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD curl --fail http://127.0.0.1:8000/api/stats || exit 1
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
