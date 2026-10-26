@@ -9,7 +9,7 @@ describe("the source viewer", () => {
     const viewSource = (await screen.findAllByRole("button", { name: "View source" }))[0];
     await user.click(viewSource);
 
-    const dialog = await screen.findByRole("dialog");
+    const dialog = await screen.findByRole("dialog", { name: /Source of/i });
     expect(dialog).toBeInTheDocument();
     expect(screen.getByText(/Source of/)).toBeInTheDocument();
 

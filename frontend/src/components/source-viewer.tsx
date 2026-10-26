@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ExternalLink, Copy, Check, Flag } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ExternalLink, Copy, Check, Flag, Eye } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -190,6 +191,16 @@ export function SourceViewer({
               <h3 className="text-xs font-mono uppercase font-bold tracking-wider text-zinc-400">
                 Datasheet page {pageNumber}
               </h3>
+              {isPdf && (
+                <Link
+                  to={`/parts/${partId}?tab=datasheet&page=${pageNumber}`}
+                  onClick={() => onOpenChange(false)}
+                  className="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-400 hover:text-white underline underline-offset-2"
+                >
+                  <Eye className="size-3" />
+                  <span>View in site tab</span>
+                </Link>
+              )}
             </div>
 
             {isPdf && source ? (

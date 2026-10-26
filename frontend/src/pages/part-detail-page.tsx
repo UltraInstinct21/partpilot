@@ -1,11 +1,12 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useParams, useSearchParams, Link, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { FileText, Download, Scale, ArrowLeft, PlayCircle, ListPlus, Check } from "lucide-react";
+import { FileText, Download, Scale, ArrowLeft, PlayCircle, ListPlus, Check, Eye, ExternalLink } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { StatusTag } from "@/components/domain/status-tag";
 import { ConfidenceMeter } from "@/components/domain/confidence-meter";
+import { PdfPage } from "@/components/domain/pdf-page";
 import { SourceViewer } from "@/components/source-viewer";
 import { ErrorState } from "@/components/error-state";
 import { PageSkeleton } from "@/components/loading-skeleton";
@@ -16,6 +17,7 @@ import {
   useStartExtractionJob,
   useDownloadDatasheet,
   useJob,
+  useSourcePage,
   queryKeys,
   type ParameterValue,
 } from "@/api/hooks";
@@ -71,8 +73,28 @@ export function PartDetailPage() {
   // Tab synchronization in URL
   const activeTab = searchParams.get("tab") || "specs";
 
-  const handleTabChange = (newTab: string) => {
-    setSearchParams({ tab: newTab });
+  const handleTabChange = (newTab: string, page?: number) => {
+    const params: Record<string, string> = { tab: newTab };
+    const targetPage = page ?? (newTab === "datasheet" ? datasheetPage : undefined);
+    if (targetPage && targetPage > 1) {
+      params.page = String(targetPage);
+    }
+    setSearchParams(params);
+  };
+
+  const [datasheetPage, setDatasheetPage] = useState<number>(() => {
+    const p = searchParams.get("page");
+    return p ? Math.max(1, parseInt(p, 10)) : 1;
+  });
+  const [datasheetMode, setDatasheetMode] = useState<"interactive" | "full">("interactive");
+
+  const handlePageChange = (newPage: number) => {
+    setDatasheetPage(newPage);
+    if (activeTab === "datasheet") {
+      const params: Record<string, string> = { tab: "datasheet" };
+      if (newPage > 1) params.page = String(newPage);
+      setSearchParams(params);
+    }
   };
 
   const activeId = id ?? "";
@@ -122,8 +144,9 @@ export function PartDetailPage() {
           setJobId(job.job_id);
           toast.success("Extraction job started");
         },
-        onError: (err: any) => {
-          toast.error(err?.message || "Failed to start extraction job");
+        onError: (err: unknown) => {
+          const message = err instanceof Error ? err.message : "Failed to start extraction job";
+          toast.error(message);
         },
       },
     );
@@ -190,6 +213,37 @@ export function PartDetailPage() {
     return groups;
   }, [parameters]);
 
+  const firstSourceParam = useMemo(() => {
+    return parameters.find((p) => p.source_id && p.page) || parameters[0];
+  }, [parameters]);
+
+  const pdfSourceId = useMemo(() => {
+    return part?.source_ids?.find((sid) => sid.startsWith("pdf-") || !sid.startsWith("api-")) ?? null;
+  }, [part?.source_ids]);
+
+  const primarySourceId = pdfSourceId || firstSourceParam?.source_id || null;
+  const pageQuery = useSourcePage(
+    activeTab === "datasheet" && pdfSourceId ? pdfSourceId : undefined,
+    datasheetPage,
+  );
+  const pdfFileUrl = pdfSourceId ? `/api/sources/${pdfSourceId}/file` : null;
+  const directPdfUrl = part?.datasheet_url ?? null;
+  const effectivePdfUrl = pdfFileUrl || directPdfUrl;
+
+  const pagesWithSpecs = useMemo(() => {
+    const pageSet = new Set<number>();
+    for (const p of parameters) {
+      if (p.page && p.page > 0) {
+        pageSet.add(p.page);
+      }
+    }
+    return Array.from(pageSet).sort((a, b) => a - b);
+  }, [parameters]);
+
+  const pageParams = useMemo(() => {
+    return parameters.filter((p) => p.page === datasheetPage);
+  }, [parameters, datasheetPage]);
+
   // Loading Skeleton State
   if (partQuery.isPending) {
     return (
@@ -236,7 +290,6 @@ export function PartDetailPage() {
 
   const compared = isSelected(part.part_id);
   const inReview = isInQueue(part.part_id);
-  const firstSourceParam = parameters.find((p) => p.source_id && p.page) || parameters[0];
 
   return (
     <div className="space-y-6 w-full">
@@ -278,6 +331,22 @@ export function PartDetailPage() {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center gap-2">
+            {(part.datasheet_url || (part.source_ids && part.source_ids.length > 0)) && (
+              <button
+                type="button"
+                onClick={() => {
+                  const targetPage = firstSourceParam?.page || 1;
+                  setDatasheetPage(targetPage);
+                  handleTabChange("datasheet", targetPage);
+                }}
+                aria-label="View datasheet in site"
+                className="inline-flex items-center gap-1.5 rounded-[8px] border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white hover:bg-white/20 transition-none"
+              >
+                <Eye className="size-3.5" />
+                <span>View datasheet in site</span>
+              </button>
+            )}
+
             {firstSourceParam && (
               <button
                 type="button"
@@ -432,6 +501,12 @@ export function PartDetailPage() {
             Alternatives
           </TabsTrigger>
           <TabsTrigger
+            value="datasheet"
+            className="rounded-full px-4 py-1.5 text-xs font-medium data-[state=active]:bg-white data-[state=active]:text-black text-zinc-400 transition"
+          >
+            Datasheet
+          </TabsTrigger>
+          <TabsTrigger
             value="history"
             className="rounded-full px-4 py-1.5 text-xs font-medium data-[state=active]:bg-white data-[state=active]:text-black text-zinc-400 transition"
           >
@@ -548,14 +623,31 @@ export function PartDetailPage() {
                                 </div>
                               </td>
                               <td className="px-3 py-2 text-right">
-                                <button
-                                  type="button"
-                                  onClick={(e) => handleOpenSource(p, e.currentTarget)}
-                                  aria-label="View source"
-                                  className="rounded-[6px] border border-white/15 bg-white/5 px-2 py-1 font-mono text-[11px] text-zinc-300 hover:text-white hover:bg-white/10"
-                                >
-                                  {p.page ? `p. ${p.page}` : "View source"}
-                                </button>
+                                <div className="flex items-center justify-end gap-1.5">
+                                  {p.page && (
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setDatasheetPage(p.page!);
+                                        handleTabChange("datasheet", p.page ?? undefined);
+                                      }}
+                                      title={`View page ${p.page} in datasheet tab`}
+                                      aria-label={`View page ${p.page} in datasheet tab`}
+                                      className="rounded-[6px] border border-white/10 bg-white/5 px-2 py-1 font-mono text-[11px] text-zinc-400 hover:text-white hover:bg-white/10 inline-flex items-center gap-1"
+                                    >
+                                      <Eye className="size-3" />
+                                      <span>p. {p.page}</span>
+                                    </button>
+                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={(e) => handleOpenSource(p, e.currentTarget)}
+                                    aria-label="View source"
+                                    className="rounded-[6px] border border-white/15 bg-white/5 px-2 py-1 font-mono text-[11px] text-zinc-300 hover:text-white hover:bg-white/10"
+                                  >
+                                    Provenance
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           );
@@ -723,6 +815,195 @@ export function PartDetailPage() {
                 </div>
               )}
             </div>
+          </div>
+        </TabsContent>
+
+        {/* Tab: Datasheet */}
+        <TabsContent value="datasheet" className="space-y-6 w-full">
+          <div className="rounded-[12px] border border-white/10 bg-[#121215] p-5 space-y-4">
+            {/* Top Toolbar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h3 className="font-heading text-sm font-semibold uppercase tracking-wider text-white">
+                    {part.mpn} Technical Datasheet
+                  </h3>
+                  {primarySourceId && (
+                    <span className="rounded bg-white/10 px-2 py-0.5 text-[10px] font-mono text-zinc-300">
+                      Cached Source: {primarySourceId.slice(0, 10)}…
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-zinc-400 mt-1">
+                  Verified manufacturer datasheet documentation with AI provenance mapping.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {/* View Mode Toggle: Interactive vs Full PDF */}
+                <div className="flex items-center rounded-[6px] border border-white/15 bg-white/5 p-0.5 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setDatasheetMode("interactive")}
+                    className={cn(
+                      "rounded-[4px] px-2.5 py-1 text-[11px] font-medium transition",
+                      datasheetMode === "interactive"
+                        ? "bg-white text-black font-semibold"
+                        : "text-zinc-400 hover:text-white",
+                    )}
+                  >
+                    Interactive Viewer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDatasheetMode("full")}
+                    className={cn(
+                      "rounded-[4px] px-2.5 py-1 text-[11px] font-medium transition",
+                      datasheetMode === "full"
+                        ? "bg-white text-black font-semibold"
+                        : "text-zinc-400 hover:text-white",
+                    )}
+                  >
+                    Full PDF Document
+                  </button>
+                </div>
+
+                {/* External URL link */}
+                {(part.datasheet_url || effectivePdfUrl) && (
+                  <a
+                    href={part.datasheet_url || effectivePdfUrl || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-[8px] border border-white/15 bg-white/5 px-2.5 py-1.5 text-xs text-zinc-300 hover:text-white hover:bg-white/10 transition"
+                  >
+                    <ExternalLink className="size-3.5" />
+                    <span>External URL</span>
+                  </a>
+                )}
+
+                {/* Download PDF button */}
+                {part.datasheet_url && (
+                  <button
+                    type="button"
+                    onClick={handleDownloadDatasheet}
+                    disabled={downloadDatasheet.isPending || downloadProgress !== null}
+                    className="inline-flex items-center gap-1.5 rounded-[8px] border border-white/15 bg-white/5 px-2.5 py-1.5 text-xs text-zinc-300 hover:text-white hover:bg-white/10 disabled:opacity-50 transition"
+                  >
+                    <Download className="size-3.5" />
+                    <span>Download</span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Quick jump to pages with extracted specifications */}
+            {pagesWithSpecs.length > 0 && datasheetMode === "interactive" && (
+              <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+                <span className="text-zinc-400 text-[11px]">Pages with extracted specs:</span>
+                {pagesWithSpecs.map((pNum) => (
+                  <button
+                    key={pNum}
+                    type="button"
+                    onClick={() => handlePageChange(pNum)}
+                    className={cn(
+                      "rounded-[4px] px-2 py-0.5 text-[11px] font-mono border transition",
+                      datasheetPage === pNum
+                        ? "border-white bg-white text-black font-semibold"
+                        : "border-white/15 bg-white/5 text-zinc-300 hover:bg-white/10",
+                    )}
+                  >
+                    Page {pNum}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Mode 1: Interactive Page Viewer */}
+            {datasheetMode === "interactive" && (
+              <div className="space-y-4">
+                <PdfPage
+                  sourceId={primarySourceId || "external"}
+                  pageNumber={datasheetPage}
+                  pdfUrl={effectivePdfUrl}
+                  imageUrl={pageQuery.data?.image_url}
+                  rawText={pageQuery.data?.text}
+                  totalPages={null}
+                  onPageChange={handlePageChange}
+                  className="border-white/10 bg-black/40"
+                />
+
+                {/* Extracted specifications matching current page */}
+                {pageParams.length > 0 && (
+                  <div className="rounded-[8px] border border-white/10 bg-white/5 p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono font-semibold uppercase tracking-wider text-zinc-300">
+                        Extracted Specifications on Page {datasheetPage} ({pageParams.length})
+                      </span>
+                      <span className="text-[11px] text-zinc-500 font-mono">
+                        Values mined from this page
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                      {pageParams.map((p) => (
+                        <div
+                          key={p.param_id || p.name}
+                          className="flex items-center justify-between p-2.5 rounded-[6px] border border-white/10 bg-black/40 text-xs"
+                        >
+                          <div>
+                            <div className="text-zinc-400 font-sans text-[11px]">
+                              {humanizeParam(p.name)}
+                            </div>
+                            <div className="font-mono font-semibold text-white mt-0.5">
+                              {formatValue(p.value ?? p.value_typ, p.unit)}
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenSource(p)}
+                            className="text-[11px] font-mono text-zinc-400 hover:text-white underline underline-offset-2"
+                          >
+                            Inspect
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Mode 2: Full PDF Document Viewer */}
+            {datasheetMode === "full" && (
+              <div className="space-y-3">
+                <div className="relative w-full h-[750px] rounded-[8px] border border-white/10 overflow-hidden bg-black/60">
+                  {effectivePdfUrl ? (
+                    <iframe
+                      src={effectivePdfUrl}
+                      title={`${part.mpn} Datasheet`}
+                      className="w-full h-full border-none"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full p-8 text-center text-xs text-zinc-400">
+                      <p className="font-medium text-white mb-2">No direct PDF stream available</p>
+                      <p className="max-w-md mb-4">
+                        The manufacturer datasheet has not been indexed as a direct stream yet.
+                      </p>
+                      {part.datasheet_url && (
+                        <a
+                          href={part.datasheet_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 rounded-[8px] bg-white px-3 py-1.5 text-xs font-medium text-black hover:bg-zinc-200"
+                        >
+                          <span>Open External Datasheet</span>
+                          <ExternalLink className="size-3.5" />
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </TabsContent>
 

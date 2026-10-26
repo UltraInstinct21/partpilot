@@ -38,6 +38,7 @@ RISK_CODES: Final[tuple[str, ...]] = (
     "not_found",
     "manufacturer_mismatch",
     "unknown_lifecycle",
+    "footprint_mismatch",
 )
 
 _MPN_HEADERS: Final[frozenset[str]] = frozenset(
@@ -164,6 +165,7 @@ _REFERENCE_HEADERS: Final[frozenset[str]] = frozenset(
 _VALUE_HEADERS: Final[frozenset[str]] = frozenset(
     {
         "value",
+        "values",
         "val",
         "device",
         "component",
@@ -174,8 +176,25 @@ _VALUE_HEADERS: Final[frozenset[str]] = frozenset(
     }
 )
 
+_FOOTPRINT_HEADERS: Final[frozenset[str]] = frozenset(
+    {
+        "footprint",
+        "footprints",
+        "package",
+        "pkg",
+        "case",
+        "housing",
+        "pattern",
+        "pcb footprint",
+        "package/case",
+        "package / case",
+        "footprint/package",
+        "encapsulation",
+    }
+)
+
 _ANY_HEADER: Final[frozenset[str]] = (
-    _MPN_HEADERS | _QTY_HEADERS | _MANUFACTURER_HEADERS | _REFERENCE_HEADERS | _VALUE_HEADERS
+    _MPN_HEADERS | _QTY_HEADERS | _MANUFACTURER_HEADERS | _REFERENCE_HEADERS | _VALUE_HEADERS | _FOOTPRINT_HEADERS
 )
 
 _SEVERITY_ORDER: Final[dict[RiskSeverity, int]] = {
@@ -211,6 +230,28 @@ _PACKAGING_SUFFIX_RE: Final[re.Pattern[str]] = re.compile(
     r"(?:-?(?:TR|T&R|TAPE|REEL|RL|PBF|PB-FREE|NOPB|REEL7|REEL13|TUBE|\+|#PBF|\bATMA1\b|\bAMNTWG\b))+$",
     re.IGNORECASE,
 )
+
+
+def _clean_footprint(raw: str | None) -> str:
+    """Normalize EDA footprint strings (e.g. 'Package_TO_SOT_THT:TO-220-3_Vertical' -> 'TO-220')."""
+    if not raw or not str(raw).strip():
+        return ""
+    text = str(raw).strip()
+    if ":" in text:
+        text = text.split(":", 1)[1]
+    match = re.search(
+        r"\b(TO-?220|TO-?263|TO-?252|TO-?247|TO-?92|D2PAK|DPAK|SUPERSO8|SUPER-?SO8|POWERPAK\s*SO-8|SOIC-?(?:8|14|16|20|28)|SO-?(?:8|14|16|20|28)|DIP-?(?:4|8|14|16|28)|QFN-?\d+|DFN-?\d+|LQFP-?\d+|TSSOP-?\d+|SOT-?(?:23|223)(?:-\d+)?|DO-?(?:35|41)|SMA|SMB|SMC|0402|0603|0805|1206|1210)\b",
+        text,
+        re.IGNORECASE,
+    )
+    if match:
+        pkg = match.group(1).upper()
+        if "TO220" in pkg and "TO-220" not in pkg:
+            pkg = pkg.replace("TO220", "TO-220")
+        return pkg
+    cleaned = re.sub(r"_[a-zA-Z0-9]*metric\b", "", text, flags=re.IGNORECASE)
+    cleaned = re.sub(r"_(?:vertical|horizontal|angled|smd|tht|thermalpad)\b", "", cleaned, flags=re.IGNORECASE)
+    return cleaned.replace("_", " ").strip().upper()
 
 
 def _normalise_header(cell: str) -> str:
@@ -380,26 +421,33 @@ class BomService:
                 columns["manufacturer"] = index
             elif name in _REFERENCE_HEADERS and "reference" not in columns:
                 columns["reference"] = index
+            elif name in _FOOTPRINT_HEADERS and "footprint" not in columns:
+                columns["footprint"] = index
+            elif name in _VALUE_HEADERS and "value" not in columns:
+                columns["value"] = index
 
         # 2. Secondary fallback for MPN: value, comment, part, designation
         if "mpn" not in columns:
-            secondary_mpn_headers = {
-                "part",
-                "part name",
-                "value",
-                "val",
-                "comment",
-                "designation",
-                "article",
-                "catalog no",
-                "catalog number",
-                "item",
-                "item number",
-            }
-            for index, name in enumerate(normalised_headers):
-                if name in secondary_mpn_headers and index not in columns.values():
-                    columns["mpn"] = index
-                    break
+            if "value" in columns:
+                columns["mpn"] = columns["value"]
+            else:
+                secondary_mpn_headers = {
+                    "part",
+                    "part name",
+                    "value",
+                    "val",
+                    "comment",
+                    "designation",
+                    "article",
+                    "catalog no",
+                    "catalog number",
+                    "item",
+                    "item number",
+                }
+                for index, name in enumerate(normalised_headers):
+                    if name in secondary_mpn_headers and index not in columns.values():
+                        columns["mpn"] = index
+                        break
 
         return columns
 
@@ -474,8 +522,8 @@ class BomService:
 
         return None
 
-    def _enrich_bom_parts(self, rows: list[tuple[str, str | None]]) -> None:
-        """Run bounded multi-tier live discovery (advisor, providers, web) concurrently at scale."""
+    def _enrich_bom_parts(self, rows: list[Any]) -> None:
+        """Run bounded multi-tier live discovery using Value, Footprint, and MPN concurrently at scale."""
         # Only run if at least one discovery backend is explicitly configured
         if (
             self._advisor is None
@@ -487,61 +535,98 @@ class BomService:
         self._live_queries = []
         self._live_discovered = 0
         seen: set[str] = set()
-        unmatched_jobs: list[tuple[str, str | None]] = []
+        unmatched_jobs: list[dict[str, Any]] = []
 
-        for mpn, manufacturer in rows[: self._max_live_lines]:
-            clean = (mpn or "").strip()
-            if not clean:
+        for item in rows[: self._max_live_lines]:
+            if isinstance(item, dict):
+                mpn = (item.get("mpn") or "").strip()
+                val = (item.get("value") or "").strip()
+                fp = (item.get("footprint") or "").strip()
+                mfr = (item.get("manufacturer") or "").strip() if item.get("manufacturer") else None
+            elif isinstance(item, (list, tuple)) and len(item) >= 2:
+                mpn = str(item[0] or "").strip()
+                val = mpn
+                fp = ""
+                mfr = str(item[1] or "").strip() if item[1] else None
+            else:
                 continue
-            if clean.upper().startswith(("UNKNOWN", "NO-SUCH", "NONE", "N/A", "DUMMY", "NOT-FOUND")):
+
+            target = mpn or val
+            if not target:
                 continue
-            key = clean.lower()
+            if target.upper().startswith(("UNKNOWN", "NO-SUCH", "NONE", "N/A", "DUMMY", "NOT-FOUND")):
+                continue
+
+            clean_fp = _clean_footprint(fp)
+            key = f"{target.lower()}::{clean_fp.lower()}"
             if key in seen:
                 continue
             seen.add(key)
-            if self._find_part(clean) is not None:
+
+            if self._find_part(target) is not None:
                 continue
-            unmatched_jobs.append((clean, manufacturer))
+
+            unmatched_jobs.append({
+                "mpn": mpn,
+                "value": val,
+                "footprint": fp,
+                "clean_footprint": clean_fp,
+                "manufacturer": mfr,
+            })
 
         if not unmatched_jobs:
             return
 
         if self._query_planner is not None:
-            for clean, manufacturer in unmatched_jobs:
-                queries = self._query_planner.plan(clean, manufacturer)
+            for job in unmatched_jobs:
+                target = job.get("mpn") or job.get("value") or ""
+                fp = job.get("clean_footprint") or ""
+                target_with_fp = f"{target} {fp}".strip() if fp else target
+                queries = self._query_planner.plan(target_with_fp, job.get("manufacturer"))
                 self._live_queries.extend(queries)
 
-        def discover_one(job: tuple[str, str | None]) -> int:
-            clean, mfr = job
+        def discover_one(job: dict[str, Any]) -> int:
+            val = job.get("value") or job.get("mpn") or ""
+            clean_fp = job.get("clean_footprint") or ""
+            mfr = (job.get("manufacturer") or "").strip()
+            mfr_str = f"{mfr} " if mfr else ""
 
-            # 1. ComponentAdvisorService (Instant template catalog + LLM dynamic discovery)
+            # 1. Try ComponentAdvisorService (Instant template catalog + LLM dynamic discovery)
             advisor = self._advisor
             if advisor is not None:
                 try:
-                    records = advisor.discover_and_ingest(clean)
+                    query = f"{val} {clean_fp}".strip() if clean_fp else val
+                    records = advisor.discover_and_ingest(query)
+                    if not records and clean_fp:
+                        records = advisor.discover_and_ingest(val)
                     if records:
                         return len(records)
                 except Exception as exc:
-                    logger.debug("BOM advisor discovery failed for %s: %s", clean, exc)
+                    logger.debug("BOM advisor discovery failed for %s: %s", val, exc)
 
-            # 2. ProviderDiscoveryService (DigiKey, Mouser, Nexar live APIs)
-            if self._provider_discovery is not None:
-                try:
-                    records = self._provider_discovery.discover_and_ingest(clean, limit=5)
-                    if records:
-                        return len(records)
-                except Exception as exc:
-                    logger.debug("BOM provider discovery failed for %s: %s", clean, exc)
-
-            # 3. WebDiscoveryService (SearXNG / Web scrapers)
+            # 2. Try WebDiscoveryService (SearXNG live search with value + footprint!)
             if self._web_discovery is not None:
                 try:
-                    query = f"{mfr.strip() + ' ' if mfr and mfr.strip() else ''}{clean} datasheet"
+                    query = f"{mfr_str}{val} {clean_fp} datasheet".strip() if clean_fp else f"{mfr_str}{val} datasheet".strip()
                     records, _ = self._web_discovery.discover_and_ingest_with_results(query, limit=5)
+                    if not records and clean_fp:
+                        records, _ = self._web_discovery.discover_and_ingest_with_results(f"{mfr_str}{val} datasheet".strip(), limit=5)
                     if records:
                         return len(records)
                 except Exception as exc:
-                    logger.debug("BOM web discovery failed for %s: %s", clean, exc)
+                    logger.debug("BOM web discovery failed for %s: %s", val, exc)
+
+            # 3. Try ProviderDiscoveryService (DigiKey, Mouser, Nexar live APIs)
+            if self._provider_discovery is not None:
+                try:
+                    query = f"{val} {clean_fp}".strip() if clean_fp else val
+                    records = self._provider_discovery.discover_and_ingest(query, limit=5)
+                    if not records and clean_fp:
+                        records = self._provider_discovery.discover_and_ingest(val, limit=5)
+                    if records:
+                        return len(records)
+                except Exception as exc:
+                    logger.debug("BOM provider discovery failed for %s: %s", val, exc)
 
             return 0
 
@@ -676,11 +761,15 @@ class BomService:
         reference_index = columns.get("reference")
         qty_index = columns.get("qty")
         manufacturer_index = columns.get("manufacturer")
+        footprint_index = columns.get("footprint")
+        value_index = columns.get("value")
 
         if "mpn" in columns:
             mpn_index = columns["mpn"]
+        elif value_index is not None:
+            mpn_index = value_index
         else:
-            taken = {idx for idx in (reference_index, qty_index, manufacturer_index) if idx is not None}
+            taken = {idx for idx in (reference_index, qty_index, manufacturer_index, footprint_index, value_index) if idx is not None}
             available = [i for i in range(len(rows[0])) if i not in taken]
             mpn_index = available[0] if available else 0
 
@@ -689,21 +778,29 @@ class BomService:
         matched_lines = 0
         highest: RiskSeverity | None = None
 
-        self._enrich_bom_parts(
-            [
-                (
-                    row[mpn_index].strip() if mpn_index < len(row) else "",
-                    row[manufacturer_index].strip()
-                    if manufacturer_index is not None and manufacturer_index < len(row)
-                    else None,
-                )
-                for row in data_rows
-            ]
-        )
+        enrich_payload = []
+        for row in data_rows:
+            r_mpn = row[mpn_index].strip() if mpn_index < len(row) else ""
+            r_val = row[value_index].strip() if value_index is not None and value_index < len(row) else r_mpn
+            r_fp = row[footprint_index].strip() if footprint_index is not None and footprint_index < len(row) else None
+            r_mfr = row[manufacturer_index].strip() if manufacturer_index is not None and manufacturer_index < len(row) else None
+            enrich_payload.append({
+                "mpn": r_mpn,
+                "value": r_val,
+                "footprint": r_fp,
+                "manufacturer": r_mfr,
+            })
+
+        self._enrich_bom_parts(enrich_payload)
 
         for offset, row in enumerate(data_rows):
             line_number = offset + (header_row_index + 2 if has_header else 1)
             mpn = row[mpn_index].strip() if mpn_index < len(row) else ""
+            value = row[value_index].strip() if value_index is not None and value_index < len(row) else mpn
+            footprint = row[footprint_index].strip() if footprint_index is not None and footprint_index < len(row) else None
+            clean_fp = _clean_footprint(footprint)
+            target = mpn or value
+
             quantity = (
                 self._to_quantity(row[qty_index])
                 if qty_index is not None and qty_index < len(row)
@@ -721,22 +818,38 @@ class BomService:
             )
 
             risks: list[BomRisk] = []
-            part = self._find_part(mpn) if mpn else None
+            part = self._find_part(target) if target else None
+            if part is None and value and value != mpn:
+                part = self._find_part(value)
+
             if part is None:
                 risks.append(
                     BomRisk(
                         code="not_found",
                         severity=RiskSeverity.HIGH,
                         message=(
-                            f"No part matches '{mpn}'" if mpn else "The line has no part number"
+                            f"No part matches '{target}'" if target else "The line has no part number or value"
                         ),
-                        mpn=mpn or None,
-                        suggestion="Check the part number and the manufacturer.",
+                        mpn=target or None,
+                        suggestion="Check the part number, value, and footprint.",
                     )
                 )
             else:
                 matched_lines += 1
                 risks.extend(self._risks_for(part, manufacturer))
+                if clean_fp and part.package:
+                    part_pkg_clean = _clean_footprint(part.package)
+                    if clean_fp not in part_pkg_clean and part_pkg_clean not in clean_fp:
+                        risks.append(
+                            BomRisk(
+                                code="footprint_mismatch",
+                                severity=RiskSeverity.INFO,
+                                message=f"BOM footprint '{clean_fp}' differs from part package '{part.package}'",
+                                part_id=part.part_id,
+                                mpn=part.mpn,
+                                suggestion="Verify PCB pad layout and physical dimensions against datasheet.",
+                            )
+                        )
 
             for risk in risks:
                 if highest is None or _SEVERITY_ORDER[risk.severity] > _SEVERITY_ORDER[highest]:
@@ -746,9 +859,9 @@ class BomService:
             lines.append(
                 BomLine(
                     line_number=line_number,
-                    mpn=mpn,
+                    mpn=target,
                     quantity=quantity,
-                    manufacturer=manufacturer or None,
+                    manufacturer=manufacturer or (part.manufacturer if part else None),
                     reference=reference or None,
                     matched_part_id=part.part_id if part is not None else None,
                     matched=part is not None,

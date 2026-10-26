@@ -370,3 +370,50 @@ def test_item_column_does_not_override_component_mpn() -> None:
     assert response.lines[0].reference == "Q1-Q4"
 
 
+def test_bom_parser_uses_value_and_footprint_columns() -> None:
+    class TrackingWebDiscovery:
+        def __init__(self, repo):
+            self.repo = repo
+            self.searched_queries = []
+
+        def discover_and_ingest_with_results(self, query: str, limit: int = 5):
+            self.searched_queries.append(query)
+            # Synthesize part matching query
+            mpn = query.split()[0]
+            part = make_part(
+                f"web-{mpn.lower()}",
+                mpn,
+                package="TO-220",
+                lifecycle=LifecycleStatus.ACTIVE,
+                offers=[_offer("mouser", 12000)],
+            )
+            self.repo.add_part(part)
+            return [part], []
+
+    repo = _repository()
+    tracker = TrackingWebDiscovery(repo)
+    service = BomService(repo, web_discovery=tracker)
+
+    # Standard KiCad/Altium BOM export without MPN column, using Value and Footprint
+    content = (
+        "Reference,Value,Footprint,Quantity\n"
+        "Q1,IRF3205,Package_TO_SOT_THT:TO-220-3_Vertical,2\n"
+        "U1,LM317,Package_TO_SOT_THT:TO-220-3_Vertical,1\n"
+    )
+
+    response = service.check_csv(content)
+
+    assert response.total_lines == 2
+    assert response.matched_lines == 2
+    # Verify that query processed both Value and Footprint
+    assert any("IRF3205" in q and "TO-220" in q for q in tracker.searched_queries)
+    assert any("LM317" in q and "TO-220" in q for q in tracker.searched_queries)
+    assert response.lines[0].reference == "Q1"
+    assert response.lines[0].quantity == 2
+    assert response.lines[0].matched is True
+    assert response.lines[1].reference == "U1"
+    assert response.lines[1].quantity == 1
+    assert response.lines[1].matched is True
+
+
+

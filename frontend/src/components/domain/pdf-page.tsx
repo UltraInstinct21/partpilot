@@ -39,6 +39,9 @@ export function PdfPage({
   const [zoomMode, setZoomMode] = useState<"fit" | "100" | "150">("fit");
   const [pdfModule, setPdfModule] = useState<PdfModule | null>(null);
   const [loadError, setLoadError] = useState(false);
+  const [internalTotalPages, setInternalTotalPages] = useState<number | null>(null);
+
+  const effectiveTotalPages = totalPages ?? internalTotalPages;
 
   useEffect(() => {
     let cancelled = false;
@@ -76,7 +79,7 @@ export function PdfPage({
   };
 
   const handleNext = () => {
-    if ((totalPages === null || totalPages === undefined || pageNumber < totalPages) && onPageChange) {
+    if ((effectiveTotalPages === null || effectiveTotalPages === undefined || pageNumber < effectiveTotalPages) && onPageChange) {
       onPageChange(pageNumber + 1);
     }
   };
@@ -97,12 +100,12 @@ export function PdfPage({
             <ChevronLeft className="size-3.5" />
           </button>
           <span className="px-1 text-[13px] font-medium text-white">
-            Page {pageNumber} {totalPages ? `/ ${totalPages}` : ""}
+            Page {pageNumber} {effectiveTotalPages ? `/ ${effectiveTotalPages}` : ""}
           </span>
           <button
             type="button"
             onClick={handleNext}
-            disabled={Boolean(totalPages && pageNumber >= totalPages) || !onPageChange}
+            disabled={Boolean(effectiveTotalPages && pageNumber >= effectiveTotalPages) || !onPageChange}
             aria-label="Next page"
             className="rounded-[4px] border border-white/15 p-1 text-zinc-300 hover:bg-white/5 disabled:opacity-30 disabled:pointer-events-none"
           >
@@ -174,6 +177,7 @@ export function PdfPage({
             <pdfModule.Document
               file={pdfUrl}
               onLoadError={() => setLoadError(true)}
+              onLoadSuccess={(pdf: { numPages: number }) => setInternalTotalPages(pdf.numPages)}
               loading={<div className="p-8 text-xs font-mono text-zinc-400">Loading datasheet page...</div>}
               error={
                 <div className="p-8 text-center text-xs text-zinc-400">

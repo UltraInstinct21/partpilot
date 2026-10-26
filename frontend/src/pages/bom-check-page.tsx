@@ -21,11 +21,11 @@ import { cn } from "@/lib/utils";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MiB per openapi.yaml & PLAN.md WP6
 
-const SAMPLE_BOM = `MPN,Quantity,Reference,Description
-BSC030N08NS5,4,Q1-Q4,80V 100A SuperSO8 N-channel
-IRF3205S,2,Q5-Q6,55V 110A D2PAK MOSFET
-UNKNOWN_PART_XYZ,1,U1,Obsolete prototype component
-NCP51820,2,U2-U3,GaN driver 650V high side
+const SAMPLE_BOM = `Reference,Value,Footprint,Quantity,Description
+Q1-Q4,BSC030N08NS5,PG-TO263-7,4,80V 100A SuperSO8 N-channel
+Q5-Q6,IRF3205,Package_TO_SOT_THT:TO-220-3_Vertical,2,55V 110A Power MOSFET
+U1,LM317,TO-220,1,1.5A Adjustable Voltage Regulator
+U2-U3,NCP51820,Package_DFN_QFN:QFN-15_4x4mm,2,GaN driver 650V high side
 `;
 
 function parseCsvLine(line: string, delimiter = ","): string[] {
@@ -75,6 +75,7 @@ export function BomCheckPage() {
   const [headers, setHeaders] = useState<string[]>(() => savedBom.headers);
   const [previewRows, setPreviewRows] = useState<string[][]>(() => savedBom.previewRows);
   const [mpnCol, setMpnCol] = useState<string>(() => savedBom.mpnCol);
+  const [footprintCol, setFootprintCol] = useState<string>(() => (savedBom as any).footprintCol || "");
   const [qtyCol, setQtyCol] = useState<string>(() => savedBom.qtyCol);
   const [refCol, setRefCol] = useState<string>(() => savedBom.refCol);
 
@@ -149,6 +150,11 @@ export function BomCheckPage() {
       ].includes(h),
     );
     if (mpnIdx !== -1) setMpnCol(detectedHeaders[mpnIdx] || "");
+
+    const fpIdx = lowerHeaders.findIndex((h) =>
+      ["footprint", "package", "pkg", "case", "housing", "pattern", "pcb footprint"].includes(h),
+    );
+    if (fpIdx !== -1) setFootprintCol(detectedHeaders[fpIdx] || "");
 
     const qtyIdx = lowerHeaders.findIndex((h) =>
       ["qty", "quantity", "count", "amount", "total qty", "pcs", "units", "quantity ordered"].includes(h),
@@ -256,24 +262,26 @@ export function BomCheckPage() {
 
         const originalCols = parseCsvLine(rawLines[headerIdx] || "", delimiter);
         const mpnIndex = mpnCol ? originalCols.indexOf(mpnCol) : 0;
+        const fpIndex = footprintCol ? originalCols.indexOf(footprintCol) : -1;
         const qtyIndex = qtyCol ? originalCols.indexOf(qtyCol) : -1;
         const refIndex = refCol ? originalCols.indexOf(refCol) : -1;
 
         if (mpnIndex !== -1) {
-          const mappedRows: string[] = ['"MPN","Qty","Reference"'];
+          const mappedRows: string[] = ['"MPN","Footprint","Qty","Reference"'];
           for (let i = headerIdx + 1; i < rawLines.length; i++) {
             const rowLine = rawLines[i];
             if (!rowLine || rowLine.startsWith("#") || rowLine.startsWith("//")) continue;
             const cells = parseCsvLine(rowLine, delimiter);
             const cellMpn = (cells[mpnIndex] || cells[0] || "").trim();
             if (!cellMpn) continue;
+            const cellFp = fpIndex >= 0 && cells[fpIndex] ? cells[fpIndex] : "";
             const cellQty =
               qtyIndex >= 0 && cells[qtyIndex]
                 ? cells[qtyIndex].replace(/[^0-9.]/g, "") || "1"
                 : "1";
             const cellRef = refIndex >= 0 && cells[refIndex] ? cells[refIndex] : `R${i}`;
             mappedRows.push(
-              `"${cellMpn.replace(/"/g, '""')}","${cellQty}","${cellRef.replace(/"/g, '""')}"`,
+              `"${cellMpn.replace(/"/g, '""')}","${cellFp.replace(/"/g, '""')}","${cellQty}","${cellRef.replace(/"/g, '""')}"`,
             );
           }
           const mappedBlob = new Blob([mappedRows.join("\n")], { type: "text/csv" });
@@ -437,13 +445,23 @@ export function BomCheckPage() {
                 <span className="font-mono text-xs text-zinc-400">Previewing first 10 rows</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <ColumnDropdownMenu
-                  label="MPN Column (Required)"
+                  label="Value / MPN (Required)"
                   value={mpnCol}
                   options={headers.map((h) => ({ label: h, value: h }))}
                   onChange={setMpnCol}
                   required
+                />
+
+                <ColumnDropdownMenu
+                  label="Footprint / Package (Optional)"
+                  value={footprintCol}
+                  options={[
+                    { label: "None", value: "" },
+                    ...headers.map((h) => ({ label: h, value: h })),
+                  ]}
+                  onChange={setFootprintCol}
                 />
 
                 <ColumnDropdownMenu

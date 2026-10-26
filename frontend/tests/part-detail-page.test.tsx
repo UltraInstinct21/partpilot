@@ -29,4 +29,23 @@ describe("the part detail page", () => {
 
     expect(await screen.findByText(/Job job-0001/)).toBeInTheDocument();
   });
+
+  it("provides an option to see the datasheet in the site and switches to the datasheet viewer tab", async () => {
+    const { user } = renderApp("/parts/mosfet-irf3205s");
+
+    // Option in action buttons to view datasheet in the site
+    const viewDatasheetBtn = await screen.findByRole("button", { name: /view datasheet in site/i });
+    expect(viewDatasheetBtn).toBeInTheDocument();
+
+    // Click "View datasheet in site"
+    await user.click(viewDatasheetBtn);
+
+    // Datasheet viewer tab is displayed
+    expect(await screen.findByText(/IRF3205S Technical Datasheet/i)).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Datasheet" })).toHaveAttribute("data-state", "active");
+
+    // Interactive Viewer and Full PDF Document controls are available
+    expect(screen.getByRole("button", { name: "Interactive Viewer" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Full PDF Document" })).toBeInTheDocument();
+  });
 });

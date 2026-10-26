@@ -1,7 +1,30 @@
 import "@testing-library/jest-dom/vitest";
-import { afterAll, afterEach, beforeAll } from "vitest";
+import { afterAll, afterEach, beforeAll, vi } from "vitest";
+import React from "react";
 import { File as NodeFile } from "node:buffer";
 import { server } from "@/mocks/server";
+
+vi.mock("react-pdf", () => ({
+  Document: ({
+    children,
+    onLoadSuccess,
+  }: {
+    children?: React.ReactNode;
+    onLoadSuccess?: (pdf: { numPages: number }) => void;
+  }) => {
+    if (onLoadSuccess) {
+      setTimeout(() => onLoadSuccess({ numPages: 5 }), 0);
+    }
+    return React.createElement("div", { "data-testid": "mock-pdf-document" }, children);
+  },
+  Page: ({ pageNumber }: { pageNumber: number }) =>
+    React.createElement("div", { "data-testid": "mock-pdf-page" }, `Datasheet Page ${pageNumber}`),
+  pdfjs: {
+    GlobalWorkerOptions: {
+      workerSrc: "",
+    },
+  },
+}));
 
 beforeAll(() => server.listen({ onUnhandledFrame: "error" }));
 afterEach(() => server.resetHandlers());
