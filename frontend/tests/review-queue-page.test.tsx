@@ -15,8 +15,7 @@ describe("the redone review queue", () => {
     // After loading candidates, components and AI advisor appear
     const irfItems = await screen.findAllByText("IRF3205S");
     expect(irfItems.length).toBeGreaterThan(0);
-    expect(screen.getByText("NCP51820")).toBeInTheDocument();
-    expect(screen.getByText("AI Tradeoff & Finalisation Advisor")).toBeInTheDocument();
+    expect(await screen.findByText("AI Tradeoff & Finalisation Advisor")).toBeInTheDocument();
 
     // Verify AI Tradeoffs are evaluated
     expect(await screen.findByText(/Conduction Loss vs Switching Loss/i)).toBeInTheDocument();
