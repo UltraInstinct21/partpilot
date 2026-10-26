@@ -282,7 +282,23 @@ export function ReviewQueueProvider({ children }: { children: ReactNode }) {
     toast.info("Review Queue cleared.");
   };
 
-  const loadSampleCandidates = () => {
+  const loadSampleCandidates = async () => {
+    try {
+      const res = await fetch("/api/parts?limit=3");
+      if (res.ok) {
+        const data = await res.json();
+        const list = data.results || data;
+        if (Array.isArray(list) && list.length > 0) {
+          for (const p of list) {
+            addItem(p);
+          }
+          toast.success("Loaded candidate components from catalog into Review Queue.");
+          return;
+        }
+      }
+    } catch {
+      // Fallback to sample parts
+    }
     setItems(SAMPLE_PARTS);
     toast.success("Loaded sample component design candidates into Review Queue.");
   };
