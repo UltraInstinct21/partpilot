@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import { FileText, ShieldCheck, RefreshCw, Link, BarChart3 } from "lucide-react";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
-import { PartPilotLogo } from "@/components/brand/logo";
+import { KoiPondFooter } from "@/components/koi-pond/koi-pond-footer";
 import { cn } from "@/lib/utils";
 
 const SAMPLE_QUERIES = [
@@ -284,38 +284,8 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 px-4 sm:px-8 lg:px-12 text-xs text-zinc-400 font-sans w-full">
-        <ScrollReveal delay={60} duration={700} distance={20}>
-          <div className="w-full flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="space-y-2 max-w-xl">
-              <div className="flex items-center gap-2">
-                <PartPilotLogo size={18} />
-                <span className="text-white font-medium">PartPilot Component Intelligence</span>
-              </div>
-              <p className="text-zinc-400">
-                Data aggregated from authorized distributor APIs (DigiKey, Mouser, element14 India,
-                Robu.in, Evelta) and official manufacturer datasheets.
-              </p>
-              <p className="text-zinc-500 text-[11px]">
-                Academic research project for Web Data Mining. Respects source distributor terms,
-                rate limits, and manufacturer documentation copyrights.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-4 text-xs font-mono">
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white underline underline-offset-4 hover:text-zinc-300"
-              >
-                GitHub Repository
-              </a>
-            </div>
-          </div>
-        </ScrollReveal>
-      </footer>
+      {/* Footer with moving fishes background */}
+      <KoiPondFooter />
     </div>
   );
 }
