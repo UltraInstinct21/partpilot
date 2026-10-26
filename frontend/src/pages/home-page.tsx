@@ -16,7 +16,7 @@ const SAMPLE_QUERIES = [
 const HOW_IT_WORKS = [
   {
     title: "Ask in plain engineering language",
-    desc: "Type a parametric need — voltage, current, package, compliance — and PartPilot resolves it against indexed datasheets.",
+    desc: "Type a parametric need, such as voltage, current, package, or compliance, and PartPilot resolves it against indexed datasheets.",
   },
   {
     title: "Every value is traced to its source",
@@ -47,7 +47,7 @@ const CAPABILITIES = [
   {
     icon: Search,
     title: "Search in plain engineering language",
-    desc: "Describe a part by its limits and conditions — no memorized part numbers or rigid filters required.",
+    desc: "Describe a part by its limits and conditions. No memorized part numbers or rigid filters required.",
   },
   {
     icon: FileText,
@@ -226,7 +226,7 @@ export function HomePage() {
               How PartPilot works
             </h2>
             <p className="text-zinc-400 text-base sm:text-lg leading-relaxed">
-              From a natural-language query to a verified, traceable specification — in three steps.
+              From a natural-language query to a verified, traceable specification, in three steps.
             </p>
           </div>
         </ScrollReveal>
