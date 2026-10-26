@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
+import { FileText, ShieldCheck, RefreshCw, Link, BarChart3 } from "lucide-react";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { PartPilotLogo } from "@/components/brand/logo";
 import { cn } from "@/lib/utils";
@@ -12,10 +13,76 @@ const SAMPLE_QUERIES = [
   "60V MOSFET TO-220AB package low gate charge",
 ];
 
+const HOW_IT_WORKS = [
+  {
+    title: "Ask in plain engineering language",
+    desc: "Type a parametric need — voltage, current, package, compliance — and PartPilot resolves it against indexed datasheets.",
+  },
+  {
+    title: "Every value is traced to its source",
+    desc: "Click any specification to open the exact datasheet page, table, and test conditions it was extracted from.",
+  },
+  {
+    title: "Verified before you use it",
+    desc: "Three-tier validation rejects out-of-range figures, standardizes units, and flags discrepancies across sources.",
+  },
+];
+
+const CAPABILITIES = [
+  {
+    icon: Link,
+    title: "Every value links to its datasheet page",
+    desc: "Click any specification to open the exact page, table, and test conditions extracted from the original PDF.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Values are checked before you see them",
+    desc: "Three-tier validation rejects out-of-range figures, standardizes engineering units, and flags API discrepancies.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Find replacements fast",
+    desc: "Identify pin-compatible alternatives and drop-in equivalents ranked by electrical trade-offs and stock.",
+  },
+  {
+    icon: Search,
+    title: "Search in plain engineering language",
+    desc: "Describe a part by its limits and conditions — no memorized part numbers or rigid filters required.",
+  },
+  {
+    icon: FileText,
+    title: "Verified against the original PDF",
+    desc: "Every specification is anchored to the manufacturer datasheet page it was extracted from.",
+  },
+  {
+    icon: BarChart3,
+    title: "Stock-aware cross-references",
+    desc: "Alternatives are ranked by electrical fit, distributor stock, and lead time from authorized sources.",
+  },
+];
+
+interface FeatureCardProps {
+  icon: React.ElementType;
+  title: string;
+  desc: string;
+}
+
+function FeatureCard({ icon: Icon, title, desc }: FeatureCardProps) {
+  return (
+    <div className="group space-y-3 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.01]">
+      <Icon className="size-6 text-zinc-400 group-hover:text-white transition-colors duration-300" />
+      <h3 className="font-heading text-lg font-medium text-white leading-snug">{title}</h3>
+      <p className="text-sm text-zinc-400 leading-relaxed font-sans">{desc}</p>
+    </div>
+  );
+}
+
 export function HomePage() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [scrolled, setScrolled] = useState(() => (typeof window !== "undefined" ? window.scrollY > 20 : false));
+  const [scrolled, setScrolled] = useState(() =>
+    typeof window !== "undefined" ? window.scrollY > 20 : false,
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,8 +137,8 @@ export function HomePage() {
                 .
               </h1>
               <p className="font-sans text-base sm:text-xl text-zinc-300 max-w-3xl leading-relaxed">
-                AI-assisted parametric intelligence that extracts semiconductor limits from datasheets,
-                verifies test conditions, and proves every number.
+                AI-assisted parametric intelligence that extracts semiconductor limits from
+                datasheets, verifies test conditions, and proves every number.
               </p>
             </div>
           </ScrollReveal>
@@ -134,7 +201,9 @@ export function HomePage() {
           }}
           className={cn(
             "absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 cursor-pointer transition-all duration-300 select-none group",
-            scrolled ? "opacity-0 pointer-events-none translate-y-2" : "opacity-70 hover:opacity-100",
+            scrolled
+              ? "opacity-0 pointer-events-none translate-y-2"
+              : "opacity-70 hover:opacity-100",
           )}
         >
           <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-400 group-hover:text-white transition-colors">
@@ -146,57 +215,61 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Built for hardware engineers: Redone without boxes and without emojis */}
-      <section id="features" className="py-24 px-4 sm:px-8 lg:px-12 border-b border-white/10 w-full scroll-mt-20">
-        <div className="w-full space-y-16">
-          <ScrollReveal delay={50} duration={750} distance={28}>
-            <div className="space-y-3 max-w-3xl">
-              <h2 className="font-heading text-3xl sm:text-4xl font-medium text-white tracking-tight">
-                Built for hardware engineers
-              </h2>
-              <p className="text-zinc-400 text-base sm:text-lg leading-relaxed">
-                Reliable specifications backed by original engineering documentation.
-              </p>
-            </div>
-          </ScrollReveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16">
-            <ScrollReveal delay={150} duration={750} distance={32}>
-              <div className="space-y-3">
-                <h3 className="font-heading text-lg font-medium text-white leading-snug">
-                  Every value links to its datasheet page
-                </h3>
-                <p className="text-sm text-zinc-400 leading-relaxed font-sans">
-                  Click any specification to open the exact page, table, and test conditions extracted
-                  from the original PDF.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={300} duration={750} distance={32}>
-              <div className="space-y-3">
-                <h3 className="font-heading text-lg font-medium text-white leading-snug">
-                  Values are checked before you see them
-                </h3>
-                <p className="text-sm text-zinc-400 leading-relaxed font-sans">
-                  Three-tier validation rejects out-of-range figures, standardizes engineering units,
-                  and flags API discrepancies.
-                </p>
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={450} duration={750} distance={32}>
-              <div className="space-y-3">
-                <h3 className="font-heading text-lg font-medium text-white leading-snug">
-                  Find replacements fast
-                </h3>
-                <p className="text-sm text-zinc-400 leading-relaxed font-sans">
-                  Identify pin-compatible alternatives and drop-in equivalents ranked by electrical
-                  trade-offs and stock.
-                </p>
-              </div>
-            </ScrollReveal>
+      {/* Built for hardware engineers: how it works */}
+      <section
+        id="how-it-works"
+        className="py-24 px-4 sm:px-8 lg:px-12 border-b border-white/10 w-full scroll-mt-20"
+      >
+        <ScrollReveal delay={50} duration={750} distance={28}>
+          <div className="space-y-3 max-w-3xl">
+            <h2 className="font-heading text-3xl sm:text-4xl font-medium text-white tracking-tight">
+              How PartPilot works
+            </h2>
+            <p className="text-zinc-400 text-base sm:text-lg leading-relaxed">
+              From a natural-language query to a verified, traceable specification — in three steps.
+            </p>
           </div>
+        </ScrollReveal>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 mt-16">
+          {HOW_IT_WORKS.map((step, i) => (
+            <ScrollReveal delay={120 + i * 140} duration={750} distance={32} key={step.title}>
+              <div className="group space-y-3 transition-transform duration-300 hover:-translate-y-1">
+                <div className="font-mono text-sm font-semibold text-zinc-500 group-hover:text-signal-blue transition-colors">
+                  0{i + 1}
+                </div>
+                <h3 className="font-heading text-lg font-medium text-white leading-snug">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-zinc-400 leading-relaxed font-sans">{step.desc}</p>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </section>
+
+      {/* Capabilities grid */}
+      <section
+        id="features"
+        className="py-24 px-4 sm:px-8 lg:px-12 border-b border-white/10 w-full scroll-mt-20"
+      >
+        <ScrollReveal delay={50} duration={750} distance={28}>
+          <div className="space-y-3 max-w-3xl">
+            <h2 className="font-heading text-3xl sm:text-4xl font-medium text-white tracking-tight">
+              Built for hardware engineers
+            </h2>
+            <p className="text-zinc-400 text-base sm:text-lg leading-relaxed">
+              Reliable specifications backed by original engineering documentation.
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-16 mt-16">
+          {CAPABILITIES.map((cap, i) => (
+            <ScrollReveal delay={120 + i * 110} duration={750} distance={32} key={cap.title}>
+              <FeatureCard {...cap} />
+            </ScrollReveal>
+          ))}
         </div>
       </section>
 
@@ -225,8 +298,8 @@ export function HomePage() {
                 Robu.in, Evelta) and official manufacturer datasheets.
               </p>
               <p className="text-zinc-500 text-[11px]">
-                Academic research project for Web Data Mining. Respects source distributor terms, rate
-                limits, and manufacturer documentation copyrights.
+                Academic research project for Web Data Mining. Respects source distributor terms,
+                rate limits, and manufacturer documentation copyrights.
               </p>
             </div>
 
