@@ -71,3 +71,43 @@ def test_review_rejects_an_unknown_action(client: TestClient) -> None:
 def test_review_of_an_unknown_value_is_a_404(client: TestClient) -> None:
     response = client.post("/api/review/nope", json={"action": "accept"})
     assert response.status_code == 404
+
+
+def test_review_advisory_generates_recommendations_and_tradeoffs(client: TestClient) -> None:
+    response = client.post(
+        "/api/review/advisory",
+        json={
+            "parts": [
+                {
+                    "mpn": "IRF3205S",
+                    "manufacturer": "Infineon",
+                    "family": "mosfet",
+                    "package": "D2PAK",
+                    "lifecycle_status": "active",
+                    "parameters": {"rds_on": 8.0, "vds": 55.0, "id": 110.0, "qg": 146.0},
+                    "stock": 4500,
+                    "price": 1.45,
+                },
+                {
+                    "mpn": "IRF540N",
+                    "manufacturer": "Vishay",
+                    "family": "mosfet",
+                    "package": "TO-220",
+                    "lifecycle_status": "active",
+                    "parameters": {"rds_on": 44.0, "vds": 100.0, "id": 33.0, "qg": 71.0},
+                    "stock": 8200,
+                    "price": 0.85,
+                },
+            ],
+            "priority": "efficiency",
+        },
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert "executive_summary" in data
+    assert "overall_recommendation" in data
+    assert len(data["candidate_evaluations"]) == 2
+    assert len(data["tradeoffs"]) >= 2
+    assert len(data["engineering_suggestions"]) > 0
+    assert data["bom_readiness_score"] > 50
+

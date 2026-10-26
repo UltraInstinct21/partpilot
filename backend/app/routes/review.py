@@ -3,12 +3,48 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
+from pydantic import BaseModel, ConfigDict, Field
 
-from app.dependencies import get_review_service
-from shared.interfaces import ReviewService
+from app.dependencies import get_repository, get_review_service
+from services.advisor import ComponentAdvisorService, ReviewAdvisoryResponse, ReviewPartCandidate
+from shared.interfaces import PartsRepository, ReviewService
 from shared.schemas import ReviewDecision, ReviewItem, ReviewResponse
 
 router = APIRouter(prefix="/api", tags=["review"])
+
+
+class ReviewAdvisoryRequest(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    parts: list[ReviewPartCandidate] = Field(default_factory=list)
+    priority: str = Field(default="balanced", description="balanced, efficiency, cost, thermal, supply")
+    custom_query: str | None = Field(default=None, description="Custom engineering constraint or question")
+
+
+@router.post(
+    "/review/advisory",
+    response_model=ReviewAdvisoryResponse,
+    operation_id="reviewAdvisory",
+    summary="AI Recommendations and Tradeoffs for Review Queue candidates",
+    include_in_schema=False,
+)
+@router.post(
+    "/review/analyze",
+    response_model=ReviewAdvisoryResponse,
+    include_in_schema=False,
+)
+def review_advisory(
+    payload: ReviewAdvisoryRequest,
+    repository: PartsRepository = Depends(get_repository),
+) -> ReviewAdvisoryResponse:
+    """Evaluate candidate parts in review queue for tradeoffs, recommendations, and BOM readiness."""
+    advisor = ComponentAdvisorService(repository)
+    return advisor.analyze_review_candidates(
+        candidates=payload.parts,
+        priority=payload.priority,
+        custom_query=payload.custom_query,
+    )
+
+
 
 
 @router.get(

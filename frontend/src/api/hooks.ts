@@ -11,6 +11,22 @@ export type SourceRef = components["schemas"]["SourceRef"];
 export type Offer = components["schemas"]["Offer"];
 export type SearchFilter = components["schemas"]["SearchFilter"];
 export type SearchResponse = components["schemas"]["SearchResponse"];
+export type WebSearchResult = {
+  title: string;
+  url: string;
+  snippet?: string;
+  scraped_text?: string;
+  source?: string;
+  offers?: Offer[];
+};
+export type SearchResponseWithWeb = Omit<
+  SearchResponse,
+  "web_results" | "provider_candidates" | "search_mode"
+> & {
+  web_results?: WebSearchResult[];
+  provider_candidates?: PartSummary[];
+  search_mode?: string;
+};
 export type SearchRequest = components["schemas"]["SearchRequest"];
 export type AlternativeResult = components["schemas"]["AlternativeResult"];
 export type BomCheckResponse = components["schemas"]["BomCheckResponse"];
@@ -25,6 +41,8 @@ export type ValueStatus = components["schemas"]["ValueStatus"];
 export type RiskSeverity = components["schemas"]["RiskSeverity"];
 export type ExtractionMethod = components["schemas"]["ExtractionMethod"];
 export type ParameterConstraint = components["schemas"]["ParameterConstraint"];
+export type Family = components["schemas"]["Family"];
+export type PartDetail = PartRecord;
 
 export const queryKeys = {
   parts: (params: Record<string, unknown>) => ["parts", params] as const,
@@ -46,7 +64,9 @@ export const queryKeys = {
 export type PartsQuery = {
   family?: components["schemas"]["Family"];
   manufacturer?: string;
+  manufacturers?: string;
   package?: string;
+  packages?: string;
   lifecycle_status?: string;
   in_stock?: boolean;
   q?: string;
@@ -55,10 +75,11 @@ export type PartsQuery = {
 };
 
 /** `GET /api/parts` - the list of parts with the simple filters. */
-export function useParts(params: PartsQuery = {}) {
+export function useParts(params: PartsQuery = {}, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: queryKeys.parts(params),
     queryFn: () => apiGet<SearchResponse>("/api/parts", { ...params }),
+    ...options,
   });
 }
 
@@ -111,6 +132,74 @@ export type SearchInput = {
   offset?: number;
 };
 
+export type StreamSearchEvent = {
+  type: "filter" | "local_results" | "web_results" | "discovered_results" | "advisory" | "done";
+  query?: string;
+  filter?: SearchFilter;
+  filter_explanation?: string | null;
+  results?: PartSummary[];
+  web_results?: WebSearchResult[];
+  provider_candidates?: PartSummary[];
+  ai_advisory?: any;
+  search_mode?: string;
+  total?: number;
+  took_ms?: number;
+  llm_used?: boolean;
+};
+
+export function streamSearch(
+  query: string,
+  onEvent: (event: StreamSearchEvent) => void,
+  limit = 50,
+  offset = 0,
+  signal?: AbortSignal,
+): Promise<void> {
+  if (typeof EventSource === "undefined") {
+    return apiPost<SearchResponseWithWeb>("/api/search", { query, limit, offset }, signal)
+      .then((data) => {
+        onEvent({
+          type: "local_results",
+          results: data.results,
+          total: data.total,
+          filter: data.filter,
+          filter_explanation: data.filter_explanation,
+          web_results: data.web_results,
+          provider_candidates: data.provider_candidates,
+          ai_advisory: data.ai_advisory,
+          took_ms: data.took_ms,
+        });
+        onEvent({ type: "done", total: data.total, took_ms: data.took_ms });
+      })
+      .catch(() => {});
+  }
+  const url = `/api/search/stream?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`;
+  return new Promise((resolve) => {
+    const es = new EventSource(url);
+    if (signal) {
+      signal.addEventListener("abort", () => {
+        es.close();
+        resolve();
+      });
+    }
+    es.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data) as StreamSearchEvent;
+        onEvent(data);
+        if (data.type === "done") {
+          es.close();
+          resolve();
+        }
+      } catch {
+        // ignore parse error
+      }
+    };
+    es.onerror = () => {
+      es.close();
+      resolve();
+    };
+  });
+}
+
 /**
  * `POST /api/search`.
  *
@@ -127,7 +216,7 @@ export function useSearch(input: SearchInput | null | undefined) {
         limit: input?.limit ?? 50,
         offset: input?.offset ?? 0,
       };
-      return apiPost<SearchResponse>("/api/search", body);
+      return apiPost<SearchResponseWithWeb>("/api/search", body);
     },
     enabled: Boolean(input),
   });
@@ -153,26 +242,28 @@ export function useReviewQueue() {
   });
 }
 
-/** `GET /api/stats` - the dashboard numbers. */
+/** `GET /api/stats` - the dashboard numbers (1 minute staleTime). */
 export function useStats() {
   return useQuery({
     queryKey: queryKeys.stats(),
     queryFn: () => apiGet<StatsResponse>("/api/stats"),
+    staleTime: 60 * 1000,
   });
 }
 
 const TERMINAL_JOB_STATES: Array<JobStatus["state"]> = ["completed", "failed", "cancelled"];
 
-/** `GET /api/jobs/{job_id}` - polled until the job reaches a terminal state. */
+/** `GET /api/jobs/{job_id}` - polled until the job reaches a terminal state (0 staleTime). */
 export function useJob(jobId: string | undefined) {
   return useQuery({
     queryKey: queryKeys.job(jobId ?? ""),
     queryFn: () => apiGet<JobStatus>(`/api/jobs/${encodeURIComponent(jobId ?? "")}`),
     enabled: Boolean(jobId),
+    staleTime: 0,
     refetchInterval: (query) => {
       const state = query.state.data?.state;
       if (!state) return false;
-      return TERMINAL_JOB_STATES.includes(state) ? false : 1000;
+      return TERMINAL_JOB_STATES.includes(state) ? false : 3000;
     },
   });
 }
@@ -185,6 +276,54 @@ export function useJob(jobId: string | undefined) {
 export function useBomCheck() {
   return useMutation({
     mutationFn: (file: File) => apiUpload<BomCheckResponse>("/api/bom/check", file),
+  });
+}
+
+export interface ReviewCandidateEvaluation {
+  mpn: string;
+  status_recommendation: "RECOMMENDED_FINAL" | "SUITABLE_ALTERNATE" | "CAUTION";
+  verdict: string;
+  pros: string[];
+  cons: string[];
+  best_used_for: string;
+}
+
+export interface ReviewTradeoff {
+  dimension: string;
+  analysis: string;
+  advantage_mpn?: string | null;
+}
+
+export interface ReviewAdvisoryResponse {
+  executive_summary: string;
+  overall_recommendation: string;
+  candidate_evaluations: ReviewCandidateEvaluation[];
+  tradeoffs: ReviewTradeoff[];
+  engineering_suggestions: string[];
+  bom_readiness_score: number;
+}
+
+export interface ReviewAdvisoryRequest {
+  parts: Array<{
+    mpn: string;
+    manufacturer?: string;
+    family?: string;
+    package?: string;
+    lifecycle_status?: string;
+    parameters?: Record<string, any>;
+    stock?: number;
+    price?: number;
+    currency?: string;
+  }>;
+  priority?: "balanced" | "efficiency" | "cost" | "thermal" | "supply";
+  custom_query?: string | null;
+}
+
+/** `POST /api/review/advisory` - AI tradeoffs and recommendations for queued candidates. */
+export function useReviewAdvisory() {
+  return useMutation({
+    mutationFn: (body: ReviewAdvisoryRequest) =>
+      apiPost<ReviewAdvisoryResponse>("/api/review/advisory", body),
   });
 }
 
@@ -201,6 +340,9 @@ export function useReviewDecision() {
   });
 }
 
+export const useDecideReview = useReviewDecision;
+export const useJobStatus = useJob;
+
 /** `POST /api/jobs/extract` - start a background extraction job. */
 export function useStartExtractionJob() {
   const queryClient = useQueryClient();
@@ -209,5 +351,13 @@ export function useStartExtractionJob() {
     onSuccess: (job) => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.job(job.job_id) });
     },
+  });
+}
+
+/** `POST /api/parts/{part_id}/datasheet` - fetch and cache the real PDF. */
+export function useDownloadDatasheet() {
+  return useMutation({
+    mutationFn: (partId: string) =>
+      apiPost<SourceRef>(`/api/parts/${encodeURIComponent(partId)}/datasheet`),
   });
 }

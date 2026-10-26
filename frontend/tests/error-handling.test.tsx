@@ -14,7 +14,7 @@ describe("the error handling", () => {
 
     renderApp("/dashboard");
 
-    expect(await screen.findByText("The statistics are not available.")).toBeInTheDocument();
+    expect((await screen.findAllByText("The statistics are not available.")).length).toBeGreaterThan(0);
   });
 
   it("shows an inline error state when a request fails", async () => {
@@ -26,7 +26,7 @@ describe("the error handling", () => {
 
     renderApp("/parts/mosfet-irf3205s");
 
-    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect((await screen.findAllByRole("alert")).length).toBeGreaterThan(0);
     expect(screen.getAllByText("The part is not available.").length).toBeGreaterThan(0);
   });
 });

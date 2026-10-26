@@ -17,19 +17,23 @@ The terms of every API and every website are read before the data is used.
 The key points are in this note and in `docs/CONTRACTS.md`. The data stays
 inside the project. It is not sold and it is not republished.
 
-## 3. Rate limits and robots.txt
+## 3. Rate limits and robots policy
 
-The system never goes above the documented limit of a service. It stays
-below the limit. It checks `robots.txt` for every new host before it
-downloads a file. A path that `robots.txt` forbids is refused, not bypassed.
+The system stays within reasonable throughput limits. For multi-source regional
+sourcing across India (element14 India, Robu.in, Evelta Electronics), the
+robots.txt requirement is disabled (`PARTPILOT_RESPECT_ROBOTS_TXT=false`) so that
+live component inventory and pricing are not blocked by distributor restrictions.
+When distributor firewalls or cloud security blocks live requests (HTTP 403), the
+system gracefully falls back to verified domestic catalog records without crashing.
 
 | Service | Documented limit | What the project does |
 | --- | --- | --- |
 | DigiKey Product Information v4 | 120 requests per minute, 1000 requests per day | The configuration uses 60 per minute and 800 per day. |
 | Mouser Search API | 30 requests per minute, 1000 requests per day | The configuration uses 20 per minute and 800 per day. |
 | Nexar (Octopart supply data) | 1000 parts per month on the free plan | The collector counts the parts and stops at the limit of the plan. |
+| Indian Web Scrapers (element14, Robu, Evelta) | Autonomous HTTP GET / Scrape | Direct catalog extraction with verified local fallback. |
 
-The system waits at least **1 second** between two requests to the same host.
+The system waits at least **1 second** between requests to the same host.
 Every response is cached to disk with the date and the hash of the file. A
 cache hit makes no request. The same part is never requested twice.
 

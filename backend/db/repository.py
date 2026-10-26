@@ -27,7 +27,6 @@ import uuid
 from collections.abc import Iterable, Sequence
 from contextlib import contextmanager
 from datetime import UTC, datetime
-from pathlib import Path
 from typing import Any
 
 from sqlalchemy import Engine, Select, and_, case, func, or_, select
@@ -46,6 +45,7 @@ from db.models import (
 )
 from db.session import make_session_factory, parse_timestamp
 from db.units import PARAMETER_UNITS, canonical_unit, canonicalize, unit_scale_map
+from shared.config import resolve_pdf_path
 from shared.schemas import (
     ExtractionMethod,
     Family,
@@ -82,6 +82,24 @@ KEY_PARAMETERS: dict[str, tuple[str, ...]] = {
         "supply_voltage_max",
         "peak_source_current",
         "propagation_delay",
+    ),
+    Family.MCU.value: (
+        "core",
+        "clock_speed",
+        "flash_memory",
+        "ram",
+    ),
+    Family.OPAMP.value: (
+        "gain_bandwidth",
+        "slew_rate",
+        "supply_voltage_max",
+        "input_offset_voltage",
+    ),
+    Family.REGULATOR.value: (
+        "output_voltage",
+        "output_current",
+        "dropout_voltage",
+        "quiescent_current",
     ),
 }
 
@@ -209,6 +227,14 @@ class SqlAlchemyPartsRepository:
         parameters: Sequence[ParameterValue],
         offers: Sequence[Offer],
     ) -> PartRecord:
+        normalized_offers = [
+            offer
+            if offer.url
+            else offer.model_copy(
+                update={"url": SqlAlchemyPartsRepository._fallback_offer_url(row.mpn, offer)}
+            )
+            for offer in offers
+        ]
         return PartRecord(
             part_id=row.part_id,
             mpn=row.mpn,
@@ -220,9 +246,30 @@ class SqlAlchemyPartsRepository:
             description=row.description,
             source_ids=list(row.source_ids or []),
             parameters=list(parameters),
-            offers=list(offers),
+            offers=normalized_offers,
             updated_at=parse_timestamp(row.updated_at),
         )
+
+    @staticmethod
+    def _fallback_offer_url(mpn: str, offer: Offer) -> str:
+        """Give legacy/scraped offers a usable product/search URL."""
+        from urllib.parse import quote_plus
+
+        query = quote_plus(mpn.strip())
+        distributor = offer.distributor.lower()
+        if "robu" in distributor:
+            return f"https://robu.in/?s={query}&post_type=product"
+        if "element14" in distributor or "farnell" in distributor:
+            return f"https://in.element14.com/search?st={query}"
+        if "evelta" in distributor:
+            return f"https://www.evelta.com/search.php?search_query={query}"
+        if "digikey" in distributor:
+            return f"https://www.digikey.com/en/products/result?keywords={query}"
+        if "mouser" in distributor:
+            return f"https://www.mouser.com/c/?q={query}"
+        if "nexar" in distributor:
+            return f"https://octopart.com/search?q={query}"
+        return f"https://www.google.com/search?q={query}+electronic+component"
 
     # ------------------------------------------------------------------
     # parts
@@ -455,7 +502,13 @@ class SqlAlchemyPartsRepository:
         if filt.family is not None:
             conditions.append(PartRow.family == Family(filt.family).value)
         if filt.manufacturer:
-            conditions.append(func.lower(PartRow.manufacturer) == filt.manufacturer.lower())
+            pattern = _like_pattern(filt.manufacturer)
+            conditions.append(
+                or_(
+                    func.lower(PartRow.manufacturer) == filt.manufacturer.lower(),
+                    PartRow.manufacturer.ilike(pattern, escape="\\"),
+                )
+            )
         if filt.manufacturer_in:
             conditions.append(
                 PartRow.manufacturer.in_([name for name in filt.manufacturer_in if name])
@@ -464,7 +517,13 @@ class SqlAlchemyPartsRepository:
             pattern = _like_pattern(filt.mpn_contains)
             conditions.append(PartRow.mpn.ilike(pattern, escape="\\"))
         if filt.package:
-            conditions.append(func.lower(PartRow.package) == filt.package.lower())
+            pattern = _like_pattern(filt.package)
+            conditions.append(
+                or_(
+                    func.lower(PartRow.package) == filt.package.lower(),
+                    PartRow.package.ilike(pattern, escape="\\"),
+                )
+            )
         if filt.package_in:
             conditions.append(PartRow.package.in_([name for name in filt.package_in if name]))
         if filt.lifecycle_status:
@@ -756,8 +815,8 @@ class SqlAlchemyPartsRepository:
     def _read_pdf_page(local_path: str | None, page: int) -> SourcePage | None:
         if not local_path:
             return None
-        path = Path(local_path).expanduser()
-        if not path.is_file():
+        path = resolve_pdf_path(local_path)
+        if not path or not path.is_file():
             return None
         try:
             import pymupdf

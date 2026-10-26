@@ -6,20 +6,29 @@
  * mock which serves the very same paths in development).
  *
  * No API key, token or secret ever lives in this file or anywhere else in
- * the frontend (rule 3).
+ * the frontend.
  */
 
-export class ApiError extends Error {
+export interface NormalizedError {
+  status: number;
+  code?: string;
+  message: string;
+  retryAfter?: number;
+}
+
+export class ApiError extends Error implements NormalizedError {
   readonly status: number;
   readonly detail: string;
   readonly code?: string;
+  readonly retryAfter?: number;
 
-  constructor(status: number, detail: string, code?: string) {
+  constructor(status: number, detail: string, code?: string, retryAfter?: number) {
     super(detail);
     this.name = "ApiError";
     this.status = status;
     this.detail = detail;
     this.code = code;
+    this.retryAfter = retryAfter;
   }
 }
 
@@ -42,6 +51,10 @@ export function buildQuery(params?: Record<string, QueryValue>): string {
 async function parseError(response: Response): Promise<ApiError> {
   let detail = `Request failed (HTTP ${response.status}).`;
   let code: string | undefined;
+
+  const retryAfterHeader = response.headers?.get("Retry-After");
+  const retryAfter = retryAfterHeader ? parseInt(retryAfterHeader, 10) : undefined;
+
   try {
     const body = (await response.json()) as { detail?: unknown; error?: unknown; code?: unknown };
     if (typeof body?.detail === "string" && body.detail.length > 0) {
@@ -53,7 +66,12 @@ async function parseError(response: Response): Promise<ApiError> {
   } catch {
     // The body was not JSON. The generic message above is used.
   }
-  return new ApiError(response.status, detail, code);
+
+  if (response.status === 429 && retryAfter) {
+    detail = `Search rate limit reached. Please wait ${retryAfter} seconds before trying again.`;
+  }
+
+  return new ApiError(response.status, detail, code, retryAfter);
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -61,7 +79,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   try {
     response = await fetch(`${BASE_URL}${path}`, init);
   } catch {
-    throw new ApiError(0, "The PartPilot backend is unreachable.");
+    throw new ApiError(0, "The PartPilot backend is unreachable. Check that the API is running.");
   }
 
   if (!response.ok) {
@@ -82,34 +100,76 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 /** `GET` a JSON resource. */
-export function apiGet<T>(path: string, params?: Record<string, QueryValue>): Promise<T> {
-  return request<T>(`${path}${buildQuery(params)}`);
+export function apiGet<T>(path: string, params?: Record<string, QueryValue>, signal?: AbortSignal): Promise<T> {
+  return request<T>(`${path}${buildQuery(params)}`, { signal });
 }
 
 /** `POST` a JSON body. */
-export function apiPost<T>(path: string, body?: unknown): Promise<T> {
+export function apiPost<T>(path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
   return request<T>(path, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
+    signal,
   });
+}
+
+/** Download a same-origin file while reporting byte progress to the UI. */
+export async function downloadFileWithProgress(
+  path: string,
+  filename: string,
+  onProgress?: (percent: number | null) => void,
+): Promise<void> {
+  const response = await fetch(`${BASE_URL}${path}`);
+  if (!response.ok) throw await parseError(response);
+
+  const total = Number(response.headers.get("Content-Length")) || 0;
+  if (!response.body) {
+    saveBlob(await response.blob(), filename);
+    onProgress?.(100);
+    return;
+  }
+
+  const reader = response.body.getReader();
+  const chunks: ArrayBuffer[] = [];
+  let loaded = 0;
+  onProgress?.(total > 0 ? 0 : null);
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (value) {
+      chunks.push(value.buffer.slice(value.byteOffset, value.byteOffset + value.byteLength) as ArrayBuffer);
+      loaded += value.byteLength;
+      onProgress?.(total > 0 ? Math.min(99, Math.round((loaded / total) * 100)) : null);
+    }
+  }
+  saveBlob(
+    new Blob(chunks, { type: response.headers.get("Content-Type") || "application/pdf" }),
+    filename,
+  );
+  onProgress?.(100);
+}
+
+function saveBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
 }
 
 /**
  * `POST` a multipart upload (the BOM CSV).
- *
- * The multipart body is assembled by hand instead of with `FormData`. In the
- * jsdom test environment `FormData` and the fetch implementation of Node do
- * not agree on the body, and the request never reaches the server. The body
- * that is built here is a standard `multipart/form-data` body and is accepted
- * by the backend as well as by the mock.
  */
-export async function apiUpload<T>(path: string, file: File, fieldName = "file"): Promise<T> {
+export async function apiUpload<T>(path: string, file: File, fieldName = "file", signal?: AbortSignal): Promise<T> {
   const boundary = `----partpilot${Math.random().toString(36).slice(2)}`;
   const header = [
     `--${boundary}`,
     `Content-Disposition: form-data; name="${fieldName}"; filename="${file.name.replace(/"/g, "")}"`,
-    `Content-Type: ${file.type || "application/octet-stream"}`,
+    `Content-Type: ${file.type || "text/csv"}`,
     "",
     "",
   ].join("\r\n");
@@ -127,6 +187,7 @@ export async function apiUpload<T>(path: string, file: File, fieldName = "file")
     method: "POST",
     headers: { "Content-Type": `multipart/form-data; boundary=${boundary}` },
     body,
+    signal,
   });
 }
 
@@ -134,5 +195,5 @@ export async function apiUpload<T>(path: string, file: File, fieldName = "file")
 export function describeError(error: unknown): string {
   if (error instanceof ApiError) return error.detail;
   if (error instanceof Error) return error.message;
-  return "Something went wrong.";
+  return "An unexpected error occurred.";
 }

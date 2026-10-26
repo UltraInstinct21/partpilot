@@ -191,7 +191,7 @@ _COMPARATOR_RE = re.compile(r"^(?P<cmp><=|>=|<|>|~)\s*(?P<rest>.+)$")
 _TOLERANCE_RE = re.compile(r"^±\s*(?P<rest>.+)$")
 _QUALIFIER_RE = re.compile(r"\b(?P<qual>max|min|typ|typical)\b\.?$", re.IGNORECASE)
 _RANGE_RE = re.compile(
-    r"^(?P<lo>[^-\s][^\s]*)\s*(?:-|–|—|to|~)\s*(?P<hi>[^\s]+)$",
+    r"^(?P<lo>[+-]?\s*(?:\d+(?:\.\d*)?|\.\d+))\s*(?:-|–|—|to|~)\s*(?P<hi>[+-]?\s*(?:\d+(?:\.\d*)?|\.\d+))$",
     re.IGNORECASE,
 )
 
@@ -236,7 +236,8 @@ def clean_cell(text: str | None) -> str:
     """Normalise whitespace of a table cell."""
     if text is None:
         return ""
-    return re.sub(r"\s+", " ", str(text).replace("\u00a0", " ")).strip()
+    cleaned = re.sub(r"\(?cid:\d+\)?", "", str(text))
+    return re.sub(r"\s+", " ", cleaned.replace("\u00a0", " ")).strip()
 
 
 def parse_number(text: str | None) -> float | None:
@@ -249,6 +250,9 @@ def parse_number(text: str | None) -> float | None:
     if not raw or raw.lower() in _NOT_SPECIFIED:
         return None
     candidate = raw.replace(" ", "")
+    candidate = re.sub(r"[\*†‡§#]+$", "", candidate)
+    candidate = re.sub(r"\([0-9]+\)$", "", candidate)
+    candidate = re.sub(r"\[[0-9]+\]$", "", candidate)
     if candidate.endswith("%"):
         candidate = candidate[:-1]
     # thousands separator: 1,234 / 1,234,567

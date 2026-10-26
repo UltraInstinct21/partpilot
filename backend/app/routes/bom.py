@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import ValidationError
+from starlette.concurrency import run_in_threadpool
 
 from app.dependencies import get_bom_service, get_settings_dep
 from shared.config import Settings
@@ -58,7 +59,7 @@ async def check_bom(
     if content_type == "multipart/form-data":
         return await _check_multipart(request, service, settings)
     if content_type in {"application/json", "text/json", ""}:
-        return _check_json(body, service)
+        return await _check_json(body, service)
     raise HTTPException(
         status_code=422,
         detail=(
@@ -88,7 +89,7 @@ async def _check_multipart(
                     f"The upload is larger than the limit of {settings.max_upload_bytes} bytes."
                 ),
             )
-        return _run(service, upload, "bom.csv")
+        return await run_in_threadpool(_run, service, upload, "bom.csv")
     filename = getattr(upload, "filename", None) or "bom.csv"
     upload_type = (getattr(upload, "content_type", "") or "").lower()
     if upload_type not in CSV_CONTENT_TYPES and not filename.lower().endswith(".csv"):
@@ -103,10 +104,10 @@ async def _check_multipart(
             detail=f"The upload is larger than the limit of {settings.max_upload_bytes} bytes.",
         )
     text = raw.decode("utf-8", errors="replace")
-    return _run(service, text, filename)
+    return await run_in_threadpool(_run, service, text, filename)
 
 
-def _check_json(body: bytes, service: BomService) -> BomCheckResponse:
+async def _check_json(body: bytes, service: BomService) -> BomCheckResponse:
     """Handle the JSON body."""
     if not body.strip():
         raise HTTPException(
@@ -120,7 +121,7 @@ def _check_json(body: bytes, service: BomService) -> BomCheckResponse:
         payload = BomCheckRequest.model_validate_json(body)
     except ValidationError as exc:
         raise HTTPException(status_code=422, detail="The BOM payload is not valid.") from exc
-    return _run(service, payload.content or "", payload.filename)
+    return await run_in_threadpool(_run, service, payload.content or "", payload.filename)
 
 
 def _run(service: BomService, content: str, filename: str | None) -> BomCheckResponse:

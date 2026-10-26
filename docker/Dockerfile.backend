@@ -45,13 +45,14 @@ FROM base AS final
 
 WORKDIR /app/backend
 
-COPY --from=build /app/backend/.venv /app/backend/.venv
-COPY --from=build /app/backend /app/backend
-COPY --from=build /app/contracts /app/contracts
-
 # The raw PDFs and the API responses live here. The folder is a volume.
-RUN mkdir -p /app/data && useradd --create-home --uid 10001 partpilot \
-    && chown -R partpilot:partpilot /app
+RUN mkdir -p /app/data && useradd --create-home --uid 10001 partpilot
+
+COPY --from=build --chown=partpilot:partpilot /app/backend/.venv /app/backend/.venv
+COPY --from=build --chown=partpilot:partpilot /app/backend /app/backend
+COPY --from=build --chown=partpilot:partpilot /app/contracts /app/contracts
+
+RUN chown -R partpilot:partpilot /app/data
 USER partpilot
 
 ENV PATH="/app/backend/.venv/bin:$PATH" \
@@ -61,6 +62,6 @@ ENV PATH="/app/backend/.venv/bin:$PATH" \
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-    CMD curl --fail http://127.0.0.1:8000/api/stats || exit 1
+    CMD curl --fail http://127.0.0.1:8000/health || exit 1
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

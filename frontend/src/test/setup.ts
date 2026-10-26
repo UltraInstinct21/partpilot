@@ -15,6 +15,29 @@ afterAll(() => server.close());
  */
 globalThis.File = NodeFile as unknown as typeof globalThis.File;
 
+if (typeof (globalThis as any).SVGGeometryElement === "undefined") {
+  class MockSVGGeometryElement {}
+  (globalThis as any).SVGGeometryElement = MockSVGGeometryElement;
+  if (typeof window !== "undefined") {
+    (window as any).SVGGeometryElement = MockSVGGeometryElement;
+  }
+}
+
+if (typeof Element !== "undefined" && !Element.prototype.animate) {
+  Element.prototype.animate = function () {
+    return {
+      play() {},
+      pause() {},
+      cancel() {},
+      finish() {},
+      playState: "running",
+      onfinish: null,
+      addEventListener() {},
+      removeEventListener() {},
+    } as any;
+  };
+}
+
 /**
  * jsdom does not implement `matchMedia` and `ResizeObserver`. The theme
  * provider (next-themes) and the charts (recharts) need them, so the two
@@ -40,5 +63,39 @@ if (typeof window !== "undefined") {
       unobserve() {}
       disconnect() {}
     } as unknown as typeof window.ResizeObserver;
+  }
+
+  if (!window.IntersectionObserver) {
+    window.IntersectionObserver = class IntersectionObserver {
+      readonly root: Element | Document | null = null;
+      readonly rootMargin: string = "";
+      readonly thresholds: ReadonlyArray<number> = [];
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+      takeRecords() {
+        return [];
+      }
+    } as unknown as typeof window.IntersectionObserver;
+    globalThis.IntersectionObserver = window.IntersectionObserver;
+  }
+
+  if (typeof SVGGeometryElement === "undefined") {
+    class MockSVGGeometryElement extends (window.SVGElement || Object) {}
+    (window as any).SVGGeometryElement = MockSVGGeometryElement;
+    (globalThis as any).SVGGeometryElement = MockSVGGeometryElement;
+  }
+
+  if (!Element.prototype.animate) {
+    Element.prototype.animate = function () {
+      return {
+        play() {},
+        pause() {},
+        cancel() {},
+        finish() {},
+        playState: "running",
+        onfinish: null,
+      } as any;
+    };
   }
 }

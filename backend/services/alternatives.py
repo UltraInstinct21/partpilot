@@ -19,6 +19,7 @@ that is not in the input (rule 5: the LLM must never invent a value).
 
 from __future__ import annotations
 
+import logging
 import re
 from typing import Final
 
@@ -63,6 +64,48 @@ _FAMILY_WEIGHTS: Final[dict[Family, dict[str, float]]] = {
     Family.GATE_DRIVER: GATE_DRIVER_WEIGHTS,
 }
 
+PACKAGE_ALIASES: Final[dict[str, str]] = {
+    "to-220": "TO-220",
+    "to-220ab": "TO-220",
+    "to-220-3": "TO-220",
+    "to220": "TO-220",
+    "sot-23": "SOT-23",
+    "sot-23-3": "SOT-23",
+    "sot23": "SOT-23",
+    "to-236": "SOT-23",
+    "to-236ab": "SOT-23",
+    "to-236-3": "SOT-23",
+    "sc-59": "SOT-23",
+    "d2pak": "D2PAK",
+    "to-263": "D2PAK",
+    "to-263ab": "D2PAK",
+    "to-263-3": "D2PAK",
+    "dpak": "DPAK",
+    "to-252": "DPAK",
+    "to-252aa": "DPAK",
+    "to-252-3": "DPAK",
+    "soic-8": "SOIC-8",
+    "so-8": "SOIC-8",
+    "soic8": "SOIC-8",
+    "so8": "SOIC-8",
+    "superso8": "SuperSO8",
+    "pg-tdson-8": "SuperSO8",
+    "powerpak so-8": "SuperSO8",
+    "to-92": "TO-92",
+    "to-92-3": "TO-92",
+}
+
+
+def canonical_pkg(p: str | None) -> str | None:
+    if not p:
+        return None
+    plow = p.lower().strip()
+    for k, v in PACKAGE_ALIASES.items():
+        if k in plow:
+            return v
+    return p
+
+
 #: Human readable names used in the reason text.
 FIELD_LABELS: Final[dict[str, str]] = {
     "rds_on": "Rds(on)",
@@ -94,6 +137,8 @@ _LIFECYCLE_BONUS: Final[dict[LifecycleStatus, float]] = {
 }
 
 _NUMBER_RE: Final[re.Pattern[str]] = re.compile(r"-?\d+(?:\.\d+)?")
+
+logger = logging.getLogger(__name__)
 
 
 def _label(field: str) -> str:
@@ -129,6 +174,7 @@ class AlternativesService:
         self,
         repository: PartsRepository,
         llm: LLMExtractor | None = None,
+        provider_discovery: object | None = None,
         *,
         weights: dict[Family, dict[str, float]] | None = None,
         stock_bonus: float = 5.0,
@@ -139,6 +185,7 @@ class AlternativesService:
     ) -> None:
         self._repository = repository
         self._llm = llm
+        self._provider_discovery = provider_discovery
         self._weights = weights or _FAMILY_WEIGHTS
         self._stock_bonus_max = float(stock_bonus)
         self._stock_target = max(1.0, float(stock_target))
@@ -271,6 +318,14 @@ class AlternativesService:
         if reference_part is None:
             return []
 
+        # Refresh the candidate pool from configured providers before ranking.
+        # Indexed parts remain useful, but are no longer the only source.
+        if self._provider_discovery is not None:
+            try:
+                self._provider_discovery.discover_and_ingest(reference_part.mpn, max(limit * 3, 12))
+            except Exception as exc:
+                logger.warning("Provider alternative discovery failed: %s", exc)
+
         family = reference_part.family
         weights = self._weights.get(family, MOSFET_WEIGHTS)
         reference_values = {
@@ -286,10 +341,12 @@ class AlternativesService:
 
         # The package is binding when at least one part of the family uses the
         # same package. Otherwise the whole family is used (fallback).
+        ref_pkg_canon = canonical_pkg(reference_part.package)
         same_package = [
             item
             for item in candidates
-            if reference_part.package is not None and item.package == reference_part.package
+            if reference_part.package is not None
+            and (item.package == reference_part.package or (ref_pkg_canon and canonical_pkg(item.package) == ref_pkg_canon))
         ]
         package_is_binding = bool(same_package)
         pool = list(candidates)
@@ -306,6 +363,7 @@ class AlternativesService:
             reason = self._reason(differences, contributions)
 
             rejection_reason: str | None = None
+            cand_pkg_canon = canonical_pkg(summary.package)
             if summary.family != family:
                 rejection_reason = "different family"
             elif summary.lifecycle_status == LifecycleStatus.OBSOLETE:
@@ -321,6 +379,7 @@ class AlternativesService:
                 package_is_binding
                 and reference_part.package is not None
                 and summary.package != reference_part.package
+                and (not ref_pkg_canon or cand_pkg_canon != ref_pkg_canon)
             ):
                 rejection_reason = f"different package (reference is {reference_part.package})"
 

@@ -57,11 +57,24 @@ SYMBOL_ALIASES: dict[str, str | tuple[str, ...]] = {
     "VDS": "vds_max",
     "VDSS": "vds_max",
     "VDSMAX": "vds_max",
+    "V(BR)DSS": "vds_max",
+    "VBRDSS": "vds_max",
+    "BVDSS": "vds_max",
+    "V(BR)DS": "vds_max",
+    "VBRDS": "vds_max",
+    "V(BR)GSS": "vgs_max",
+    "VBRGSS": "vgs_max",
+    "BVGSS": "vgs_max",
     "ID": "id_continuous",
     "IDC": "id_continuous",
+    "IDCONT": "id_continuous",
+    "ID(CONT)": "id_continuous",
     "RDS(ON)": "rds_on",
     "RDSON": "rds_on",
     "RDS(ON)MAX": "rds_on",
+    "RDS(ON)TYP": "rds_on",
+    "RDSONMAX": "rds_on",
+    "RDSONTYP": "rds_on",
     "VGS(TH)": "vgs_threshold",
     "VGSTH": "vgs_threshold",
     "VTH": "vgs_threshold",
@@ -70,6 +83,7 @@ SYMBOL_ALIASES: dict[str, str | tuple[str, ...]] = {
     "QG": "total_gate_charge_qg",
     "QGTOTAL": "total_gate_charge_qg",
     "QGD": "gate_drain_charge_qgd",
+    "QGS": "gate_drain_charge_qgd",
     "CISS": "input_capacitance_ciss",
     "CIN": "input_capacitance_ciss",
     "COSS": "output_capacitance_coss",
@@ -79,6 +93,10 @@ SYMBOL_ALIASES: dict[str, str | tuple[str, ...]] = {
     "RTHJC": "thermal_resistance",
     "RTH": "thermal_resistance",
     "RTHJA": "thermal_resistance",
+    "RJC": "thermal_resistance",
+    "RJA": "thermal_resistance",
+    "ROJC": "thermal_resistance",
+    "ROJA": "thermal_resistance",
     "QRR": "reverse_recovery_qrr",
     # --- gate driver ------------------------------------------------------
     "VCC": SUPPLY_NAMES,
@@ -112,6 +130,9 @@ LABEL_ALIASES: dict[str, str | tuple[str, ...]] = {
     "DRAIN SOURCE VOLTAGE": "vds_max",
     "DRAIN TO SOURCE VOLTAGE": "vds_max",
     "DRAIN SOURCE VOLTAGE VDS": "vds_max",
+    "DRAIN TO SOURCE BREAKDOWN VOLTAGE": "vds_max",
+    "DRAIN SOURCE BREAKDOWN VOLTAGE": "vds_max",
+    "BREAKDOWN VOLTAGE": "vds_max",
     "CONTINUOUS DRAIN CURRENT": "id_continuous",
     "CONTINUOUS DRAIN CURRENT ID": "id_continuous",
     "DRAIN CURRENT": "id_continuous",
@@ -119,8 +140,13 @@ LABEL_ALIASES: dict[str, str | tuple[str, ...]] = {
     "JUNCTION TEMPERATURE": "max_junction_temp",
     "MAX JUNCTION TEMPERATURE": "max_junction_temp",
     "OPERATING JUNCTION TEMPERATURE": "max_junction_temp",
+    "OPERATING JUNCTION AND STORAGE TEMPERATURE RANGE": "max_junction_temp",
+    "JUNCTION AND STORAGE TEMPERATURE RANGE": "max_junction_temp",
     "DRAIN SOURCE ON RESISTANCE": "rds_on",
     "DRAIN SOURCE ON RESISTANCE RDS ON": "rds_on",
+    "STATIC DRAIN TO SOURCE ON RESISTANCE": "rds_on",
+    "STATIC DRAIN SOURCE ON RESISTANCE": "rds_on",
+    "STATIC DRAIN TO SOURCE ON STATE RESISTANCE": "rds_on",
     "ON RESISTANCE": "rds_on",
     "STATIC ON RESISTANCE": "rds_on",
     "GATE SOURCE THRESHOLD VOLTAGE": "vgs_threshold",
@@ -140,6 +166,8 @@ LABEL_ALIASES: dict[str, str | tuple[str, ...]] = {
     "THERMAL RESISTANCE": "thermal_resistance",
     "THERMAL RESISTANCE JUNCTION TO CASE": "thermal_resistance",
     "THERMAL RESISTANCE JUNCTION TO CASE RTHJC": "thermal_resistance",
+    "JUNCTION TO CASE": "thermal_resistance",
+    "JUNCTION TO AMBIENT": "thermal_resistance",
     "REVERSE RECOVERY CHARGE": "reverse_recovery_qrr",
     "REVERSE RECOVERY": "reverse_recovery_qrr",
     # --- gate driver ------------------------------------------------------
@@ -312,6 +340,17 @@ def match_name(
             accepted = _accept(label_names)
             if accepted:
                 return NameMatch(names=accepted, confidence=0.85, matched_by="label")
+
+    # Clean label base before commas, conditions, or parens (e.g., "Continuous Drain Current, V @ 10V GS")
+    raw_base = re.split(r"[,;(@]", label)[0].strip()
+    if raw_base:
+        base_key = normalise_label(raw_base)
+        if base_key and base_key not in NON_PARAMETER_LABELS and base_key != label_key:
+            base_names = _lookup_table(LABEL_ALIASES, base_key)
+            if base_names:
+                accepted = _accept(base_names)
+                if accepted:
+                    return NameMatch(names=accepted, confidence=0.85, matched_by="label_base")
 
     # --- fuzzy fallback ---------------------------------------------------
     for key, table in (

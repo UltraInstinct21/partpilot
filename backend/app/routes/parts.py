@@ -49,7 +49,9 @@ def list_parts(
     service: SearchService = Depends(get_search_service),
     family: Family | None = Query(default=None, description="Restrict to one family."),
     manufacturer: str | None = Query(default=None),
+    manufacturers: str | None = Query(default=None, description="Comma separated manufacturers."),
     package: str | None = Query(default=None),
+    packages: str | None = Query(default=None, description="Comma separated list of packages."),
     lifecycle_status: str | None = Query(
         default=None, description="Comma separated list of lifecycle states."
     ),
@@ -61,10 +63,22 @@ def list_parts(
     offset: int = Query(default=0, ge=0),
 ) -> SearchResponse:
     """Return a page of parts that match the filters."""
+    pkg_list = (
+        [p.strip() for p in packages.split(",") if p.strip()]
+        if packages
+        else ([package] if package else [])
+    )
+    mfr_list = (
+        [m.strip() for m in manufacturers.split(",") if m.strip()]
+        if manufacturers
+        else ([manufacturer] if manufacturer else [])
+    )
     filt = SearchFilter(
         family=family,
         manufacturer=manufacturer,
+        manufacturer_in=mfr_list,
         package=package,
+        package_in=pkg_list,
         lifecycle_status=parse_lifecycle_status(lifecycle_status),
         in_stock=in_stock,
         text=q,
@@ -82,10 +96,24 @@ def get_part(
     part_id: str = Path(description="The identifier of the part."),
     repository: PartsRepository = Depends(get_repository),
 ) -> PartRecord:
-    """Return one part with every value and offer."""
+    """Return one part with every value and offer (triggers deep scraping on-demand for web parts)."""
     part = repository.get_part(part_id)
     if part is None:
         raise HTTPException(status_code=404, detail=f"Part '{part_id}' was not found.")
+
+    # Live scrape & enrich fields on-demand (multi-distributor offers, missing specs, verified datasheet PDF)
+    try:
+        from services.web_search import WebDiscoveryService
+        from shared.config import get_settings
+
+        settings = get_settings()
+        web = WebDiscoveryService(settings.searxng_url, repository=repository)
+        enriched = web.deep_scrape_part(part_id)
+        if enriched is not None:
+            return enriched
+    except Exception as exc:
+        pass
+
     return part
 
 

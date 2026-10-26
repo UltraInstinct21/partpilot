@@ -1,10 +1,10 @@
 import type { RiskSeverity, ValueStatus } from "@/api/hooks";
 
+// Monochrome status tags (rectangular, 4px radius, no colors)
 export const STATUS_CLASS: Record<ValueStatus, string> = {
-  accepted: "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/40 dark:text-green-200",
-  review:
-    "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/40 dark:text-yellow-200",
-  rejected: "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/40 dark:text-red-200",
+  accepted: "border border-ink/40 text-ink bg-transparent",
+  review: "border border-dashed border-ink/60 text-ink bg-transparent",
+  rejected: "bg-ink text-haze border border-ink",
 };
 
 export const STATUS_LABEL: Record<ValueStatus, string> = {
@@ -13,13 +13,13 @@ export const STATUS_LABEL: Record<ValueStatus, string> = {
   rejected: "Rejected",
 };
 
+// Monochrome BOM risk severity (no colors)
 export const SEVERITY_CLASS: Record<RiskSeverity, string> = {
-  info: "bg-muted text-muted-foreground border-border",
-  low: "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/40 dark:text-blue-200",
-  medium:
-    "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/40 dark:text-yellow-200",
-  high: "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/40 dark:text-orange-200",
-  critical: "bg-red-100 text-red-800 border-red-300 dark:bg-red-900/40 dark:text-red-200",
+  info: "border border-ink/20 text-ink/60 bg-transparent",
+  low: "border border-ink/40 text-ink bg-transparent",
+  medium: "border border-dashed border-ink/60 text-ink bg-transparent",
+  high: "border-2 border-ink text-ink font-medium bg-transparent",
+  critical: "bg-ink text-haze border border-ink font-semibold",
 };
 
 export const SEVERITY_ORDER: RiskSeverity[] = ["info", "low", "medium", "high", "critical"];

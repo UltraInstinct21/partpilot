@@ -142,8 +142,13 @@ Pass the FastAPI `BackgroundTasks` object of the request to run the job
 
 ### Alternatives (FR-13)
 
-* Candidates: the same family, the same package. When **no** part of the
-  family uses the reference package, the whole family is used (fallback).
+* Candidates are collected from configured distributor providers first
+  (DigiKey, Mouser, Nexar/Octopart, plus configured web scrapers), then
+  merged with the indexed catalogue. The indexed catalogue is a cache and
+  fallback, not the sole source of alternatives.
+* The same-family/same-package rule is applied after provider and catalogue
+  candidates are merged. When **no** part of the family uses the reference
+  package, the whole family is used (fallback).
 * Hard rules -> the candidate is returned with `rejected=True` and a
   `rejection_reason`, ranked **below** the accepted ones:
   `different family`, `obsolete part`, `lower Vds / lower supply voltage than

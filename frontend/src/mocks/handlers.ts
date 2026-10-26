@@ -175,6 +175,58 @@ export const handlers = [
 
   http.get(`${API}/review`, () => HttpResponse.json(buildReviewQueue())),
 
+  http.post(`${API}/review/advisory`, async ({ request }) => {
+    const payload = (await request.json().catch(() => ({}))) as {
+      parts?: Array<{ mpn: string; [key: string]: any }>;
+      priority?: string;
+    };
+    const parts = payload.parts || [];
+    const priority = payload.priority || "balanced";
+    const topMpn = parts[0]?.mpn || "IRF3205S";
+
+    return HttpResponse.json({
+      executive_summary: `Evaluated ${parts.length} candidate part(s) across electrical figures-of-merit, lifecycle risk, and distributor availability under '${priority}' priority.`,
+      overall_recommendation: `Finalize ${topMpn} as primary production BOM component; maintain second source for supply resilience.`,
+      candidate_evaluations: parts.map((p, idx) => ({
+        mpn: p.mpn,
+        status_recommendation: idx === 0 ? "RECOMMENDED_FINAL" : "SUITABLE_ALTERNATE",
+        verdict: idx === 0 ? `${p.mpn} is PartPilot's primary selection under ${priority} priority.` : `${p.mpn} is a viable alternate candidate.`,
+        pros: ["Active lifecycle status", "Low conduction loss", "Deep distributor inventory (>2,500 units)"],
+        cons: ["Requires minimum 10V gate drive voltage for rated Rds(on)"],
+        best_used_for: "High-efficiency synchronous rectification and power conversion",
+      })),
+      tradeoffs: [
+        {
+          dimension: "Conduction Loss vs Switching Loss",
+          analysis: "Lower Rds(on) minimizes I²R conduction heat below 50kHz, while low Qg dominates efficiency above 100kHz.",
+          advantage_mpn: topMpn,
+        },
+        {
+          dimension: "Thermal Footprint & Heatsinking",
+          analysis: "Tabbed power packages offer lower thermal resistance but require dedicated copper pour area.",
+          advantage_mpn: topMpn,
+        },
+      ],
+      engineering_suggestions: [
+        `Ensure gate driver delivers rated Vgs voltage for ${topMpn} to avoid resistive saturation.`,
+        "Place decoupling capacitors directly adjacent to power input pins to suppress switching transients.",
+        "Verify distributor minimum order quantities before freezing production purchase orders.",
+      ],
+      bom_readiness_score: 92,
+    });
+  }),
+
+  http.post(`${API}/review/analyze`, async () => {
+    return HttpResponse.json({
+      executive_summary: "Review queue candidates analyzed successfully.",
+      overall_recommendation: "Approved for production BOM.",
+      candidate_evaluations: [],
+      tradeoffs: [],
+      engineering_suggestions: [],
+      bom_readiness_score: 90,
+    });
+  }),
+
   http.post(`${API}/review/:paramId`, async ({ params, request }) => {
     const payload = (await request.json()) as { action?: "accept" | "correct" | "reject" };
     const action = payload.action ?? "accept";
@@ -252,8 +304,8 @@ export const handlers = [
 /* ------------------------------------------------------------------ */
 
 function buildBomResponse(text: string, filename: string | null) {
-  const lines = text.split(/\r?\n/).filter((line) => line.trim().length > 0);
-  if (lines.length === 0) {
+  const rawLines = text.split(/\r?\n/).map((l) => l.trim()).filter((line) => line.length > 0 && !line.startsWith("#") && !line.startsWith("//"));
+  if (rawLines.length === 0) {
     return {
       filename,
       total_lines: 0,
@@ -266,29 +318,86 @@ function buildBomResponse(text: string, filename: string | null) {
       took_ms: 2,
     };
   }
-  const header = lines[0].split(/[,;\t]/).map((h) => h.trim().toLowerCase());
-  const mpnIndex = Math.max(
-    0,
-    header.findIndex((h) => ["mpn", "part number", "partnumber", "mfr part number"].includes(h)),
+
+  // Detect delimiter
+  const firstDataLine = rawLines[0];
+  const commaCount = (firstDataLine.match(/,/g) || []).length;
+  const semiCount = (firstDataLine.match(/;/g) || []).length;
+  const tabCount = (firstDataLine.match(/\t/g) || []).length;
+  const delim = semiCount > commaCount && semiCount > tabCount ? ";" : tabCount > commaCount ? "\t" : ",";
+
+  const header = firstDataLine.split(delim).map((h) => h.trim().replace(/^"|"$/g, "").toLowerCase());
+  const mpnSynonyms = [
+    "mpn", "part number", "partnumber", "part no", "part no.", "part_number",
+    "part", "component", "device", "value", "val", "comment", "item", "order code",
+    "article", "pn", "mfr part number", "mfr part no", "mfg part number",
+  ];
+  let mpnIndex = header.findIndex((h) => mpnSynonyms.includes(h));
+  if (mpnIndex === -1) mpnIndex = 0;
+
+  const qtyIndex = header.findIndex((h) =>
+    ["qty", "quantity", "count", "amount", "total qty", "pcs", "units", "quantity ordered"].includes(h),
   );
-  const qtyIndex = header.findIndex((h) => ["qty", "quantity", "quantity ordered"].includes(h));
-  const mfrIndex = header.findIndex((h) => ["manufacturer", "mfr", "mfr name"].includes(h));
+  const mfrIndex = header.findIndex((h) =>
+    ["manufacturer", "mfr", "mfr name", "brand", "vendor", "mfg"].includes(h),
+  );
+  const refIndex = header.findIndex((h) =>
+    ["reference", "ref", "refdes", "designator", "designators"].includes(h),
+  );
 
   const outLines: Record<string, unknown>[] = [];
   const risks: Record<string, unknown>[] = [];
   let matched = 0;
-  lines.slice(1).forEach((row, index) => {
-    const cells = row.split(/[,;\t]/).map((c) => c.trim());
-    const mpn = cells[mpnIndex] ?? cells[0] ?? "";
-    const quantity = qtyIndex >= 0 && cells[qtyIndex] ? Number(cells[qtyIndex]) || 1 : 1;
+
+  rawLines.slice(1).forEach((row, index) => {
+    const cells = row.split(delim).map((c) => c.trim().replace(/^"|"$/g, ""));
+    const mpn = (cells[mpnIndex] ?? cells[0] ?? "").trim();
+    if (!mpn) return;
+    const quantity = qtyIndex >= 0 && cells[qtyIndex] ? Number(cells[qtyIndex].replace(/[^0-9.]/g, "")) || 1 : 1;
     const manufacturer = mfrIndex >= 0 ? cells[mfrIndex] : undefined;
-    const part = allParts.find(
-      (p) =>
-        p.mpn.toLowerCase() === mpn.toLowerCase() &&
-        (!manufacturer || p.manufacturer.toLowerCase().includes(manufacturer.toLowerCase())),
-    );
+    const reference = refIndex >= 0 ? cells[refIndex] : undefined;
+
+    // Multi-tier matching
+    const stem = mpn.replace(/(?:-?(?:TR|T&R|PBF|NOPB|\+))+$/i, "").trim().toLowerCase();
+    const part = allParts.find((p) => {
+      const pMpn = p.mpn.toLowerCase();
+      const pStem = p.mpn.replace(/(?:-?(?:TR|T&R|PBF|NOPB|\+))+$/i, "").trim().toLowerCase();
+      return (
+        pMpn === mpn.toLowerCase() ||
+        pStem === stem ||
+        (stem.length >= 4 && (pMpn.startsWith(stem) || stem.startsWith(pMpn)))
+      );
+    });
+
+    let resolvedPart: any = part;
+    if (
+      !resolvedPart &&
+      !mpn.toUpperCase().startsWith("UNKNOWN") &&
+      !mpn.toUpperCase().startsWith("NO-SUCH") &&
+      !mpn.toUpperCase().startsWith("NONE")
+    ) {
+      const cleanMpn = mpn.toUpperCase();
+      resolvedPart = {
+        part_id: `mock-${cleanMpn.toLowerCase()}`,
+        mpn: cleanMpn,
+        manufacturer:
+          manufacturer ||
+          (cleanMpn.startsWith("STM32")
+            ? "STMicroelectronics"
+            : cleanMpn.startsWith("ESP32")
+              ? "Espressif Systems"
+              : cleanMpn.startsWith("LM") || cleanMpn.startsWith("NE555")
+                ? "Texas Instruments"
+                : "Global Semiconductor"),
+        family:
+          cleanMpn.startsWith("STM32") || cleanMpn.startsWith("ESP32") ? "mcu" : "general",
+        lifecycle_status: "active",
+        offers: [{ distributor: "DigiKey", stock: 15000, unit_price: 1.2 }],
+      };
+    }
+
     const lineRisks: Record<string, unknown>[] = [];
-    if (!part) {
+    if (!resolvedPart) {
       lineRisks.push({
         code: "not_found",
         severity: "high",
@@ -299,60 +408,65 @@ function buildBomResponse(text: string, filename: string | null) {
       });
     } else {
       matched += 1;
-      if (part.lifecycle_status === "obsolete") {
+      if (resolvedPart.lifecycle_status === "obsolete") {
         lineRisks.push({
           code: "obsolete",
           severity: "critical",
           message: `${mpn} is obsolete.`,
-          part_id: part.part_id,
+          part_id: resolvedPart.part_id,
           mpn,
           suggestion: "Use the alternatives list.",
         });
-      } else if (part.lifecycle_status === "nrnd") {
+      } else if (resolvedPart.lifecycle_status === "nrnd") {
         lineRisks.push({
           code: "nrnd",
           severity: "medium",
           message: `${mpn} is NRND (not recommended for new designs).`,
-          part_id: part.part_id,
+          part_id: resolvedPart.part_id,
           mpn,
           suggestion: "Plan a migration.",
         });
       }
-      if (part.lifecycle_status !== "active") {
+      if (resolvedPart.offers && resolvedPart.offers.length <= 1) {
         lineRisks.push({
           code: "single_source",
           severity: "low",
-          message: `${mpn} is only offered by one distributor in the cache.`,
-          part_id: part.part_id,
+          message: `${mpn} is only offered by one distributor.`,
+          part_id: resolvedPart.part_id,
           mpn,
           suggestion: "Qualify a second source.",
         });
       }
     }
+
     risks.push(...lineRisks);
     outLines.push({
       line_number: index + 2,
       mpn,
       quantity,
-      manufacturer: manufacturer ?? null,
-      matched_part_id: part?.part_id ?? null,
-      matched: Boolean(part),
+      manufacturer: manufacturer || (resolvedPart ? resolvedPart.manufacturer : undefined),
+      reference: reference || `R${index + 1}`,
+      matched_part_id: resolvedPart ? resolvedPart.part_id : null,
+      matched: Boolean(resolvedPart),
       risks: lineRisks,
     });
   });
 
-  const order = ["info", "low", "medium", "high", "critical"];
-  const severities = risks.map((r) => String(r.severity));
-  const highest = severities.length
-    ? severities.reduce((a, b) => (order.indexOf(a) >= order.indexOf(b) ? a : b))
-    : null;
   return {
     filename,
     total_lines: outLines.length,
     matched_lines: matched,
     unmatched_lines: outLines.length - matched,
     risk_count: risks.length,
-    highest_severity: highest,
+    highest_severity: risks.some((r) => r.severity === "critical")
+      ? "critical"
+      : risks.some((r) => r.severity === "high")
+        ? "high"
+        : risks.some((r) => r.severity === "medium")
+          ? "medium"
+          : risks.some((r) => r.severity === "low")
+            ? "low"
+            : null,
     lines: outLines,
     risks,
     took_ms: 3,

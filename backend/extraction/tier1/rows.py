@@ -91,8 +91,13 @@ def detect_schema(rows: list[list[str]]) -> TableSchema:
                 schema.unit_col = col
             elif role == "conditions":
                 schema.conditions_col = col
-        if schema.symbol_col is None and schema.param_col == 0:
-            schema.symbol_col = 1
+        if schema.symbol_col is None or schema.symbol_col == schema.param_col:
+            if schema.param_col == 1:
+                schema.symbol_col = 0
+            elif schema.param_col == 0:
+                schema.symbol_col = 1 if len(row) > 1 else None
+            else:
+                schema.symbol_col = None
         return schema
     return _fallback_schema(rows)
 
@@ -141,10 +146,11 @@ def _cell(row: list[str], col: int | None) -> str:
 def parse_row(row: list[str], schema: TableSchema, page: int) -> ParsedRow | None:
     """Parse one table row into a :class:`ParsedRow` (``None`` for empty rows)."""
     label = _cell(row, schema.param_col)
+    symbol = _cell(row, schema.symbol_col) or extract_label_symbol(label) or ""
+    if not label and symbol:
+        label = symbol
     if not label:
         return None
-
-    symbol = _cell(row, schema.symbol_col) or extract_label_symbol(label) or ""
 
     values = ParsedValue()
     promote_typical = False

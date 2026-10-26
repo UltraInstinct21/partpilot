@@ -237,26 +237,76 @@ class DigiKeyCollector:
         """Turn one DigiKey product document into a :class:`PartRecord`."""
         mpn = str(product.get("ManufacturerProductNumber") or "").strip()
         manufacturer = str((product.get("Manufacturer") or {}).get("Name") or "").strip()
-        description = product.get("Description")
+        raw_description = product.get("Description")
+        if isinstance(raw_description, dict):
+            description = raw_description.get("DetailedDescription") or raw_description.get("ProductDescription")
+        else:
+            description = raw_description
         category = (product.get("Category") or {}).get("Name")
-        family = self._family(product, category, description)
+        family = self._family(product, category, str(description) if description else None)
         slug = slugify(mpn)
         source_id = f"api-{self.name}-{slug}"
         part_id = f"{family.value.replace('_', '-')}-{slug}"
 
         parameters: list[ParameterValue] = []
         package: str | None = None
-        raw_parameters = ((product.get("Parameters") or {}).get("Parameter")) or []
+        raw_parameters = product.get("Parameters")
+        if isinstance(raw_parameters, dict):
+            raw_parameters = raw_parameters.get("Parameter") or []
+        elif not isinstance(raw_parameters, list):
+            raw_parameters = []
         for entry in raw_parameters:
             if not isinstance(entry, dict):
                 continue
-            label = entry.get("Text")
+            label = entry.get("ParameterText") or entry.get("Text")
             standard = resolve_parameter_name(label)
+            raw_value = entry.get("ValueText") or entry.get("Value")
             if standard is None:
+                lbl_lower = (label or "").strip().lower()
+                if "voltage - supply" in lbl_lower and raw_value and "~" in str(raw_value):
+                    parts = str(raw_value).split("~")
+                    min_val, min_u = parse_value_with_unit(parts[0])
+                    max_val, max_u = parse_value_with_unit(parts[1])
+                    if min_val is not None:
+                        parameters.append(ParameterValue(part_id=part_id, name="supply_voltage_min", value=min_val, unit=canonical_unit(min_u) or min_u, source_id=source_id, method=ExtractionMethod.API, confidence=API_CONFIDENCE, raw_text=str(raw_value)))
+                    if max_val is not None:
+                        parameters.append(ParameterValue(part_id=part_id, name="supply_voltage_max", value=max_val, unit=canonical_unit(max_u) or max_u, source_id=source_id, method=ExtractionMethod.API, confidence=API_CONFIDENCE, raw_text=str(raw_value)))
+                    continue
+                if "current - peak output" in lbl_lower and raw_value and "," in str(raw_value):
+                    parts = str(raw_value).split(",")
+                    src_val, src_u = parse_value_with_unit(parts[0])
+                    snk_val, snk_u = parse_value_with_unit(parts[1])
+                    if src_val is not None:
+                        parameters.append(ParameterValue(part_id=part_id, name="peak_source_current", value=src_val, unit=canonical_unit(src_u) or src_u, source_id=source_id, method=ExtractionMethod.API, confidence=API_CONFIDENCE, raw_text=str(raw_value)))
+                    if snk_val is not None:
+                        parameters.append(ParameterValue(part_id=part_id, name="peak_sink_current", value=snk_val, unit=canonical_unit(snk_u) or snk_u, source_id=source_id, method=ExtractionMethod.API, confidence=API_CONFIDENCE, raw_text=str(raw_value)))
+                    continue
+                if "rise / fall time" in lbl_lower and raw_value and "," in str(raw_value):
+                    parts = str(raw_value).split(",")
+                    r_val, r_u = parse_value_with_unit(parts[0])
+                    f_val, f_u = parse_value_with_unit(parts[1])
+                    if r_val is not None:
+                        parameters.append(ParameterValue(part_id=part_id, name="rise_time", value=r_val, unit=canonical_unit(r_u) or r_u, source_id=source_id, method=ExtractionMethod.API, confidence=API_CONFIDENCE, raw_text=str(raw_value)))
+                    if f_val is not None:
+                        parameters.append(ParameterValue(part_id=part_id, name="fall_time", value=f_val, unit=canonical_unit(f_u) or f_u, source_id=source_id, method=ExtractionMethod.API, confidence=API_CONFIDENCE, raw_text=str(raw_value)))
+                    continue
                 logger.debug("unknown DigiKey parameter label %r - skipped", label)
                 continue
-            raw_value = entry.get("Value")
+            if standard in {"operating_temp_max", "max_junction_temp"} and raw_value and "~" in str(raw_value):
+                parts = str(raw_value).split("~")
+                min_val, min_u = parse_value_with_unit(parts[0])
+                max_val, max_u = parse_value_with_unit(parts[1])
+                if min_val is not None and family == Family.GATE_DRIVER:
+                    parameters.append(ParameterValue(part_id=part_id, name="operating_temp_min", value=min_val, unit=canonical_unit(min_u) or min_u or "degC", source_id=source_id, method=ExtractionMethod.API, confidence=API_CONFIDENCE, raw_text=str(raw_value)))
+                if max_val is not None:
+                    target_name = "max_junction_temp" if family == Family.MOSFET else "operating_temp_max"
+                    parameters.append(ParameterValue(part_id=part_id, name=target_name, value=max_val, unit=canonical_unit(max_u) or max_u or "degC", source_id=source_id, method=ExtractionMethod.API, confidence=API_CONFIDENCE, raw_text=str(raw_value)))
+                continue
             number, unit = parse_value_with_unit(raw_value)
+            if standard == "package":
+                package = str(raw_value) if raw_value is not None else None
+                number = None
+                unit = None
             condition = parse_condition(label)
             value = ParameterValue(
                 part_id=part_id,
@@ -271,8 +321,6 @@ class DigiKeyCollector:
                 raw_text=str(raw_value) if raw_value is not None else None,
                 value_text=str(raw_value) if raw_value is not None else None,
             )
-            if standard == "package":
-                package = str(raw_value) if raw_value is not None else None
             if number is None and standard != "package":
                 # Keep the text, but do not invent a number.
                 continue
@@ -304,20 +352,35 @@ class DigiKeyCollector:
         raw = str(product.get("Family") or "").strip().lower()
         if raw in {f.value for f in Family}:
             return Family(raw)
-        guessed = infer_family(category, description, product.get("ProductUrl"))
+        category_names = [category] if category else []
+        cat = product.get("Category")
+        while isinstance(cat, dict):
+            children = cat.get("ChildCategories")
+            if isinstance(children, list) and children:
+                for child in children:
+                    if isinstance(child, dict) and child.get("Name"):
+                        category_names.append(child["Name"])
+                cat = children[0]
+            else:
+                break
+        guessed = infer_family(*category_names, description, product.get("ProductUrl"))
         if guessed:
             return Family(guessed)
-        logger.warning("cannot determine the family of %s - assuming mosfet", product)
+        logger.warning("cannot determine the family of %s - assuming mosfet", product.get("ManufacturerProductNumber") or product)
         return Family.MOSFET
 
     @staticmethod
     def _lifecycle(product: dict[str, Any]) -> LifecycleStatus:
-        status = str((product.get("Status") or {}).get("LifecycleStatus") or "").strip().lower()
+        status = str(
+            (product.get("Status") or {}).get("LifecycleStatus")
+            or (product.get("ProductStatus") or {}).get("Status")
+            or ""
+        ).strip().lower()
         if status in {"active"}:
             return LifecycleStatus.ACTIVE
         if status in {"nrnd", "not recommended for new designs"}:
             return LifecycleStatus.NRND
-        if status in {"obsolete", "discontinued"}:
+        if status in {"obsolete", "discontinued"} or product.get("Discontinued") or product.get("EndOfLife"):
             return LifecycleStatus.OBSOLETE
         return LifecycleStatus.UNKNOWN
 
@@ -360,13 +423,25 @@ class DigiKeyCollector:
     async def search_by_mpn_async(self, mpn: str) -> PartRecord | None:
         """Return the normalised part for ``mpn`` or ``None``."""
         self._require_credentials()
+        product = None
         try:
             product = await self.fetch_product_details(mpn)
         except MissingCredentialsError:
             raise
         except (CollectorError, httpx.TransportError) as exc:
             logger.warning("DigiKey has no product %s (%s)", mpn, exc)
-            return None
+        if not product:
+            try:
+                search_res = await self.search_keyword(mpn, limit=5)
+                products = search_res.get("Products") or []
+                for p in products:
+                    if str(p.get("ManufacturerProductNumber") or "").strip().lower() == mpn.strip().lower():
+                        product = p
+                        break
+                if not product and products:
+                    product = products[0]
+            except Exception as exc:
+                logger.debug("DigiKey keyword fallback failed for %s: %s", mpn, exc)
         if not product:
             logger.warning("DigiKey returned no product for %s", mpn)
             return None

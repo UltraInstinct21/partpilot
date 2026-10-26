@@ -169,7 +169,7 @@ cp .env.example .env
 | Key | Where to get it | What it opens |
 | --- | --- | --- |
 | `PARTPILOT_DIGIKEY_CLIENT_ID` and `PARTPILOT_DIGIKEY_CLIENT_SECRET` | <https://developer.digikey.com> - register an application and create an organisation when the portal asks for one. | The product details, the prices, the stock, the lifecycle and the datasheet links. |
-| `PARTPILOT_NEXAR_CLIENT_ID` and `PARTPILOT_NEXAR_CLIENT_SECRET` | <https://portal.nexar.com> - create an application and request the `supply` scope. | The Octopart supply data: the stock, the lifecycle, the datasheet links, the similar parts. |
+| `PARTPILOT_NEXAR_CLIENT_ID` and `PARTPILOT_NEXAR_CLIENT_SECRET` | <https://portal.nexar.com> - create an application and request the `supply` scope. | Provider-first discovery: stock, lifecycle, datasheet links, and candidate similar parts. |
 | `PARTPILOT_MOUSER_API_KEY` | <https://www.mouser.com/api-search/> - request a Search API key. | The second price and stock source, and the cross-check of the values. |
 | `OPENAI_API_KEY` (or `ANTHROPIC_API_KEY`, or `GOOGLE_API_KEY`) | The portal of the provider that you choose in `PARTPILOT_LLM_PROVIDER`. | The tier 2 and tier 3 extraction, the name mapping, the filter builder and the explanation of the alternatives. |
 
@@ -230,6 +230,12 @@ The documented limits are in `docs/ETHICS.md`:
 | FR-13 | Give a ranked list of alternative parts. | `backend/services/alternatives.py`, `GET /api/parts/{id}/alternatives` |
 | FR-14 | Accept a BOM file and flag the risk. | `backend/services/bom.py`, `POST /api/bom/check` |
 | FR-15 | Show the status of each part (active, NRND, obsolete). | `backend/collectors/` (the lifecycle), `backend/shared/schemas.py:LifecycleStatus`, the part page |
+
+Provider-first discovery is part of FR-11/FR-13: a live search queries the
+configured distributor providers and web scrapers, merges their normalized
+records with the indexed catalogue, and ranks the combined set for the
+requested use case. The indexed catalogue is a cache and fallback, not the
+only source of candidates.
 
 ### Non-functional requirements
 

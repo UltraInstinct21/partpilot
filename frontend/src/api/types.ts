@@ -228,7 +228,7 @@ export interface components {
             code?: string;
         };
         /** @enum {string} */
-        Family: "mosfet" | "gate_driver";
+        Family: "mosfet" | "gate_driver" | "mcu" | "opamp" | "regulator" | "sensor" | "transceiver" | "passive" | "diode" | "general";
         /** @enum {string} */
         LifecycleStatus: "active" | "nrnd" | "obsolete" | "unknown";
         /** @enum {string} */
@@ -439,6 +439,14 @@ export interface components {
             took_ms?: number;
             filter_explanation?: string | null;
             llm_used?: boolean;
+            ai_advisory?: {
+                [key: string]: unknown;
+            } | null;
+            web_results?: {
+                [key: string]: unknown;
+            }[];
+            provider_candidates?: components["schemas"]["PartSummary"][];
+            search_mode?: string;
         };
         AlternativeResult: {
             part: components["schemas"]["PartSummary"];
@@ -486,6 +494,8 @@ export interface components {
             lines?: components["schemas"]["BomLine"][];
             risks?: components["schemas"]["BomRisk"][];
             took_ms?: number;
+            live_queries?: string[];
+            live_discovered?: number;
         };
         ReviewItem: {
             param_id: string;

@@ -31,10 +31,18 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Family(str, Enum):
-    """Supported component families (plan section 1.2)."""
+    """Supported component families."""
 
     MOSFET = "mosfet"
     GATE_DRIVER = "gate_driver"
+    MCU = "mcu"
+    OPAMP = "opamp"
+    REGULATOR = "regulator"
+    SENSOR = "sensor"
+    TRANSCEIVER = "transceiver"
+    PASSIVE = "passive"
+    DIODE = "diode"
+    GENERAL = "general"
 
 
 class SourceType(str, Enum):
@@ -450,6 +458,13 @@ class SearchResponse(BaseModel):
     took_ms: int = 0
     filter_explanation: str | None = None
     llm_used: bool = False
+    ai_advisory: dict[str, Any] | None = None
+    # Live discovery results are deliberately separate from catalogue rows:
+    # an external page is not treated as a verified PartRecord until it goes
+    # through the normal extraction/validation pipeline.
+    web_results: list[dict[str, Any]] = Field(default_factory=list)
+    provider_candidates: list[PartSummary] = Field(default_factory=list)
+    search_mode: str = "catalogue"
 
 
 # --------------------------------------------------------------------------------------
@@ -527,6 +542,8 @@ class BomCheckResponse(BaseModel):
     lines: list[BomLine] = Field(default_factory=list)
     risks: list[BomRisk] = Field(default_factory=list)
     took_ms: int = 0
+    live_queries: list[str] = Field(default_factory=list)
+    live_discovered: int = 0
 
 
 # --------------------------------------------------------------------------------------

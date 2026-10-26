@@ -8,15 +8,32 @@
 # The `.env` file is not in Git. Copy `.env.example` to `.env` and fill it in.
 
 services:
+  searxng:
+    image: searxng/searxng:latest
+    container_name: partpilot-searxng
+    ports:
+      - "${PARTPILOT_DOCKER_SEARXNG_PORT:-8088}:8080"
+    volumes:
+      - ./docker/searxng-config:/etc/searxng:rw
+    environment:
+      BASE_URL: http://localhost:8080/
+      INSTANCE_NAME: PartPilot Search
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080')\" || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 6
+      start_period: 3s
+
   api:
     build:
       context: .
       dockerfile: docker/Dockerfile.backend
     image: partpilot-backend:local
     container_name: partpilot-api
-    # The port is bound to the loopback. The service is not public.
     ports:
-      - "127.0.0.1:8000:8000"
+      - "${PARTPILOT_DOCKER_API_PORT:-8002}:8000"
     env_file:
       - path: .env
         required: false
@@ -25,7 +42,12 @@ services:
       PARTPILOT_DB_PATH: /app/data/partpilot.db
       PARTPILOT_API_HOST: 0.0.0.0
       PARTPILOT_API_PORT: 8000
-      PARTPILOT_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      PARTPILOT_SEARXNG_URL: http://searxng:8080
+      PARTPILOT_CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:5175,http://127.0.0.1:5175,http://localhost:80,http://localhost,http://web
+      PARTPILOT_LLM_BASE_URL: ${PARTPILOT_DOCKER_LLM_BASE_URL:-http://host.docker.internal:11434/v1}
+    depends_on:
+      searxng:
+        condition: service_healthy
     volumes:
       # The raw PDFs, the cached API responses and the SQLite database.
       - ./data:/app/data
@@ -38,9 +60,10 @@ services:
     image: partpilot-frontend:local
     container_name: partpilot-web
     ports:
-      - "127.0.0.1:5173:80"
+      - "${PARTPILOT_DOCKER_WEB_PORT:-5175}:80"
     depends_on:
       - api
+      - searxng
     restart: unless-stopped
 
   # The fixture backed mock. It serves the recorded API responses, so the

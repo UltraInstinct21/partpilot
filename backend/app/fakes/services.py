@@ -19,6 +19,7 @@ from typing import Any
 from uuid import uuid4
 
 from app.fakes.llm import StubLLMExtractor
+from services.search import fallback_filter
 from shared.schemas import (
     AlternativeResult,
     BomCheckResponse,
@@ -47,10 +48,54 @@ _SEVERITY_ORDER = {
     RiskSeverity.CRITICAL: 4,
 }
 
-_MPN_COLUMNS = ("mpn", "partnumber", "manufacturerpartnumber", "mfrpartnumber", "pn", "part")
-_QTY_COLUMNS = ("quantity", "qty", "count", "qnt")
-_REF_COLUMNS = ("reference", "references", "ref", "refdes", "designator", "location")
-_MANUFACTURER_COLUMNS = ("manufacturer", "mfr", "mfrname", "brand", "make")
+_MPN_COLUMNS = (
+    "mpn",
+    "partnumber",
+    "manufacturerpartnumber",
+    "mfrpartnumber",
+    "mfgpartnumber",
+    "pn",
+    "partno",
+    "part",
+    "component",
+    "device",
+    "value",
+    "val",
+    "comment",
+    "item",
+    "ordercode",
+    "article",
+)
+_QTY_COLUMNS = (
+    "quantity",
+    "qty",
+    "count",
+    "qnt",
+    "amount",
+    "pcs",
+    "units",
+    "totalqty",
+)
+_REF_COLUMNS = (
+    "reference",
+    "references",
+    "ref",
+    "refdes",
+    "designator",
+    "designators",
+    "location",
+    "loc",
+)
+_MANUFACTURER_COLUMNS = (
+    "manufacturer",
+    "mfr",
+    "mfrname",
+    "brand",
+    "make",
+    "vendor",
+    "producer",
+    "company",
+)
 
 
 def _normalise_header(name: str) -> str:
@@ -86,9 +131,12 @@ class FakeSearchService:
     def search(self, query: str, limit: int = 50, offset: int = 0) -> SearchResponse:
         """Build a filter from ``query`` and execute it."""
         filt = self._llm.build_search_filter(query)
+        deterministic = fallback_filter(query)
+        if filt == SearchFilter() and deterministic != SearchFilter():
+            filt = deterministic
         response = self.search_filter(filt, limit=limit, offset=offset)
         response.query = query
-        response.llm_used = True
+        response.llm_used = filt != deterministic
         response.filter_explanation = self._explain(filt)
         return response
 
@@ -268,6 +316,10 @@ class FakeBomService:
                 except ValueError:
                     quantity = 1
             part = self._repo.get_part_by_mpn(mpn)
+            if part is None:
+                stem = re.sub(r"(?:-?(?:TR|T&R|PBF|NOPB|\+))+$", "", mpn, flags=re.IGNORECASE).strip()
+                if stem and stem.lower() != mpn.lower():
+                    part = self._repo.get_part_by_mpn(stem)
             line_risks: list[BomRisk] = []
             if part is None:
                 line_risks.append(

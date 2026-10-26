@@ -34,7 +34,7 @@ from collectors.base import (
     user_agent,
 )
 from collectors.bundle import DefaultCollectorBundle
-from collectors.datasheets import DatasheetDownloader
+from collectors.datasheets import DatasheetDownloader, DatasheetResolver
 from collectors.digikey import DigiKeyCollector
 from collectors.mouser import MouserCollector
 from collectors.nexar import NexarCollector
@@ -52,6 +52,7 @@ __all__ = [
     "CacheStats",
     "CollectorError",
     "DatasheetDownloader",
+    "DatasheetResolver",
     "DefaultCollectorBundle",
     "DigiKeyCollector",
     "DiskCache",

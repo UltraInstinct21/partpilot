@@ -10,7 +10,7 @@ are missing.
 
 from __future__ import annotations
 
-from pathlib import Path
+from shared.config import resolve_pdf_path
 
 #: The resolution of the rendered page.
 DEFAULT_DPI = 150
@@ -28,14 +28,14 @@ def render_page_png(
     """
     if not pdf_path or page < 1:
         return None
-    path = Path(pdf_path)
-    if not path.exists() or not path.is_file():
+    resolved = resolve_pdf_path(pdf_path)
+    if not resolved or not resolved.is_file():
         return None
     try:
         import pymupdf
 
         zoom = max(1.0, dpi / 72.0)
-        with pymupdf.open(path) as document:
+        with pymupdf.open(resolved) as document:
             if page > document.page_count:
                 return None
             pdf_page = document[page - 1]

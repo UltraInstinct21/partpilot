@@ -12,7 +12,7 @@ describe("the correction dialog of the review queue", () => {
       }
     });
 
-    const { user } = renderApp("/review");
+    const { user } = renderApp("/review?tab=extraction");
 
     const correct = (await screen.findAllByRole("button", { name: /correct/i }))[0];
     await user.click(correct);

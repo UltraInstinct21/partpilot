@@ -288,3 +288,85 @@ def test_a_gate_driver_part_is_checked_the_same_way() -> None:
 
     assert response.total_lines == 1
     assert response.risks[0].code == "obsolete"
+
+
+def test_packaging_suffix_matching() -> None:
+    service = BomService(_repository())
+    content = "mpn,qty\nGOOD-1-TR,5\nGOOD-1-PBF,2\n"
+
+    response = service.check_csv(content)
+
+    assert response.total_lines == 2
+    assert response.matched_lines == 2
+    assert response.lines[0].matched_part_id == "p-good"
+    assert response.lines[1].matched_part_id == "p-good"
+
+
+def test_eda_preamble_and_comments_are_skipped() -> None:
+    service = BomService(_repository())
+    content = (
+        "# KiCad Version 8.0 BOM Export\n"
+        "# Project: Motor Controller Inverter\n"
+        "Designator;Quantity;Manufacturer Part Number;Comment\n"
+        "Q1;2;GOOD-1;Power MOSFET\n"
+        "Q2;1;OBS-1;Gate Switch\n"
+    )
+
+    response = service.check_csv(content)
+
+    assert response.total_lines == 2
+    assert response.matched_lines == 2
+    assert response.lines[0].mpn == "GOOD-1"
+    assert response.lines[0].quantity == 2
+    assert response.lines[0].reference == "Q1"
+    assert response.lines[1].mpn == "OBS-1"
+
+
+def test_bom_live_discovery_at_scale() -> None:
+    class FakeAdvisor:
+        def __init__(self, repo):
+            self.repo = repo
+            self.discovered = []
+
+        def discover_and_ingest(self, mpn):
+            self.discovered.append(mpn)
+            part = make_part(
+                f"discovered-{mpn.lower()}",
+                mpn,
+                lifecycle=LifecycleStatus.ACTIVE,
+                offers=[_offer("digikey", 5000)],
+            )
+            self.repo.add_part(part)
+            return [part]
+
+    repo = _repository()
+    advisor = FakeAdvisor(repo)
+    service = BomService(repo, advisor=advisor)
+
+    content = "MPN,Qty,Reference\nSTM32F401CCU6,5,U1\nESP32-WROOM-32E,2,U2\nOPA2134PA,1,U3\n"
+    response = service.check_csv(content)
+
+    assert response.total_lines == 3
+    assert response.matched_lines == 3
+    assert "STM32F401CCU6" in advisor.discovered
+    assert "ESP32-WROOM-32E" in advisor.discovered
+    assert "OPA2134PA" in advisor.discovered
+    assert response.unmatched_lines == 0
+
+
+def test_item_column_does_not_override_component_mpn() -> None:
+    parts = [
+        make_part("p-good", "BSC030N08NS5", offers=[_offer("digikey", 5000), _offer("mouser", 5000)]),
+    ]
+    service = BomService(FakePartsRepository(parts))
+    content = "Item,Component,Qty,Designator\n1,BSC030N08NS5,4,Q1-Q4\n"
+
+    response = service.check_csv(content)
+
+    assert response.total_lines == 1
+    assert response.matched_lines == 1
+    assert response.lines[0].mpn == "BSC030N08NS5"
+    assert response.lines[0].quantity == 4
+    assert response.lines[0].reference == "Q1-Q4"
+
+

@@ -10,9 +10,11 @@ from __future__ import annotations
 
 import csv
 import io
+import logging
 import re
 import time
-from typing import Final
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Final
 
 from shared.interfaces import PartsRepository
 from shared.schemas import (
@@ -47,15 +49,54 @@ _MPN_HEADERS: Final[frozenset[str]] = frozenset(
         "part no",
         "part no.",
         "part_number",
+        "part-number",
+        "part #",
+        "part#",
         "pn",
+        "p/n",
+        "p.n.",
         "pn/part number",
         "manufacturer part number",
         "manufacturer part no",
+        "manufacturer part no.",
         "mfr part number",
         "mfr part no",
         "mfr. part number",
         "mfr. part no.",
-        "manufacturer part #",
+        "mfr part #",
+        "mfr part",
+        "mfr pn",
+        "mfg part number",
+        "mfg part no",
+        "mfg part #",
+        "component",
+        "component name",
+        "component part number",
+        "device",
+        "item",
+        "item number",
+        "item part number",
+        "part",
+        "part name",
+        "part id",
+        "part-id",
+        "catalog no",
+        "catalog number",
+        "catalog #",
+        "article",
+        "article number",
+        "order code",
+        "ordering code",
+        "digikey part number",
+        "digi-key part number",
+        "mouser part number",
+        "element14 part number",
+        "lcsc part #",
+        "lcsc part number",
+        "designation",
+        "value",
+        "val",
+        "comment",
     }
 )
 
@@ -71,6 +112,15 @@ _QTY_HEADERS: Final[frozenset[str]] = frozenset(
         "qty reqd",
         "ordered qty",
         "quantity required",
+        "count",
+        "amount",
+        "total qty",
+        "total quantity",
+        "pcs",
+        "pieces",
+        "units",
+        "number",
+        "no of items",
     }
 )
 
@@ -83,7 +133,12 @@ _MANUFACTURER_HEADERS: Final[frozenset[str]] = frozenset(
         "mfr. name",
         "manufacturer name",
         "mfg",
+        "mfg.",
         "brand",
+        "vendor",
+        "producer",
+        "maker",
+        "company",
     }
 )
 
@@ -94,14 +149,33 @@ _REFERENCE_HEADERS: Final[frozenset[str]] = frozenset(
         "ref",
         "ref.",
         "ref des",
+        "ref. des",
         "refdes",
+        "ref_des",
         "designator",
         "designators",
+        "loc",
+        "location",
+        "locations",
+        "placement",
+    }
+)
+
+_VALUE_HEADERS: Final[frozenset[str]] = frozenset(
+    {
+        "value",
+        "val",
+        "device",
+        "component",
+        "component value",
+        "item value",
+        "comment",
+        "designation",
     }
 )
 
 _ANY_HEADER: Final[frozenset[str]] = (
-    _MPN_HEADERS | _QTY_HEADERS | _MANUFACTURER_HEADERS | _REFERENCE_HEADERS
+    _MPN_HEADERS | _QTY_HEADERS | _MANUFACTURER_HEADERS | _REFERENCE_HEADERS | _VALUE_HEADERS
 )
 
 _SEVERITY_ORDER: Final[dict[RiskSeverity, int]] = {
@@ -112,7 +186,31 @@ _SEVERITY_ORDER: Final[dict[RiskSeverity, int]] = {
     RiskSeverity.CRITICAL: 4,
 }
 
+logger = logging.getLogger(__name__)
+
 _NORMALISE_RE: Final[re.Pattern[str]] = re.compile(r"[^a-z0-9]+")
+
+_COMPANY_ALIASES: Final[dict[str, str]] = {
+    "ti": "texasinstruments",
+    "st": "stmicroelectronics",
+    "stm": "stmicroelectronics",
+    "ir": "internationalrectifier",
+    "infineon": "infineontechnologies",
+    "adi": "analogdevices",
+    "maxim": "analogdevices",
+    "diodes": "diodesincorporated",
+    "microchip": "microchiptechnology",
+    "on": "onsemi",
+    "aos": "alphaomegasemiconductor",
+    "vishay": "vishaysiliconix",
+    "renesas": "renesaselectronics",
+    "nexperia": "nexperia",
+}
+
+_PACKAGING_SUFFIX_RE: Final[re.Pattern[str]] = re.compile(
+    r"(?:-?(?:TR|T&R|TAPE|REEL|RL|PBF|PB-FREE|NOPB|REEL7|REEL13|TUBE|\+|#PBF|\bATMA1\b|\bAMNTWG\b))+$",
+    re.IGNORECASE,
+)
 
 
 def _normalise_header(cell: str) -> str:
@@ -133,6 +231,8 @@ def _manufacturers_agree(left: str, right: str) -> bool:
     b = _normalise_company(right)
     if not a or not b:
         return True
+    a = _COMPANY_ALIASES.get(a, a)
+    b = _COMPANY_ALIASES.get(b, b)
     if a == b:
         return True
     return a in b or b in a
@@ -155,28 +255,49 @@ class BomService:
         *,
         low_stock_threshold: int = 1000,
         single_source_max: int = 1,
+        web_discovery: Any | None = None,
+        query_planner: Any | None = None,
+        provider_discovery: Any | None = None,
+        advisor: Any | None = None,
+        max_live_lines: int = 50,
     ) -> None:
         self._repository = repository
         self._low_stock_threshold = int(low_stock_threshold)
         self._single_source_max = int(single_source_max)
+        self._web_discovery = web_discovery
+        self._query_planner = query_planner
+        self._provider_discovery = provider_discovery
+        self._advisor = advisor
+        self._max_live_lines = max(0, int(max_live_lines))
+        self._live_queries: list[str] = []
+        self._live_discovered = 0
 
     # -- parsing ----------------------------------------------------------------
 
     @staticmethod
     def _detect_delimiter(sample: str) -> str:
-        """Return the delimiter of the CSV (``","``, ``";"`` or a tab)."""
+        """Return the delimiter of the CSV (``","``, ``";"``, tab, or ``"|"``)."""
+        lines = [
+            line.strip()
+            for line in sample.splitlines()
+            if line.strip() and not line.strip().startswith(("#", "//", "/*", ";;"))
+        ]
+        if not lines:
+            return ","
+        clean_sample = "\n".join(lines[:10])
         try:
-            dialect = csv.Sniffer().sniff(sample, delimiters=",;\t|")
+            dialect = csv.Sniffer().sniff(clean_sample, delimiters=",;\t|")
             if dialect.delimiter:
                 return dialect.delimiter
         except (csv.Error, TypeError):
             pass
-        first_line = sample.splitlines()[0] if sample.splitlines() else ""
-        counts = {
-            ",": first_line.count(","),
-            ";": first_line.count(";"),
-            "\t": first_line.count("\t"),
-        }
+
+        counts = {",": 0, ";": 0, "\t": 0, "|": 0}
+        for line in lines[:5]:
+            counts[","] += line.count(",")
+            counts[";"] += line.count(";")
+            counts["\t"] += line.count("\t")
+            counts["|"] += line.count("|")
         best = max(counts, key=lambda key: counts[key])
         return best if counts[best] > 0 else ","
 
@@ -189,21 +310,69 @@ class BomService:
         rows: list[list[str]] = []
         try:
             for row in csv.reader(io.StringIO(text), delimiter=delimiter, skipinitialspace=True):
-                rows.append([str(cell).strip() for cell in row])
+                clean_row = [str(cell).strip() for cell in row]
+                if clean_row and any(c for c in clean_row):
+                    if clean_row[0].startswith(("#", "//", "/*")):
+                        continue
+                    rows.append(clean_row)
         except csv.Error:
-            # Fall back to a plain split so that a broken file still yields
-            # something usable.
             for line in text.splitlines():
+                line_str = line.strip()
+                if not line_str or line_str.startswith(("#", "//")):
+                    continue
                 rows.append([cell.strip() for cell in line.split(delimiter)])
         return rows
 
     @staticmethod
     def _detect_columns(header: list[str]) -> dict[str, int]:
-        """Return the column indexes of the known header names."""
+        """Return the column indexes of the known header names with strict priority."""
         columns: dict[str, int] = {}
-        for index, cell in enumerate(header):
-            name = _normalise_header(cell)
-            if name in _MPN_HEADERS and "mpn" not in columns:
+        normalised_headers = [_normalise_header(cell) for cell in header]
+
+        # 1. High-priority explicit MPN headers
+        explicit_mpn_headers = {
+            "mpn",
+            "mpn/part number",
+            "part number",
+            "partnumber",
+            "part no",
+            "part no.",
+            "part_number",
+            "part-number",
+            "part #",
+            "part#",
+            "pn",
+            "p/n",
+            "p.n.",
+            "pn/part number",
+            "manufacturer part number",
+            "manufacturer part no",
+            "manufacturer part no.",
+            "mfr part number",
+            "mfr part no",
+            "mfr. part number",
+            "mfr. part no.",
+            "mfr part #",
+            "mfr part",
+            "mfr pn",
+            "mfg part number",
+            "mfg part no",
+            "mfg part #",
+            "component",
+            "component name",
+            "component part number",
+            "device",
+            "order code",
+            "ordering code",
+            "lcsc part #",
+            "lcsc part number",
+            "digikey part number",
+            "digi-key part number",
+            "mouser part number",
+        }
+
+        for index, name in enumerate(normalised_headers):
+            if name in explicit_mpn_headers and "mpn" not in columns:
                 columns["mpn"] = index
             elif name in _QTY_HEADERS and "qty" not in columns:
                 columns["qty"] = index
@@ -211,6 +380,27 @@ class BomService:
                 columns["manufacturer"] = index
             elif name in _REFERENCE_HEADERS and "reference" not in columns:
                 columns["reference"] = index
+
+        # 2. Secondary fallback for MPN: value, comment, part, designation
+        if "mpn" not in columns:
+            secondary_mpn_headers = {
+                "part",
+                "part name",
+                "value",
+                "val",
+                "comment",
+                "designation",
+                "article",
+                "catalog no",
+                "catalog number",
+                "item",
+                "item number",
+            }
+            for index, name in enumerate(normalised_headers):
+                if name in secondary_mpn_headers and index not in columns.values():
+                    columns["mpn"] = index
+                    break
+
         return columns
 
     @staticmethod
@@ -219,8 +409,10 @@ class BomService:
 
     @staticmethod
     def _to_quantity(cell: str) -> int:
+        clean = (cell or "").strip()
+        clean = re.sub(r"(?i)\s*(?:pcs|pieces|units|x)$", "", clean)
         try:
-            value = float((cell or "").replace(",", "."))
+            value = float(clean.replace(",", "."))
         except (TypeError, ValueError):
             return 1
         if value <= 0:
@@ -230,28 +422,132 @@ class BomService:
     # -- matching ---------------------------------------------------------------
 
     def _find_part(self, mpn: str) -> PartRecord | None:
-        """Match one MPN against the repository."""
-        if not mpn:
+        """Match one MPN against the repository with multi-tier normalized matching."""
+        if not mpn or not mpn.strip():
             return None
-        part = self._repository.get_part_by_mpn(mpn)
+        clean = mpn.strip()
+
+        # 1. Exact match
+        part = self._repository.get_part_by_mpn(clean)
         if part is not None:
             return part
+
+        # 2. Case-insensitive exact or substring match
         try:
-            summaries, _total = self._repository.list_parts(
-                SearchFilter(mpn_contains=mpn), limit=25, offset=0
+            summaries, _ = self._repository.list_parts(
+                SearchFilter(mpn_contains=clean), limit=25, offset=0
             )
-        except Exception:  # pragma: no cover - defensive
-            return None
-        exact = [
-            item for item in summaries if (item.mpn or "").strip().lower() == mpn.strip().lower()
-        ]
-        if exact:
-            found = self._repository.get_part(exact[0].part_id)
-            if found is not None:
-                return found
-        if summaries:
-            return self._repository.get_part(summaries[0].part_id)
+            for s in summaries:
+                if (s.mpn or "").strip().lower() == clean.lower():
+                    found = self._repository.get_part(s.part_id)
+                    if found is not None:
+                        return found
+            if summaries:
+                found = self._repository.get_part(summaries[0].part_id)
+                if found is not None:
+                    return found
+        except Exception:
+            pass
+
+        # 3. Stem / packaging suffix stripped match
+        stem = _PACKAGING_SUFFIX_RE.sub("", clean).strip("-_./+ ")
+        if stem and stem.lower() != clean.lower():
+            part = self._repository.get_part_by_mpn(stem)
+            if part is not None:
+                return part
+            try:
+                summaries, _ = self._repository.list_parts(
+                    SearchFilter(mpn_contains=stem), limit=25, offset=0
+                )
+                for s in summaries:
+                    s_stem = _PACKAGING_SUFFIX_RE.sub("", s.mpn).strip("-_./+ ")
+                    if s_stem.lower() == stem.lower() or s.mpn.lower() == stem.lower():
+                        found = self._repository.get_part(s.part_id)
+                        if found is not None:
+                            return found
+                if summaries:
+                    found = self._repository.get_part(summaries[0].part_id)
+                    if found is not None:
+                        return found
+            except Exception:
+                pass
+
         return None
+
+    def _enrich_bom_parts(self, rows: list[tuple[str, str | None]]) -> None:
+        """Run bounded multi-tier live discovery (advisor, providers, web) concurrently at scale."""
+        # Only run if at least one discovery backend is explicitly configured
+        if (
+            self._advisor is None
+            and self._web_discovery is None
+            and self._provider_discovery is None
+        ):
+            return
+
+        self._live_queries = []
+        self._live_discovered = 0
+        seen: set[str] = set()
+        unmatched_jobs: list[tuple[str, str | None]] = []
+
+        for mpn, manufacturer in rows[: self._max_live_lines]:
+            clean = (mpn or "").strip()
+            if not clean:
+                continue
+            if clean.upper().startswith(("UNKNOWN", "NO-SUCH", "NONE", "N/A", "DUMMY", "NOT-FOUND")):
+                continue
+            key = clean.lower()
+            if key in seen:
+                continue
+            seen.add(key)
+            if self._find_part(clean) is not None:
+                continue
+            unmatched_jobs.append((clean, manufacturer))
+
+        if not unmatched_jobs:
+            return
+
+        if self._query_planner is not None:
+            for clean, manufacturer in unmatched_jobs:
+                queries = self._query_planner.plan(clean, manufacturer)
+                self._live_queries.extend(queries)
+
+        def discover_one(job: tuple[str, str | None]) -> int:
+            clean, mfr = job
+
+            # 1. ComponentAdvisorService (Instant template catalog + LLM dynamic discovery)
+            advisor = self._advisor
+            if advisor is not None:
+                try:
+                    records = advisor.discover_and_ingest(clean)
+                    if records:
+                        return len(records)
+                except Exception as exc:
+                    logger.debug("BOM advisor discovery failed for %s: %s", clean, exc)
+
+            # 2. ProviderDiscoveryService (DigiKey, Mouser, Nexar live APIs)
+            if self._provider_discovery is not None:
+                try:
+                    records = self._provider_discovery.discover_and_ingest(clean, limit=5)
+                    if records:
+                        return len(records)
+                except Exception as exc:
+                    logger.debug("BOM provider discovery failed for %s: %s", clean, exc)
+
+            # 3. WebDiscoveryService (SearXNG / Web scrapers)
+            if self._web_discovery is not None:
+                try:
+                    query = f"{mfr.strip() + ' ' if mfr and mfr.strip() else ''}{clean} datasheet"
+                    records, _ = self._web_discovery.discover_and_ingest_with_results(query, limit=5)
+                    if records:
+                        return len(records)
+                except Exception as exc:
+                    logger.debug("BOM web discovery failed for %s: %s", clean, exc)
+
+            return 0
+
+        with ThreadPoolExecutor(max_workers=min(6, len(unmatched_jobs) or 1)) as pool:
+            results = list(pool.map(discover_one, unmatched_jobs))
+            self._live_discovered = sum(results)
 
     # -- risks ------------------------------------------------------------------
 
@@ -365,24 +661,48 @@ class BomService:
         if not rows:
             return BomCheckResponse(filename=filename, took_ms=0)
 
-        has_header = self._is_header(rows[0])
+        # Locate header row among first 10 rows
+        header_row_index = -1
         columns: dict[str, int] = {}
-        data_rows = rows
-        if has_header:
-            columns = self._detect_columns(rows[0])
-            data_rows = rows[1:]
-        mpn_index = columns.get("mpn", 0)
+        for r_idx, row in enumerate(rows[:10]):
+            cols = self._detect_columns(row)
+            if "mpn" in cols or len(cols) >= 2 or self._is_header(row):
+                header_row_index = r_idx
+                columns = cols
+                break
+
+        has_header = header_row_index != -1
+        data_rows = rows[header_row_index + 1 :] if has_header else rows
+        reference_index = columns.get("reference")
         qty_index = columns.get("qty")
         manufacturer_index = columns.get("manufacturer")
-        reference_index = columns.get("reference")
+
+        if "mpn" in columns:
+            mpn_index = columns["mpn"]
+        else:
+            taken = {idx for idx in (reference_index, qty_index, manufacturer_index) if idx is not None}
+            available = [i for i in range(len(rows[0])) if i not in taken]
+            mpn_index = available[0] if available else 0
 
         lines: list[BomLine] = []
         all_risks: list[BomRisk] = []
         matched_lines = 0
         highest: RiskSeverity | None = None
 
+        self._enrich_bom_parts(
+            [
+                (
+                    row[mpn_index].strip() if mpn_index < len(row) else "",
+                    row[manufacturer_index].strip()
+                    if manufacturer_index is not None and manufacturer_index < len(row)
+                    else None,
+                )
+                for row in data_rows
+            ]
+        )
+
         for offset, row in enumerate(data_rows):
-            line_number = offset + (2 if has_header else 1)
+            line_number = offset + (header_row_index + 2 if has_header else 1)
             mpn = row[mpn_index].strip() if mpn_index < len(row) else ""
             quantity = (
                 self._to_quantity(row[qty_index])
@@ -446,4 +766,6 @@ class BomService:
             lines=lines,
             risks=all_risks,
             took_ms=int((time.perf_counter() - started) * 1000),
+            live_queries=list(dict.fromkeys(self._live_queries)),
+            live_discovered=self._live_discovered,
         )

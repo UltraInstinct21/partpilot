@@ -63,6 +63,14 @@ class Settings(BaseSettings):
     search_rate_limit_per_minute: int = 30
     max_upload_bytes: int = 5 * 1024 * 1024  # 5 MiB, plan WP6 "limit the size of file uploads"
 
+    # Optional self-hosted SearXNG instance. Empty keeps deployments fully
+    # offline; set PARTPILOT_SEARXNG_URL to enable live discovery.
+    searxng_url: str = ""
+    web_search_timeout_seconds: float = 4.0
+    web_search_results: int = 50
+    web_discovery_budget_seconds: float = 12.0
+    provider_api_discovery_enabled: bool = False
+
     # --- LLM -------------------------------------------------------------------
     # The provider is chosen by config. The base URL and the key are optional:
     # when they are empty the provider uses its own default URL and the key
@@ -152,6 +160,41 @@ class Settings(BaseSettings):
         """Return the SQLite URL for the configured database path."""
         return f"sqlite:///{self.db_path}"
 
+    @property
+    def root(self) -> Path:
+        return REPO_ROOT
+
+
+def resolve_pdf_path(path: str | Path | None, settings: Settings | None = None) -> Path | None:
+    """Resolve a PDF path robustly across local filesystem and container environments."""
+    if not path:
+        return None
+    p = Path(path).expanduser()
+    if p.is_file():
+        return p
+    cfg = settings or get_settings()
+    raw = str(path)
+    # 1. Container mount: path starting with /app/
+    if raw.startswith("/app/"):
+        rel = raw[len("/app/") :].lstrip("/")
+        candidate = REPO_ROOT / rel
+        if candidate.is_file():
+            return candidate
+    # 2. Relative to repo_root
+    candidate = REPO_ROOT / raw.lstrip("/")
+    if candidate.is_file():
+        return candidate
+    # 3. Filename in pdf_dir
+    filename = p.name
+    candidate = cfg.pdf_dir / filename
+    if candidate.is_file():
+        return candidate
+    # 4. Filename in fixtures/pdfs
+    candidate = cfg.fixtures_dir / "pdfs" / filename
+    if candidate.is_file():
+        return candidate
+    return None
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
@@ -163,4 +206,4 @@ def get_settings() -> Settings:
     return Settings()
 
 
-__all__ = ["REPO_ROOT", "Settings", "get_settings"]
+__all__ = ["REPO_ROOT", "Settings", "get_settings", "resolve_pdf_path"]

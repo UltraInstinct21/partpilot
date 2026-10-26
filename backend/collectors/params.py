@@ -128,6 +128,7 @@ ALIASES: dict[str, str] = {
     "continuous drain current id @ 25°c": "id_continuous",
     "continuous drain current (id) @ 25 c": "id_continuous",
     "continuous drain current (id) @ 100°c": "id_continuous",
+    "current - continuous drain (id) @ 25°c": "id_continuous",
     "id": "id_continuous",
     "id continuous": "id_continuous",
     "rds(on) @ id, vgs": "rds_on",
@@ -136,22 +137,26 @@ ALIASES: dict[str, str] = {
     "rds(on)": "rds_on",
     "rds(on) max @ id, vgs": "rds_on",
     "rds (on) @ id, vgs": "rds_on",
+    "rds on (max) @ id, vgs": "rds_on",
     "static drain to source on-resistance": "rds_on",
     "rds": "rds_on",
     "gate threshold voltage (vgs(th))": "vgs_threshold",
     "gate threshold voltage vgs(th)": "vgs_threshold",
     "gate threshold voltage": "vgs_threshold",
     "threshold voltage": "vgs_threshold",
+    "vgs(th) (max) @ id": "vgs_threshold",
     "vgs(th)": "vgs_threshold",
     "vth": "vgs_threshold",
     "gate-source voltage (vgs)": "vgs_max",
     "gate to source voltage (vgs)": "vgs_max",
     "gate-source voltage": "vgs_max",
     "vgs max": "vgs_max",
+    "vgs (max)": "vgs_max",
     "vgs": "vgs_max",
     "total gate charge (qg)": "total_gate_charge_qg",
     "total gate charge qg": "total_gate_charge_qg",
     "total gate charge": "total_gate_charge_qg",
+    "gate charge (qg) (max) @ vgs": "total_gate_charge_qg",
     "qg": "total_gate_charge_qg",
     "gate to drain charge (qgd)": "gate_drain_charge_qgd",
     "gate-drain charge (qgd)": "gate_drain_charge_qgd",
@@ -159,9 +164,11 @@ ALIASES: dict[str, str] = {
     "qgd": "gate_drain_charge_qgd",
     "input capacitance (ciss)": "input_capacitance_ciss",
     "input capacitance ciss": "input_capacitance_ciss",
+    "input capacitance (ciss) (max) @ vds": "input_capacitance_ciss",
     "ciss": "input_capacitance_ciss",
     "output capacitance (coss)": "output_capacitance_coss",
     "output capacitance coss": "output_capacitance_coss",
+    "output capacitance (coss) (max) @ vds": "output_capacitance_coss",
     "coss": "output_capacitance_coss",
     "operating junction temperature": "max_junction_temp",
     "maximum junction temperature": "max_junction_temp",
@@ -170,6 +177,7 @@ ALIASES: dict[str, str] = {
     "max junction temp": "max_junction_temp",
     "package / case": "package",
     "package/case": "package",
+    "supplier device package": "package",
     "package": "package",
     "thermal resistance - junction to case (rthjc)": "thermal_resistance",
     "thermal resistance junction to case (rthjc)": "thermal_resistance",
@@ -204,6 +212,7 @@ ALIASES: dict[str, str] = {
     "number of channels": "channel_count",
     "channel count": "channel_count",
     "channels": "channel_count",
+    "number of drivers": "channel_count",
     "operating temperature range": "operating_temp_max",
     "operating temperature": "operating_temp_max",
     "operating temperature min": "operating_temp_min",
@@ -430,12 +439,16 @@ def parse_value_with_unit(text: str | None) -> tuple[float | None, str | None]:
         return (None, None)
     if isinstance(text, (int, float)):
         return (float(text), None)
-    cleaned = str(text).strip().replace(",", "")
+    cleaned = str(text).strip().replace(",", "").replace("±", "")
+    if "@" in cleaned:
+        cleaned = cleaned.split("@")[0].strip()
+    if "(" in cleaned and ")" in cleaned:
+        cleaned = re.sub(r"\(.*?\)", "", cleaned).strip()
     match = _NUMBER_RE.match(cleaned)
     if not match:
         return (None, None)
     number = float(match.group(1))
-    unit = canonical_unit(match.group(2))
+    unit = canonical_unit(match.group(2).strip())
     return (number, unit)
 
 

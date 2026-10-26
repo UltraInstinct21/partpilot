@@ -1,7 +1,7 @@
 export type ConfidenceLevel = "high" | "medium" | "low" | "unknown";
 
 /**
- * The confidence bands are the ones of the project plan (section 6.2):
+ * The confidence bands for legacy ConfidenceBadge:
  * green >= 0.75, yellow >= 0.5, red < 0.5.
  */
 export function confidenceLevel(confidence: number | null | undefined): ConfidenceLevel {

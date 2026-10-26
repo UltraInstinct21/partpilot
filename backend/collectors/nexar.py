@@ -59,11 +59,11 @@ _PART_FIELDS = """
       id
       mpn
       name
-      description
+      shortDescription
       totalAvail
       manufacturer { id name }
       category { id name }
-      lifecycle { status }
+      bestDatasheet { url }
       specs {
         attribute { id name shortname }
         value
@@ -316,7 +316,7 @@ class NexarCollector:
         """Turn one Nexar part object into a :class:`PartRecord`."""
         mpn = str(part.get("mpn") or "").strip()
         manufacturer = str((part.get("manufacturer") or {}).get("name") or "").strip()
-        description = part.get("description") or part.get("name")
+        description = part.get("shortDescription") or part.get("description") or part.get("name")
         category = (part.get("category") or {}).get("name")
         family = self._family(part, category, description)
         slug = slugify(mpn or str(part.get("id") or ""))
@@ -392,6 +392,9 @@ class NexarCollector:
 
     @staticmethod
     def _datasheet_url(part: dict[str, Any]) -> str | None:
+        best = part.get("bestDatasheet") or {}
+        if isinstance(best, dict) and best.get("url"):
+            return str(best["url"])
         for document in part.get("documents") or []:
             url = document.get("url") if isinstance(document, dict) else None
             if url:

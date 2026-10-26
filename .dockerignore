@@ -27,6 +27,7 @@ docs
 # --- Node ------------------------------------------------------------------
 **/node_modules
 **/dist
+!frontend/dist
 **/coverage
 **/.vite
 

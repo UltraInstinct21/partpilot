@@ -98,25 +98,76 @@ def _real_validator(settings: Settings, **_: Any) -> Any:
     return ParameterValidator()
 
 
-def _real_search_service(repository: Any, llm_extractor: Any, **_: Any) -> Any:
+def _real_search_service(repository: Any, llm_extractor: Any, settings: Settings, **_: Any) -> Any:
     """The real search service."""
+    from services.provider_discovery import ProviderDiscoveryService
     from services.search import SearchService
+    from services.web_search import WebDiscoveryService
 
-    return SearchService(repository, llm_extractor)
+    providers = (
+        ProviderDiscoveryService(repository, settings)
+        if settings.provider_api_discovery_enabled
+        else None
+    )
+    web = WebDiscoveryService(
+        settings.searxng_url,
+        repository=repository,
+        timeout=settings.web_search_timeout_seconds,
+        limit=settings.web_search_results,
+    )
+    return SearchService(
+        repository,
+        llm_extractor,
+        web_discovery=web,
+        provider_discovery=providers,
+        web_discovery_budget_seconds=settings.web_discovery_budget_seconds,
+    )
 
 
-def _real_alternatives_service(repository: Any, llm_extractor: Any, **_: Any) -> Any:
+def _real_alternatives_service(repository: Any, llm_extractor: Any, settings: Settings, **_: Any) -> Any:
     """The real alternatives finder."""
     from services.alternatives import AlternativesService
+    from services.provider_discovery import ProviderDiscoveryService
 
-    return AlternativesService(repository, llm_extractor)
+    provider = (
+        ProviderDiscoveryService(repository, settings)
+        if settings.provider_api_discovery_enabled
+        else None
+    )
+    return AlternativesService(
+        repository,
+        llm_extractor,
+        provider_discovery=provider,
+    )
 
 
-def _real_bom_service(repository: Any, **_: Any) -> Any:
+def _real_bom_service(repository: Any, settings: Settings, **_: Any) -> Any:
     """The real BOM health check."""
+    from services.advisor import ComponentAdvisorService
     from services.bom import BomService
+    from services.bom_discovery import BomQueryPlanner
+    from services.provider_discovery import ProviderDiscoveryService
+    from services.web_search import WebDiscoveryService
 
-    return BomService(repository)
+    web = WebDiscoveryService(
+        settings.searxng_url,
+        repository=repository,
+        timeout=settings.web_search_timeout_seconds,
+        limit=settings.web_search_results,
+    )
+    provider = (
+        ProviderDiscoveryService(repository, settings)
+        if settings.provider_api_discovery_enabled
+        else None
+    )
+    advisor = ComponentAdvisorService(repository, settings)
+    return BomService(
+        repository,
+        web_discovery=web,
+        query_planner=BomQueryPlanner(settings),
+        provider_discovery=provider,
+        advisor=advisor,
+    )
 
 
 def _real_review_service(repository: Any, **_: Any) -> Any:

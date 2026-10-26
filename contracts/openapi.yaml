@@ -367,7 +367,7 @@ components:
 
     Family:
       type: string
-      enum: [mosfet, gate_driver]
+      enum: [mosfet, gate_driver, mcu, opamp, regulator, sensor, transceiver, passive, diode, general]
 
     LifecycleStatus:
       type: string
@@ -636,6 +636,14 @@ components:
         took_ms: { type: integer }
         filter_explanation: { type: [string, "null"] }
         llm_used: { type: boolean }
+        ai_advisory: { type: [object, "null"], additionalProperties: true }
+        web_results:
+          type: array
+          items: { type: object, additionalProperties: true }
+        provider_candidates:
+          type: array
+          items: { $ref: "#/components/schemas/PartSummary" }
+        search_mode: { type: string }
 
     AlternativeResult:
       type: object
@@ -701,6 +709,10 @@ components:
           type: array
           items: { $ref: "#/components/schemas/BomRisk" }
         took_ms: { type: integer }
+        live_queries:
+          type: array
+          items: { type: string }
+        live_discovered: { type: integer }
 
     ReviewItem:
       type: object

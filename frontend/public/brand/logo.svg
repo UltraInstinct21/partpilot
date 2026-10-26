@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 32" fill="none">
+  <!-- Minimal Vector Mark -->
+  <g transform="translate(4, 4)">
+    <path d="M11 3.5L3.5 20.5L11 16.5V3.5Z" fill="#ffffff" stroke="#ffffff" stroke-width="0.8" stroke-linejoin="round" />
+    <path d="M13 3.5L20.5 20.5L13 16.5V3.5Z" fill="#9ca3af" stroke="#9ca3af" stroke-width="0.8" stroke-linejoin="round" />
+  </g>
+  <!-- Wordmark -->
+  <text x="36" y="21" font-family="'Inter', -apple-system, sans-serif" font-size="16" font-weight="600" letter-spacing="-0.02em" fill="#ffffff">Part<tspan fill="#a1a1aa" font-weight="400">Pilot</tspan></text>
+</svg>
