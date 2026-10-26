@@ -5,7 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 
 from app.dependencies import get_repository, get_search_service
-from services.web_search import WebDiscoveryService
+from services.part_enrichment import PartEnrichmentService, needs_enrichment
 from shared.config import get_settings
 from shared.interfaces import PartsRepository, SearchService
 from shared.schemas import (
@@ -98,17 +98,21 @@ def get_part(
     part_id: str = Path(description="The identifier of the part."),
     repository: PartsRepository = Depends(get_repository),
 ) -> PartRecord:
-    """Return one part with every value and offer (triggers deep scraping on-demand for web parts)."""
+    """Return one part with every value and offer.
+
+    When the stored details are thin (few parameters, unknown lifecycle, no
+    package or datasheet) the part is enriched on-demand from the DigiKey API
+    and bounded web scraping - this is what backs the compare tab when a
+    selected part has no details yet.
+    """
     part = repository.get_part(part_id)
     if part is None:
         raise HTTPException(status_code=404, detail=f"Part '{part_id}' was not found.")
 
-    # Live scrape & enrich fields on-demand (multi-distributor offers, missing specs, verified datasheet PDF)
-    if len(part.parameters) < 5 or part_id.startswith("web-"):
+    if needs_enrichment(part) or part_id.startswith("web-"):
         try:
-            settings = get_settings()
-            web = WebDiscoveryService(settings.searxng_url, repository=repository)
-            enriched = web.deep_scrape_part(part_id)
+            service = PartEnrichmentService(repository, get_settings())
+            enriched = service.enrich(part_id)
             if enriched is not None:
                 return enriched
         except Exception:
