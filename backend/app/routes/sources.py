@@ -136,6 +136,17 @@ def get_source_page(
     source = repository.get_source(source_id)
     if source is None:
         raise HTTPException(status_code=404, detail=f"Source '{source_id}' was not found.")
+
+    # Auto-resolve PDF if missing from disk
+    if source.type.value == "pdf" and source.url and (not source.local_path or not resolve_pdf_path(source.local_path)):
+        resolved_src = DatasheetResolver(get_settings()).resolve_and_download(
+            mpn=source_id,
+            direct_url=source.url,
+        )
+        if resolved_src and resolved_src.local_path:
+            source = resolved_src
+            repository.add_source(source)
+
     page_number = n
     if format == "image":
         png = render_page_png(source.local_path, page_number)
@@ -146,16 +157,43 @@ def get_source_page(
                     f"Page {page_number} of source '{source_id}' is not available as an image."
                 ),
             )
-        return Response(content=png, media_type="image/png")
+        return Response(
+            content=png,
+            media_type="image/png",
+            headers={"Cache-Control": "public, max-age=31536000, immutable"},
+        )
+
     # Every format other than "image" returns the page metadata.
     page = repository.get_source_page(source_id, page_number)
     if page is None:
-        raise HTTPException(
-            status_code=404, detail=f"Page {page_number} of source '{source_id}' was not found."
+        # Dynamically extract page text & dimensions from PDF if available
+        extracted_text = ""
+        width = 595
+        height = 842
+        if source.local_path:
+            resolved_pdf = resolve_pdf_path(source.local_path)
+            if resolved_pdf and resolved_pdf.is_file():
+                try:
+                    import pymupdf
+                    with pymupdf.open(resolved_pdf) as doc:
+                        if page_number <= doc.page_count:
+                            p = doc[page_number - 1]
+                            rect = p.rect
+                            width = int(rect.width)
+                            height = int(rect.height)
+                            extracted_text = p.get_text("text") or ""
+                except Exception:
+                    pass
+
+        page = SourcePage(
+            source_id=source_id,
+            page=page_number,
+            width=width,
+            height=height,
+            text=extracted_text,
+            image_url=f"/api/sources/{source_id}/page/{page_number}?format=image",
         )
-    if not page.image_url:
-        # The URL of the rendered page is an API concern, so the route fills
-        # it in. The frontend shows it next to the value (FR-12).
+    elif not page.image_url:
         page.image_url = f"/api/sources/{source_id}/page/{page_number}?format=image"
     return page
 
@@ -171,12 +209,34 @@ def download_source_file(
     repository: PartsRepository = Depends(get_repository),
 ) -> FileResponse:
     source = repository.get_source(source_id)
-    if source is None or source.type.value != "pdf" or not source.local_path:
+    if source is None or source.type.value != "pdf":
         raise HTTPException(status_code=404, detail="Cached PDF was not found.")
-    path = resolve_pdf_path(source.local_path)
+
+    path = resolve_pdf_path(source.local_path) if source.local_path else None
+    if not path or not path.is_file():
+        # Attempt on-demand download if direct URL exists
+        if source.url:
+            resolved_src = DatasheetResolver(get_settings()).resolve_and_download(
+                mpn=source_id,
+                direct_url=source.url,
+            )
+            if resolved_src and resolved_src.local_path:
+                path = resolve_pdf_path(resolved_src.local_path)
+                repository.add_source(resolved_src)
+
     if not path or not path.is_file():
         raise HTTPException(status_code=404, detail="Cached PDF file is missing.")
-    return FileResponse(path, media_type="application/pdf", filename=f"{source_id}.pdf")
+
+    return FileResponse(
+        path,
+        media_type="application/pdf",
+        filename=f"{source_id}.pdf",
+        headers={
+            "Accept-Ranges": "bytes",
+            "Content-Disposition": f'inline; filename="{source_id}.pdf"',
+            "Cache-Control": "public, max-age=31536000, immutable",
+        },
+    )
 
 
 __all__ = ["router"]

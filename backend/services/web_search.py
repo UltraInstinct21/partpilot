@@ -284,11 +284,24 @@ class WebDiscoveryService:
 
             if not offers_data:
                 dist_name = mfg if mfg != "Unknown (scraped)" else "Global Sourcing Network"
+                scraped_full_text = f"{page.get('title', '')} {page.get('snippet', '')} {page.get('scraped_text', '')}"
+                price_match = re.search(r"[\$€£]\s*(\d+(?:\.\d{1,2})?)|\b(\d+(?:\.\d{1,2})?)\s*(?:USD|EUR|GBP|INR)\b", scraped_full_text, re.IGNORECASE)
+                extracted_price = float(price_match.group(1) or price_match.group(2)) if price_match else 1.25
+
+                stock_match = re.search(r"(?:in\s*stock|stock|available)[\s:]*([0-9,]+)|\b([0-9,]+)\s*(?:in\s*stock|units\s*available|pieces)\b", scraped_full_text, re.IGNORECASE)
+                extracted_stock = 2500
+                if stock_match:
+                    try:
+                        raw_stock_str = (stock_match.group(1) or stock_match.group(2)).replace(",", "")
+                        extracted_stock = int(raw_stock_str)
+                    except ValueError:
+                        extracted_stock = 2500
+
                 offers_data = [
                     {
                         "distributor": dist_name,
-                        "stock": 3500,
-                        "unit_price": 1.20,
+                        "stock": extracted_stock,
+                        "unit_price": extracted_price,
                         "currency": "USD",
                         "url": page["url"],
                     }

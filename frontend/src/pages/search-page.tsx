@@ -46,21 +46,6 @@ import { searchSessionStore } from "@/lib/session-store";
 import { downloadTextFile, toCsv, formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-const FALLBACK_MANUFACTURERS = [
-  "Alpha & Omega Semiconductor",
-  "Analog Devices / Maxim",
-  "Diodes Incorporated",
-  "Infineon Technologies",
-  "International Rectifier",
-  "Microchip Technology",
-  "Nexperia",
-  "Renesas Electronics",
-  "STMicroelectronics",
-  "Texas Instruments",
-  "Vishay Siliconix",
-  "onsemi",
-];
-
 export function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -75,13 +60,13 @@ export function SearchPage() {
   const statsQuery = useStats();
 
   const manufacturers = useMemo(() => {
+    const set = new Set<string>();
     if (statsQuery.data?.parts_by_manufacturer) {
-      const keys = Object.keys(statsQuery.data.parts_by_manufacturer).filter(
-        (m) => !m.includes("Synthetic"),
-      );
-      if (keys.length > 0) return keys.sort();
+      for (const m of Object.keys(statsQuery.data.parts_by_manufacturer)) {
+        if (!m.includes("Synthetic") && m.trim()) set.add(m.trim());
+      }
     }
-    return FALLBACK_MANUFACTURERS;
+    return Array.from(set).sort();
   }, [statsQuery.data]);
 
   // URL and Session state synchronization

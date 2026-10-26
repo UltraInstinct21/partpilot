@@ -299,12 +299,17 @@ function JobRowItem({
   const job = jobQuery.data;
 
   const state = job?.state ?? "queued";
-  const progressPercent =
-    job && job.total && job.total > 0 && job.progress !== undefined
-      ? Math.min(100, Math.round((job.progress / job.total) * 100))
-      : state === "completed"
-        ? 100
-        : 10;
+  const progressPercent = (() => {
+    if (state === "completed") return 100;
+    if (state === "failed" || state === "cancelled") return 0;
+    if (job?.progress !== undefined && job.progress !== null) {
+      if (job.total && job.total > 0 && job.progress <= job.total) {
+        return Math.min(100, Math.round((job.progress / job.total) * 100));
+      }
+      return Math.min(100, Math.max(0, Math.round(job.progress)));
+    }
+    return state === "running" ? 45 : 10;
+  })();
 
   return (
     <div className="py-3">

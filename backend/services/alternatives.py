@@ -59,9 +59,41 @@ GATE_DRIVER_WEIGHTS: Final[dict[str, float]] = {
     "fall_time": 0.05,
 }
 
+OPAMP_WEIGHTS: Final[dict[str, float]] = {
+    "gain_bandwidth": 0.35,
+    "slew_rate": 0.25,
+    "supply_voltage_max": 0.20,
+    "input_offset_voltage": 0.20,
+}
+
+REGULATOR_WEIGHTS: Final[dict[str, float]] = {
+    "v_out": 0.35,
+    "i_out_max": 0.35,
+    "v_in_max": 0.20,
+    "v_dropout": 0.10,
+}
+
+MCU_WEIGHTS: Final[dict[str, float]] = {
+    "clock_speed": 0.35,
+    "flash_memory": 0.35,
+    "ram": 0.20,
+    "supply_voltage_max": 0.10,
+}
+
+GENERAL_WEIGHTS: Final[dict[str, float]] = {
+    "vds_max": 0.25,
+    "id_continuous": 0.25,
+    "supply_voltage_max": 0.25,
+    "rds_on": 0.25,
+}
+
 _FAMILY_WEIGHTS: Final[dict[Family, dict[str, float]]] = {
     Family.MOSFET: MOSFET_WEIGHTS,
     Family.GATE_DRIVER: GATE_DRIVER_WEIGHTS,
+    Family.OPAMP: OPAMP_WEIGHTS,
+    Family.REGULATOR: REGULATOR_WEIGHTS,
+    Family.MCU: MCU_WEIGHTS,
+    Family.GENERAL: GENERAL_WEIGHTS,
 }
 
 PACKAGE_ALIASES: Final[dict[str, str]] = {
@@ -423,7 +455,8 @@ class AlternativesService:
             item.rank = index
 
         limit = max(1, int(limit))
-        return accepted[:limit] + rejected[:limit]
+        combined = accepted + rejected
+        return combined[:limit]
 
     def explain_alternative(self, differences: dict[str, dict[str, float | None]], mpn: str) -> str:
         """Public helper: the reason text for one set of differences."""

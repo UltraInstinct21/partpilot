@@ -170,7 +170,9 @@ export function streamSearch(
         });
         onEvent({ type: "done", total: data.total, took_ms: data.took_ms });
       })
-      .catch(() => {});
+      .catch((err) => {
+        onEvent({ type: "error" as any, error: err?.message || "Search request failed" } as any);
+      });
   }
   const url = `/api/search/stream?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`;
   return new Promise((resolve) => {
@@ -195,6 +197,7 @@ export function streamSearch(
     };
     es.onerror = () => {
       es.close();
+      onEvent({ type: "error" as any, error: "Search stream interrupted or rate limited" } as any);
       resolve();
     };
   });

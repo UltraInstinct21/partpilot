@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, Fragment } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   Download,
@@ -131,7 +131,7 @@ export function ComparePage() {
     handleUpdateUrl([]);
   };
 
-  // Group parameters for side-by-side table
+  // Group parameters dynamically for side-by-side table across all families
   const groupedParameters = useMemo(() => {
     const groups: Record<string, string[]> = {
       "Absolute Maximum Ratings": [],
@@ -140,13 +140,27 @@ export function ComparePage() {
       "Package & Configuration": [],
     };
 
+    const inferGroup = (name: string): string => {
+      const lower = name.toLowerCase();
+      if (PARAM_SYMBOLS[name]?.group) return PARAM_SYMBOLS[name].group;
+      if (lower.includes("thermal") || lower.includes("temp") || lower.includes("rth") || lower.startsWith("tj")) {
+        return "Thermal Characteristics";
+      }
+      if (lower.includes("max") || lower.includes("breakdown") || lower.includes("rating")) {
+        return "Absolute Maximum Ratings";
+      }
+      if (lower.includes("package") || lower.includes("pin") || lower.includes("channel") || lower.includes("lead")) {
+        return "Package & Configuration";
+      }
+      return "Electrical Characteristics";
+    };
+
     const seen = new Set<string>();
     for (const record of records) {
       for (const p of record.parameters ?? []) {
         if (!seen.has(p.name)) {
           seen.add(p.name);
-          const meta = PARAM_SYMBOLS[p.name];
-          const groupName = meta?.group || "Electrical Characteristics";
+          const groupName = inferGroup(p.name);
           if (!groups[groupName]) {
             groups[groupName] = [];
           }
@@ -433,161 +447,163 @@ export function ComparePage() {
                   ))}
                 </tr>
 
-                {/* Grouped parameter rows */}
-                {Object.entries(groupedParameters).map(([groupTitle]) => {
-                  return (
-                    <tr key={`group-${groupTitle}`} className="bg-white/[0.04] font-mono text-[11px] uppercase font-bold text-zinc-400">
-                      <td colSpan={records.length + 1} className="px-4 py-1.5">
-                        {groupTitle}
-                      </td>
-                    </tr>
-                  );
-                })}
-
-                {/* Actual parameters */}
-                {Object.values(groupedParameters)
-                  .flat()
-                  .map((paramName) => {
+                {/* Grouped parameter categories & rows */}
+                {Object.entries(groupedParameters).map(([groupTitle, paramNames]) => {
+                  const filteredParamNames = paramNames.filter((paramName) => {
                     const items = records.map((part) =>
                       (part.parameters ?? []).find((p: ParameterValue) => p.name === paramName),
                     );
-
-                    // Check if difference only applies
                     const values = items.map((item) => item?.value);
                     const allEqual = values.every((v) => v === values[0]);
-                    if (differencesOnly && allEqual && values[0] !== undefined) {
-                      return null;
-                    }
+                    return !(differencesOnly && allEqual && values[0] !== undefined);
+                  });
 
-                    const bestVal = getBestInRow(paramName, items);
-                    const conditionsDiffer = checkDifferentConditions(items);
-                    const meta = PARAM_SYMBOLS[paramName];
-                    const label = meta?.label || humanizeParam(paramName);
+                  if (filteredParamNames.length === 0) return null;
 
-                    return (
-                      <tr key={paramName} className="hover:bg-white/[0.04]">
-                        {/* Parameter Label Cell */}
-                        <td className="px-4 py-2.5 font-sans font-medium text-white sticky left-0 bg-[#121215] border-r border-white/10">
-                          <div className="flex items-center justify-between gap-2">
-                            <div>
-                              <span>{label}</span>
-                              {meta?.symbol && (
-                                <span className="font-mono text-[11px] text-zinc-400 block">
-                                  {meta.symbol}
-                                </span>
-                              )}
-                            </div>
-
-                            {/* "Different conditions" marker with tooltip */}
-                            {conditionsDiffer && (
-                              <TooltipProvider delayDuration={100}>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <span
-                                      className="cursor-help inline-flex items-center text-zinc-400 hover:text-white"
-                                      aria-label="Different test conditions between parts"
-                                    >
-                                      <AlertTriangle className="size-3.5" />
-                                    </span>
-                                  </TooltipTrigger>
-                                  <TooltipContent
-                                    side="top"
-                                    className="rounded-[4px] border border-white/20 bg-[#18181c] text-white p-2 text-xs shadow-none max-w-xs"
-                                  >
-                                    <div className="font-semibold mb-1">Different Conditions</div>
-                                    <div>
-                                      Test voltages or ambient temperatures differ between parts.
-                                      Values cannot be compared directly without normalization.
-                                    </div>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            )}
-                          </div>
+                  return (
+                    <Fragment key={`group-${groupTitle}`}>
+                      <tr className="bg-white/[0.04] font-mono text-[11px] uppercase font-bold text-zinc-400">
+                        <td colSpan={records.length + 1} className="px-4 py-2 border-y border-white/10">
+                          {groupTitle}
                         </td>
+                      </tr>
+                      {filteredParamNames.map((paramName) => {
+                        const items = records.map((part) =>
+                          (part.parameters ?? []).find((p: ParameterValue) => p.name === paramName),
+                        );
 
-                        {/* Part Columns */}
-                        {records.map((part, colIdx) => {
-                          const param = items[colIdx];
-                          if (!param) {
-                            return (
-                              <td
-                                key={part.part_id}
-                                className="px-4 py-2.5 font-mono text-zinc-500 border-r border-white/10 last:border-r-0"
-                              >
-                                -
-                              </td>
-                            );
-                          }
+                        const bestVal = getBestInRow(paramName, items);
+                        const conditionsDiffer = checkDifferentConditions(items);
+                        const meta = PARAM_SYMBOLS[paramName];
+                        const label = meta?.label || humanizeParam(paramName);
 
-                          const isBest = bestVal !== null && param.value === bestVal;
-                          const condText = formatCondition(param.condition);
-
-                          return (
-                            <td
-                              key={part.part_id}
-                              className={cn(
-                                "px-4 py-2.5 border-r border-white/10 last:border-r-0 align-top",
-                                isBest && "bg-white/[0.04]",
-                              )}
-                            >
-                              <div className="space-y-1">
-                                <div className="flex items-center justify-between gap-1.5">
-                                  {/* Min / Typ / Max / Value */}
-                                  <span
-                                    className={cn(
-                                      "font-mono text-xs",
-                                      isBest ? "font-bold text-white" : "text-zinc-200",
-                                    )}
-                                  >
-                                    {param.value_min !== null && param.value_min !== undefined
-                                      ? `${formatNumber(param.value_min)} ... ${formatNumber(param.value_max)} ${param.unit ?? ""}`
-                                      : formatValue(param.value, param.unit)}
-                                  </span>
-
-                                  {/* Best in Row Marker */}
-                                  {isBest && (
-                                    <span
-                                      title="Best in row"
-                                      aria-label="Best in row"
-                                      className="inline-flex items-center text-white"
-                                    >
-                                      <Award className="size-3.5 stroke-[2]" />
+                        return (
+                          <tr key={paramName} className="hover:bg-white/[0.04]">
+                            {/* Parameter Label Cell */}
+                            <td className="px-4 py-2.5 font-sans font-medium text-white sticky left-0 bg-[#121215] border-r border-white/10">
+                              <div className="flex items-center justify-between gap-2">
+                                <div>
+                                  <span>{label}</span>
+                                  {meta?.symbol && (
+                                    <span className="font-mono text-[11px] text-zinc-400 block">
+                                      {meta.symbol}
                                     </span>
                                   )}
                                 </div>
 
-                                {condText && (
-                                  <div className="text-[11px] text-zinc-400 font-mono leading-tight">
-                                    {condText}
-                                  </div>
-                                )}
-
-                                {/* Source Button */}
-                                {param.source_id && (
-                                  <div className="pt-1">
-                                    <button
-                                      type="button"
-                                      onClick={() =>
-                                        setActiveParamSource({
-                                          partId: part.part_id,
-                                          param,
-                                        })
-                                      }
-                                      aria-label={`View source for ${label}`}
-                                      className="rounded-[4px] border border-white/15 bg-white/5 px-2 py-0.5 font-mono text-[10px] text-zinc-300 hover:text-white hover:bg-white/10"
-                                    >
-                                      {param.page ? `p. ${param.page}` : "Source"}
-                                    </button>
-                                  </div>
+                                {/* "Different conditions" marker with tooltip */}
+                                {conditionsDiffer && (
+                                  <TooltipProvider delayDuration={100}>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <span
+                                          className="cursor-help inline-flex items-center text-zinc-400 hover:text-white"
+                                          aria-label="Different test conditions between parts"
+                                        >
+                                          <AlertTriangle className="size-3.5" />
+                                        </span>
+                                      </TooltipTrigger>
+                                      <TooltipContent
+                                        side="top"
+                                        className="rounded-[4px] border border-white/20 bg-[#18181c] text-white p-2 text-xs shadow-none max-w-xs"
+                                      >
+                                        <div className="font-semibold mb-1">Different Conditions</div>
+                                        <div>
+                                          Test voltages or ambient temperatures differ between parts.
+                                          Values cannot be compared directly without normalization.
+                                        </div>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
                                 )}
                               </div>
                             </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
+
+                            {/* Part Columns */}
+                            {records.map((part, colIdx) => {
+                              const param = items[colIdx];
+                              if (!param) {
+                                return (
+                                  <td
+                                    key={part.part_id}
+                                    className="px-4 py-2.5 font-mono text-zinc-500 border-r border-white/10 last:border-r-0"
+                                  >
+                                    -
+                                  </td>
+                                );
+                              }
+
+                              const isBest = bestVal !== null && param.value === bestVal;
+                              const condText = formatCondition(param.condition);
+
+                              return (
+                                <td
+                                  key={part.part_id}
+                                  className={cn(
+                                    "px-4 py-2.5 border-r border-white/10 last:border-r-0 align-top",
+                                    isBest && "bg-white/[0.04]",
+                                  )}
+                                >
+                                  <div className="space-y-1">
+                                    <div className="flex items-center justify-between gap-1.5">
+                                      {/* Min / Typ / Max / Value */}
+                                      <span
+                                        className={cn(
+                                          "font-mono text-xs",
+                                          isBest ? "font-bold text-white" : "text-zinc-200",
+                                        )}
+                                      >
+                                        {param.value_min !== null && param.value_min !== undefined
+                                          ? `${formatNumber(param.value_min)} ... ${formatNumber(param.value_max)} ${param.unit ?? ""}`
+                                          : formatValue(param.value, param.unit)}
+                                      </span>
+
+                                      {/* Best in Row Marker */}
+                                      {isBest && (
+                                        <span
+                                          title="Best in row"
+                                          aria-label="Best in row"
+                                          className="inline-flex items-center text-white"
+                                        >
+                                          <Award className="size-3.5 stroke-[2]" />
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {condText && (
+                                      <div className="text-[11px] text-zinc-400 font-mono leading-tight">
+                                        {condText}
+                                      </div>
+                                    )}
+
+                                    {/* Source Button */}
+                                    {param.source_id && (
+                                      <div className="pt-1">
+                                        <button
+                                          type="button"
+                                          onClick={() =>
+                                            setActiveParamSource({
+                                              partId: part.part_id,
+                                              param,
+                                            })
+                                          }
+                                          aria-label={`View source for ${label}`}
+                                          className="rounded-[4px] border border-white/15 bg-white/5 px-2 py-0.5 font-mono text-[10px] text-zinc-300 hover:text-white hover:bg-white/10"
+                                        >
+                                          {param.page ? `p. ${param.page}` : "Source"}
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        );
+                      })}
+                    </Fragment>
+                  );
+                })}
               </tbody>
             </table>
           </div>

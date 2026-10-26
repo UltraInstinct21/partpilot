@@ -207,8 +207,8 @@ export function SourceViewer({
               <PdfPage
                 sourceId={source.source_id}
                 pageNumber={pageNumber}
-                pdfUrl={source.type === "pdf" ? source.url : undefined}
-                imageUrl={pageData?.image_url}
+                pdfUrl={`/api/sources/${source.source_id}/file`}
+                imageUrl={pageData?.image_url || `/api/sources/${source.source_id}/page/${pageNumber}?format=image`}
                 rawText={sourceValue?.raw_text || pageData?.text}
                 totalPages={source.page_count}
                 className="border-white/10 bg-[#121215]"

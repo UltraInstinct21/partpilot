@@ -77,12 +77,13 @@ class ProviderDiscoveryService:
     def _register_sources(self, record: PartRecord) -> None:
         for source_id in record.source_ids:
             try:
+                dist = source_id.split("-")[1] if "-" in source_id else "distributor"
                 self._repository.add_source(
                     SourceRef(
                         source_id=source_id,
-                        url=record.datasheet_url or f"https://www.{source_id.split('-')[1]}.com",
+                        url=record.datasheet_url or f"https://www.{dist}.com",
                         type=SourceType.API,
-                        distributor=source_id.split("-")[1] if "-" in source_id else None,
+                        distributor=dist if dist != "distributor" else None,
                         note="Provider-first live discovery result",
                     )
                 )

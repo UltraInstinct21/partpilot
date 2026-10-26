@@ -1103,6 +1103,32 @@ class SqlAlchemyPartsRepository:
             )
         coverage_pct = round(100.0 * parts_with_values / parts_total, 2) if parts_total else 0.0
         avg_cost_per_datasheet = round(llm_cost_total / pdf_sources, 6) if pdf_sources else 0.0
+
+        # Compute extraction accuracy per family based on accepted vs total values
+        accuracy: dict[str, float] = {}
+        with self.session() as session:
+            for fam in parts_by_family:
+                total_val = (
+                    session.scalar(
+                        select(func.count(ParameterRow.param_id))
+                        .join(PartRow, PartRow.part_id == ParameterRow.part_id)
+                        .where(PartRow.family == fam)
+                    )
+                    or 0
+                )
+                accepted_val = (
+                    session.scalar(
+                        select(func.count(ParameterRow.param_id))
+                        .join(PartRow, PartRow.part_id == ParameterRow.part_id)
+                        .where(PartRow.family == fam, ParameterRow.status == ValueStatus.ACCEPTED.value)
+                    )
+                    or 0
+                )
+                if total_val > 0:
+                    accuracy[fam] = round(100.0 * accepted_val / total_val, 1)
+                elif mean_confidence > 0:
+                    accuracy[fam] = round(mean_confidence * 100.0, 1)
+
         return StatsResponse(
             parts_total=parts_total,
             parts_by_family=parts_by_family,
@@ -1120,6 +1146,7 @@ class SqlAlchemyPartsRepository:
             llm_tokens_out=llm_tokens_out,
             llm_cost_total=round(llm_cost_total, 6),
             avg_cost_per_datasheet=avg_cost_per_datasheet,
+            accuracy=accuracy,
             generated_at=datetime.now(UTC),
         )
 

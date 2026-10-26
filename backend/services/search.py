@@ -100,7 +100,30 @@ GATE_DRIVER_PARAMETERS: Final[frozenset[str]] = frozenset(
     }
 )
 
-ALLOWED_PARAMETERS: Final[frozenset[str]] = MOSFET_PARAMETERS | GATE_DRIVER_PARAMETERS
+OPAMP_PARAMETERS: Final[frozenset[str]] = frozenset(
+    {"gain_bandwidth", "slew_rate", "input_offset_voltage", "supply_voltage_max", "supply_voltage_min"}
+)
+
+REGULATOR_PARAMETERS: Final[frozenset[str]] = frozenset(
+    {"v_out", "v_out_min", "v_out_max", "i_out_max", "v_dropout", "v_in_max"}
+)
+
+MCU_PARAMETERS: Final[frozenset[str]] = frozenset(
+    {"clock_speed", "flash_memory", "ram", "supply_voltage_max", "supply_voltage_min"}
+)
+
+GENERAL_PARAMETERS: Final[frozenset[str]] = frozenset(
+    {"vr_max", "vrrm_max", "if_max", "trr_ns", "vceo_max", "ic_max", "hfe_min"}
+)
+
+ALLOWED_PARAMETERS: Final[frozenset[str]] = (
+    MOSFET_PARAMETERS
+    | GATE_DRIVER_PARAMETERS
+    | OPAMP_PARAMETERS
+    | REGULATOR_PARAMETERS
+    | MCU_PARAMETERS
+    | GENERAL_PARAMETERS
+)
 
 _FAMILY_LABELS: Final[dict[Family, str]] = {
     Family.MOSFET: "MOSFET",
@@ -394,6 +417,12 @@ def _allowed_for(family: Family | None) -> frozenset[str]:
         return MOSFET_PARAMETERS
     if family is Family.GATE_DRIVER:
         return GATE_DRIVER_PARAMETERS
+    if family is Family.OPAMP:
+        return OPAMP_PARAMETERS
+    if family is Family.REGULATOR:
+        return REGULATOR_PARAMETERS
+    if family is Family.MCU:
+        return MCU_PARAMETERS
     return ALLOWED_PARAMETERS
 
 

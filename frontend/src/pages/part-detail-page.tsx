@@ -924,8 +924,8 @@ export function PartDetailPage() {
                 <PdfPage
                   sourceId={primarySourceId || "external"}
                   pageNumber={datasheetPage}
-                  pdfUrl={effectivePdfUrl}
-                  imageUrl={pageQuery.data?.image_url}
+                  pdfUrl={pdfFileUrl || effectivePdfUrl}
+                  imageUrl={pageQuery.data?.image_url || (primarySourceId ? `/api/sources/${primarySourceId}/page/${datasheetPage}?format=image` : null)}
                   rawText={pageQuery.data?.text}
                   totalPages={null}
                   onPageChange={handlePageChange}

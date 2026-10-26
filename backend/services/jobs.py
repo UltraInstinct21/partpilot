@@ -448,13 +448,28 @@ class BackgroundJobRunner:
     ) -> PartRecord | None:
         """Store the validated values through the repository."""
         values = list(values)
-        if not request.part_id:
-            return None
-        part = self._repository.get_part(request.part_id)
-        if part is None:
-            raise ValueError(f"unknown part_id: {request.part_id}")
-        merged: dict[str, Any] = {parameter.name: parameter for parameter in part.parameters}
         source_id = request.source_id or result.source_id
+
+        part_id = request.part_id
+        if not part_id:
+            guessed_mpn = result.part_number or (Path(request.pdf_path).stem if request.pdf_path else "unknown")
+            fam = request.family or Family.GENERAL
+            part_id = f"{fam.value}-{guessed_mpn.lower().replace('_', '-').strip('-')}"
+
+        part = self._repository.get_part(part_id)
+        if part is None:
+            guessed_mpn = result.part_number or (Path(request.pdf_path).stem if request.pdf_path else part_id)
+            fam = request.family or Family.GENERAL
+            part = PartRecord(
+                part_id=part_id,
+                mpn=guessed_mpn,
+                manufacturer="Datasheet Extraction",
+                family=fam,
+                parameters=[],
+                source_ids=[source_id] if source_id else [],
+            )
+
+        merged: dict[str, Any] = {parameter.name: parameter for parameter in part.parameters}
         for value in values:
             name = getattr(value, "name", None)
             if not name:
