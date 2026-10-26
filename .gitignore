@@ -49,3 +49,12 @@ Thumbs.db
 .idea/
 .vscode/
 !.vscode/extensions.json
+
+# --- presentations (generated decks and their build scripts) -----------------
+*.pptx
+*.ppt
+*.pptm
+create_ppt.py
+*_ppt.py
+ppt_*.py
+*_presentation.py
