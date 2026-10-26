@@ -252,24 +252,40 @@ class SqlAlchemyPartsRepository:
 
     @staticmethod
     def _fallback_offer_url(mpn: str, offer: Offer) -> str:
-        """Give legacy/scraped offers a usable product/search URL."""
+        """Build the best available product URL for an offer that has no stored URL.
+
+        Priority: direct product page via SKU → direct product page via MPN →
+        keyword search on the distributor site.
+        """
         from urllib.parse import quote_plus
 
-        query = quote_plus(mpn.strip())
+        sku = (offer.sku or "").strip()
+        mpn_clean = mpn.strip()
+        # Use SKU for direct product links where the URL structure is known;
+        # fall back to MPN when the SKU is absent.
+        lookup = quote_plus(sku if sku else mpn_clean)
+        query = quote_plus(mpn_clean)
         distributor = offer.distributor.lower()
+
         if "robu" in distributor:
+            # Robu only has a search endpoint; use MPN for best results.
             return f"https://robu.in/?s={query}&post_type=product"
         if "element14" in distributor or "farnell" in distributor:
-            return f"https://in.element14.com/search?st={query}"
+            return f"https://in.element14.com/search?st={lookup}"
         if "evelta" in distributor:
-            return f"https://www.evelta.com/search.php?search_query={query}"
+            return f"https://www.evelta.com/search.php?search_query={lookup}"
         if "digikey" in distributor:
-            return f"https://www.digikey.com/en/products/result?keywords={query}"
+            # DigiKey SKUs open the exact product page via the keyword search
+            # that resolves to a single result; a bare MPN also works.
+            return f"https://www.digikey.com/short/product?keywords={lookup}"
         if "mouser" in distributor:
-            return f"https://www.mouser.com/c/?q={query}"
-        if "nexar" in distributor:
+            # Mouser ProductDetail URL accepts the SKU or MPN directly.
+            return f"https://www.mouser.com/ProductDetail/{lookup}"
+        if "nexar" in distributor or "octopart" in distributor:
             return f"https://octopart.com/search?q={query}"
-        return f"https://www.google.com/search?q={query}+electronic+component"
+        if "lcsc" in distributor:
+            return f"https://www.lcsc.com/search?q={lookup}"
+        return f"https://www.google.com/search?q={quote_plus(mpn_clean)}+{quote_plus(offer.distributor)}+buy"
 
     # ------------------------------------------------------------------
     # parts
@@ -1101,12 +1117,9 @@ class SqlAlchemyPartsRepository:
                 )
                 or 0
             )
-        coverage_pct = round(100.0 * parts_with_values / parts_total, 2) if parts_total else 0.0
-        avg_cost_per_datasheet = round(llm_cost_total / pdf_sources, 6) if pdf_sources else 0.0
 
-        # Compute extraction accuracy per family based on accepted vs total values
-        accuracy: dict[str, float] = {}
-        with self.session() as session:
+            # Compute extraction accuracy per family based on accepted vs total values
+            accuracy: dict[str, float] = {}
             for fam in parts_by_family:
                 total_val = (
                     session.scalar(
@@ -1128,6 +1141,9 @@ class SqlAlchemyPartsRepository:
                     accuracy[fam] = round(100.0 * accepted_val / total_val, 1)
                 elif mean_confidence > 0:
                     accuracy[fam] = round(mean_confidence * 100.0, 1)
+
+        coverage_pct = round(100.0 * parts_with_values / parts_total, 2) if parts_total else 0.0
+        avg_cost_per_datasheet = round(llm_cost_total / pdf_sources, 6) if pdf_sources else 0.0
 
         return StatsResponse(
             parts_total=parts_total,

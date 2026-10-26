@@ -8,6 +8,7 @@ need a key. The production wiring is covered by the integration test in
 from __future__ import annotations
 
 from collections.abc import Iterator
+from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -22,6 +23,17 @@ from shared.config import Settings
 def settings() -> Settings:
     """A settings object for the tests."""
     return Settings(_env_file=None)
+
+
+@pytest.fixture(autouse=True)
+def _no_live_scraper():
+    """Prevent the inline WebDiscoveryService in the parts route from making
+    real HTTP requests during tests.  deep_scrape_part returns None so the
+    route falls through to the repository result as normal."""
+    mock_web = MagicMock()
+    mock_web.deep_scrape_part.return_value = None
+    with patch("services.web_search.WebDiscoveryService", return_value=mock_web):
+        yield
 
 
 @pytest.fixture

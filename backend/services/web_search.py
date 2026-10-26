@@ -612,7 +612,7 @@ class WebDiscoveryService:
 
         # 1. Multi-Distributor Scraping (element14 India, Robu, Evelta, Mouser, LCSC)
         existing_distributors = {o.distributor.lower() for o in part.offers}
-        
+
         # Scrape India sources if missing
         if len(existing_distributors) <= 1 or not any(d in existing_distributors for d in ("element14_in", "robu_in", "evelta_in")):
             try:
@@ -648,7 +648,7 @@ class WebDiscoveryService:
                 stock=14520,
                 unit_price=round(ref_price * 1.04, 4),
                 currency="USD",
-                url=f"https://www.mouser.com/ProductDetail/{part.mpn}",
+                url=f"https://www.mouser.com/ProductDetail/{part.mpn}/",
                 lead_time_days=3,
             )
             try:
@@ -688,7 +688,7 @@ class WebDiscoveryService:
                         # Find real verified datasheet PDF link
                         if url.endswith(".pdf") and (not part.datasheet_url or "invalid" in part.datasheet_url):
                             part.datasheet_url = url
-                        
+
                         # Extract parameters from hit using FeatureWiseScraper
                         raw_text = f"{h.get('title', '')} {h.get('snippet', '')} {h.get('scraped_text', '')}"
                         new_params = FeatureWiseScraper.extract_parameters_from_text(raw_text, part.family, title=h.get('title', ''), mpn=part.mpn)

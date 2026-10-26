@@ -502,7 +502,7 @@ class DigiKeyCollector:
                 "unit_price": first,
                 "currency": self.settings.digikey_locale_currency,
                 "price_breaks": breaks,
-                "url": None,
+                "url": None,  # no SKU from price-only endpoint; _fallback_offer_url uses MPN
                 "fetched_at": datetime.now(UTC).isoformat(),
                 "source_type": SourceType.API.value,
             }

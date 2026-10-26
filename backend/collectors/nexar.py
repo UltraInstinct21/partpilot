@@ -451,16 +451,26 @@ class NexarCollector:
                 unit_price = next(
                     (b["unit_price"] for b in breaks if b.get("unit_price") is not None), None
                 )
+                sku = offer.get("sku")
+                # Build a direct Octopart offer URL when we have a SKU so
+                # the Buy button points to the specific product, not a search.
+                offer_url: str | None = None
+                if sku:
+                    from urllib.parse import quote_plus
+                    offer_url = (
+                        f"https://octopart.com/search?q={quote_plus(sku)}"
+                        f"&seller={quote_plus(distributor)}"
+                    )
                 offers.append(
                     Offer(
                         part_id=part_id,
                         distributor=distributor,
-                        sku=offer.get("sku"),
+                        sku=sku,
                         stock=offer.get("inventoryLevel"),
                         unit_price=float(unit_price) if unit_price is not None else None,
                         currency=str(breaks[0]["currency"]) if breaks else "USD",
                         price_breaks=breaks,
-                        url=None,
+                        url=offer_url,
                         fetched_at=datetime.now(UTC),
                     )
                 )

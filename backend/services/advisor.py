@@ -28,6 +28,7 @@ from shared.schemas import (
     Offer,
     ParameterValue,
     PartRecord,
+    SearchFilter,
     SourceRef,
     SourceType,
     ValueStatus,
@@ -616,14 +617,6 @@ class ComponentAdvisorService:
         if is_blocked(query):
             return None
 
-    def get_advisory(self, query: str) -> AIAdvisory | None:
-        """Generate structured engineering advice and tradeoff evaluation for `query`."""
-        if not query or len(query.strip()) < 2:
-            return None
-        from services.web_search import is_blocked
-        if is_blocked(query):
-            return None
-
         # 1. Generate dynamically via LLM for arbitrary queries if model is available
         try:
             model = build_chat_model(settings=self.settings)
@@ -655,7 +648,7 @@ class ComponentAdvisorService:
             summaries, _ = self.repo.list_parts(SearchFilter(text=first_kw), limit=5, offset=0)
 
         recommendations: list[AIRecommendation] = []
-        for idx, s in enumerate(summaries[:3]):
+        for _idx, s in enumerate(summaries[:3]):
             pros = [
                 f"{s.manufacturer} authenticated semiconductor production",
                 f"Package {s.package or 'standard SMD/THT'}",

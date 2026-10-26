@@ -5,6 +5,8 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 
 from app.dependencies import get_repository, get_search_service
+from services.web_search import WebDiscoveryService
+from shared.config import get_settings
 from shared.interfaces import PartsRepository, SearchService
 from shared.schemas import (
     Family,
@@ -102,17 +104,15 @@ def get_part(
         raise HTTPException(status_code=404, detail=f"Part '{part_id}' was not found.")
 
     # Live scrape & enrich fields on-demand (multi-distributor offers, missing specs, verified datasheet PDF)
-    try:
-        from services.web_search import WebDiscoveryService
-        from shared.config import get_settings
-
-        settings = get_settings()
-        web = WebDiscoveryService(settings.searxng_url, repository=repository)
-        enriched = web.deep_scrape_part(part_id)
-        if enriched is not None:
-            return enriched
-    except Exception as exc:
-        pass
+    if len(part.parameters) < 5 or part_id.startswith("web-"):
+        try:
+            settings = get_settings()
+            web = WebDiscoveryService(settings.searxng_url, repository=repository)
+            enriched = web.deep_scrape_part(part_id)
+            if enriched is not None:
+                return enriched
+        except Exception:
+            pass
 
     return part
 

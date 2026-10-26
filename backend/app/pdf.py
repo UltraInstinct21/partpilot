@@ -7,9 +7,9 @@ serving to the frontend (FR-12).
 
 from __future__ import annotations
 
-import functools
 import logging
 from pathlib import Path
+
 from shared.config import resolve_pdf_path
 
 logger = logging.getLogger(__name__)

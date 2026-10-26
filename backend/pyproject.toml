@@ -102,6 +102,9 @@ testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-q --strict-markers"
 filterwarnings = ["ignore::DeprecationWarning"]
+markers = [
+  "flaky_network: test makes live network calls and may fail when external sites are unreachable or return 4xx",
+]
 
 [tool.ruff]
 line-length = 100

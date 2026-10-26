@@ -21,6 +21,7 @@ import threading
 import uuid
 from collections.abc import Callable, Iterable
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from shared.config import Settings, get_settings, resolve_pdf_path
@@ -450,24 +451,24 @@ class BackgroundJobRunner:
         values = list(values)
         source_id = request.source_id or result.source_id
 
-        part_id = request.part_id
-        if not part_id:
-            guessed_mpn = result.part_number or (Path(request.pdf_path).stem if request.pdf_path else "unknown")
+        if request.part_id:
+            part = self._repository.get_part(request.part_id)
+            if part is None:
+                raise ValueError(f"unknown part_id: {request.part_id}")
+        else:
+            guessed_mpn = Path(request.pdf_path).stem if request.pdf_path else "unknown"
             fam = request.family or Family.GENERAL
             part_id = f"{fam.value}-{guessed_mpn.lower().replace('_', '-').strip('-')}"
-
-        part = self._repository.get_part(part_id)
-        if part is None:
-            guessed_mpn = result.part_number or (Path(request.pdf_path).stem if request.pdf_path else part_id)
-            fam = request.family or Family.GENERAL
-            part = PartRecord(
-                part_id=part_id,
-                mpn=guessed_mpn,
-                manufacturer="Datasheet Extraction",
-                family=fam,
-                parameters=[],
-                source_ids=[source_id] if source_id else [],
-            )
+            part = self._repository.get_part(part_id)
+            if part is None:
+                part = PartRecord(
+                    part_id=part_id,
+                    mpn=guessed_mpn,
+                    manufacturer="Datasheet Extraction",
+                    family=fam,
+                    parameters=[],
+                    source_ids=[source_id] if source_id else [],
+                )
 
         merged: dict[str, Any] = {parameter.name: parameter for parameter in part.parameters}
         for value in values:

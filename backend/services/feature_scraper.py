@@ -17,17 +17,13 @@ Implements dedicated, parameter-specific extraction methods engineered for elect
 
 from __future__ import annotations
 
-import asyncio
 import logging
 import re
 from typing import Any
 
-from collectors.scrapers.india_hub import IndiaSourcesHub
 from shared.schemas import (
     Family,
-    Offer,
     ParameterValue,
-    PartRecord,
     ValueStatus,
 )
 
@@ -76,7 +72,7 @@ class FeatureWiseScraper:
     @classmethod
     def extract_vds_max(cls, text: str) -> float | None:
         """Extract Drain-to-Source breakdown voltage (Vds max).
-        
+
         Rejects logic/gate voltages (e.g., 3.3V, 5V, 10V Vgs).
         Valid range: 12V to 1700V.
         """
@@ -118,7 +114,7 @@ class FeatureWiseScraper:
     @classmethod
     def extract_rds_on(cls, text: str) -> tuple[float, dict[str, str]] | None:
         """Extract On-State Resistance Rds(on) in Ohms with test conditions.
-        
+
         Carefully handles milliohms vs ohms and rejects gate resistance Rg.
         Valid range: 0.0002 ohm (0.2 mOhm) to 30 ohm.
         """
@@ -162,7 +158,7 @@ class FeatureWiseScraper:
     @classmethod
     def extract_id_continuous(cls, text: str) -> tuple[float, dict[str, str]] | None:
         """Extract continuous drain current (Id) in Amperes.
-        
+
         Rejects pulsed current (Idm) and test currents (< 50mA).
         """
         # Look for explicit continuous drain current label
@@ -199,7 +195,7 @@ class FeatureWiseScraper:
     @classmethod
     def extract_vgs_threshold(cls, text: str) -> tuple[float, dict[str, str]] | None:
         """Extract Gate Threshold Voltage Vgs(th) in Volts.
-        
+
         Strict bounds: 0.6V to 5.5V. Never match Vgs(max) (+/-20V).
         """
         m = re.search(
@@ -216,7 +212,7 @@ class FeatureWiseScraper:
     @classmethod
     def extract_vgs_max(cls, text: str) -> float | None:
         """Extract Absolute Maximum Gate-Source Voltage rating (Vgs max).
-        
+
         Explicitly rejects '@ Vgs = 10V' test conditions.
         Standard ratings: ±12V, ±16V, ±20V, ±30V.
         """

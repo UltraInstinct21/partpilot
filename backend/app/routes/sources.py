@@ -13,7 +13,7 @@ from app.schemas import ParameterSource
 from collectors.datasheets import DatasheetResolver
 from shared.config import get_settings, resolve_pdf_path
 from shared.interfaces import PartsRepository
-from shared.schemas import SourcePage, SourceRef
+from shared.schemas import SourcePage, SourceRef, SourceType
 
 router = APIRouter(prefix="/api", tags=["sources"])
 
@@ -137,8 +137,14 @@ def get_source_page(
     if source is None:
         raise HTTPException(status_code=404, detail=f"Source '{source_id}' was not found.")
 
+    source_type_val = getattr(source.type, "value", str(source.type))
+    if source.type != SourceType.PDF and source_type_val != "pdf":
+        raise HTTPException(
+            status_code=404, detail=f"Source '{source_id}' is not a PDF datasheet."
+        )
+
     # Auto-resolve PDF if missing from disk
-    if source.type.value == "pdf" and source.url and (not source.local_path or not resolve_pdf_path(source.local_path)):
+    if source.url and (not source.local_path or not resolve_pdf_path(source.local_path)):
         resolved_src = DatasheetResolver(get_settings()).resolve_and_download(
             mpn=source_id,
             direct_url=source.url,
