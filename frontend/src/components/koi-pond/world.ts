@@ -27,12 +27,13 @@ export function hash3(x: number, y: number, z: number) {
 
 export type Box = { left: number; top: number; right: number; bottom: number };
 
-export type Variety = "kohaku" | "sanke" | "tancho";
+export type Variety = "kohaku" | "sanke" | "tancho" | "showa";
 
 const VARIETY_WEIGHTS: [Variety, number][] = [
     ["kohaku", 3],
     ["sanke", 2],
     ["tancho", 1],
+    ["showa", 1],
 ];
 const TOTAL_WEIGHT = VARIETY_WEIGHTS.reduce((sum, [, w]) => sum + w, 0);
 

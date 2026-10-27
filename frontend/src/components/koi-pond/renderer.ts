@@ -119,7 +119,7 @@ function valueNoise(x: number, y: number, seed: number) {
 
 /** A marking in body space: centred at (s, v) along and across the spine, as fractions of length. */
 type Patch = { s: number; v: number; rs: number; rv: number };
-type Markings = { red: Patch[]; black: Patch[] };
+type Markings = { red: Patch[]; black: Patch[]; white: Patch[] };
 
 function inPatch(m: Patch, s: number, vn: number, wobble: number) {
     return ((s - m.s) / m.rs) ** 2 + ((vn - m.v) / m.rv) ** 2 < 1 + wobble;
@@ -128,11 +128,11 @@ function inPatch(m: Patch, s: number, vn: number, wobble: number) {
 /**
  * Each koi gets a fixed set of markings, seeded by its id, so every fish carries a clear pattern:
  * kohaku a red head and two or three red saddles on white, sanke the same plus small black spots,
- * tancho a single red disc on the crown.
+ * tancho a single red disc on the crown, showa a black base with red saddles and white patches.
  */
 function koiMarkings(k: Koi): Markings {
     const r = (j: number) => hash3(k.id, j, 41);
-    if (k.variety === "tancho") return { red: [{ s: 0.11, v: 0, rs: 0.05, rv: 0.055 }], black: [] };
+    if (k.variety === "tancho") return { red: [{ s: 0.11, v: 0, rs: 0.05, rv: 0.055 }], black: [], white: [] };
 
     const red: Patch[] = [];
     if (r(0) < 0.75) red.push({ s: 0.1, v: (r(1) - 0.5) * 0.03, rs: 0.055 + r(2) * 0.03, rv: 0.11 });
@@ -154,7 +154,15 @@ function koiMarkings(k: Koi): Markings {
             black.push({ s: 0.24 + r(60 + j) * 0.44, v: (r(70 + j) - 0.5) * 0.16, rs: 0.022, rv: 0.026 });
         }
     }
-    return { red, black };
+
+    const white: Patch[] = [];
+    if (k.variety === "showa") {
+        const spots = 3 + Math.floor(r(80) * 3);
+        for (let j = 0; j < spots; j++) {
+            white.push({ s: 0.22 + r(90 + j) * 0.5, v: (r(100 + j) - 0.5) * 0.14, rs: 0.026, rv: 0.03 });
+        }
+    }
+    return { red, black, white };
 }
 
 const packRgb = (c: Rgb) => (c[0] << 16) | (c[1] << 8) | c[2];
@@ -379,9 +387,14 @@ export class KoiRenderer {
         // Ragged edges, so patches read as painted markings rather than ellipses.
         const wobble = (valueNoise(s * 14 + k.id, vn * 30, k.id + 3) - 0.5) * 0.6;
         const markings = this.markings(k);
-        for (const m of markings.black) if (inPatch(m, s, vn, wobble)) return p.black;
+        // Showa has a black base, so black patches are invisible; skip them.
+        if (k.variety !== "showa") {
+            for (const m of markings.black) if (inPatch(m, s, vn, wobble)) return p.black;
+        }
         for (const m of markings.red) if (inPatch(m, s, vn, wobble)) return p.red;
-        return p.white;
+        for (const m of markings.white) if (inPatch(m, s, vn, wobble)) return p.white;
+        // Base colour: white for most varieties, black for showa.
+        return k.variety === "showa" ? p.black : p.white;
     }
 
     private markings(k: Koi) {
