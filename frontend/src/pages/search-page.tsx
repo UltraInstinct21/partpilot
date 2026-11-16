@@ -76,7 +76,11 @@ export function SearchPage() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [askAiQuery, setAskAiQuery] = useState(() => savedSearch.askAiQuery || "");
   const [isAskingAi, setIsAskingAi] = useState(false);
-  const [customAdvisory, setCustomAdvisory] = useState<any>(() => savedSearch.customAdvisory);
+  const [advisorMessages, setAdvisorMessages] = useState<
+    Array<{ role: "user" | "assistant"; content: string }>
+  >([]);
+  const [advisorError, setAdvisorError] = useState<string | null>(null);
+  const [customAdvisory] = useState<any>(() => savedSearch.customAdvisory);
   const [isAdvisoryCollapsed, setIsAdvisoryCollapsed] = useState(false);
   const [showTradeoffs, setShowTradeoffs] = useState(false);
 
@@ -90,13 +94,22 @@ export function SearchPage() {
     if (e) e.preventDefault();
     const prompt = askAiQuery.trim() || initialQuery.trim();
     if (!prompt) return;
+    const userMessage = { role: "user" as const, content: prompt };
+    const nextMessages = [...advisorMessages, userMessage];
+    setAdvisorMessages(nextMessages);
+    setAdvisorError(null);
     setIsAskingAi(true);
     try {
-      const adv = await apiPost<any>("/api/search/advise", { query: prompt });
-      setCustomAdvisory(adv);
-      searchSessionStore.set({ customAdvisory: adv, askAiQuery: prompt });
+      const response = await apiPost<{ reply: string }>("/api/search/advise/chat", {
+        query: initialQuery.trim() || prompt,
+        messages: nextMessages,
+      });
+      setAdvisorMessages([...nextMessages, { role: "assistant", content: response.reply }]);
+      setAskAiQuery("");
+      searchSessionStore.set({ askAiQuery: "" });
     } catch (err) {
-      console.error("AI Advisor error:", err);
+      const message = err instanceof Error ? err.message : "Advisor request failed.";
+      setAdvisorError(message);
     } finally {
       setIsAskingAi(false);
     }
@@ -985,6 +998,26 @@ export function SearchPage() {
                   )}
 
                   {/* Ask AI Input */}
+                  {advisorMessages.length > 0 && (
+                    <div className="space-y-2 border-t border-white/10 pt-3" aria-label="Advisor conversation">
+                      {advisorMessages.map((message, idx) => (
+                        <div
+                          key={`${message.role}-${idx}`}
+                          className={cn(
+                            "rounded-[6px] px-3 py-2 leading-relaxed",
+                            message.role === "user"
+                              ? "ml-8 bg-white/10 text-zinc-200"
+                              : "mr-8 bg-black/20 text-zinc-300",
+                          )}
+                        >
+                          <span className="mr-2 text-[10px] font-mono uppercase text-zinc-500">
+                            {message.role === "user" ? "You" : "Advisor"}
+                          </span>
+                          {message.content}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <form
                     onSubmit={handleAskAi}
                     className="pt-3 border-t border-white/10 flex items-center gap-2"
@@ -1017,6 +1050,7 @@ export function SearchPage() {
                       )}
                     </button>
                   </form>
+                  {advisorError && <p className="text-[11px] text-red-300">{advisorError}</p>}
                 </>
               )}
             </section>

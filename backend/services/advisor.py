@@ -66,6 +66,15 @@ class AIAdvisory(BaseModel):
     verdict: str | None = None
 
 
+class AIChatMessage(BaseModel):
+    role: str
+    content: str
+
+
+class AIChatResponse(BaseModel):
+    reply: str
+
+
 class ReviewPartCandidate(BaseModel):
     part_id: str | None = None
     mpn: str
@@ -705,6 +714,44 @@ class ComponentAdvisorService:
             ] if len(recommendations) > 1 else [],
             verdict=f"Start with {primary_mpn} for primary design; verify thermal pad layout and second-source stock.",
         )
+
+    def chat(
+        self,
+        query: str,
+        messages: list[AIChatMessage],
+    ) -> AIChatResponse | None:
+        """Answer a short advisor conversation while retaining the search context."""
+        if not query.strip() or not messages:
+            return None
+        from services.web_search import is_blocked
+
+        if is_blocked(messages[-1].content):
+            return None
+        transcript = "\n".join(
+            f"{message.role.title()}: {message.content.strip()}"
+            for message in messages[-12:]
+            if message.content.strip()
+        )
+        try:
+            model = build_chat_model(settings=self.settings)
+            response = model.invoke(
+                "You are an electronics engineering advisor. Answer the user's latest "
+                "question clearly and briefly using the search context. Do not invent "
+                "specific ratings; state what must be checked in the datasheet.\n"
+                f"Search context: {query.strip()}\nConversation:\n{transcript}\n"
+                "Reply with plain text only."
+            )
+            reply = str(response.content).strip()
+            if reply:
+                return AIChatResponse(reply=reply)
+        except Exception as exc:
+            logger.debug("Advisor chat model unavailable: %s", exc)
+
+        advisory = self.get_advisory(query)
+        if not advisory:
+            return None
+        fallback = advisory.verdict or advisory.summary
+        return AIChatResponse(reply=fallback)
 
     def analyze_review_candidates(
         self,

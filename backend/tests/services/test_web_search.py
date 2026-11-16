@@ -8,6 +8,8 @@ from services.web_search import (
     WebDiscoveryService,
     is_blocked,
     is_trusted_domain,
+    page_rank,
+    rank_web_results,
     validate_mpn,
 )
 from shared.schemas import Family
@@ -145,3 +147,37 @@ def test_discover_and_ingest_persists_verified_component() -> None:
     assert records[0].family == Family.MOSFET
     assert records[0].manufacturer == "Infineon"
     assert repo.add_part.call_count == 1
+
+
+def test_page_rank_rewards_pages_linked_by_other_results() -> None:
+    results = [
+        {"url": "https://example.test/a", "links": ["https://example.test/b"]},
+        {"url": "https://example.test/b", "links": []},
+    ]
+
+    scores = page_rank(results)
+
+    assert scores["https://example.test/b"] > scores["https://example.test/a"]
+
+
+def test_web_ranking_combines_relevance_and_page_rank() -> None:
+    results = [
+        {
+            "url": "https://example.test/a",
+            "title": "MOSFET datasheet",
+            "snippet": "100 V transistor",
+            "links": ["https://example.test/b"],
+        },
+        {
+            "url": "https://example.test/b",
+            "title": "Power component",
+            "snippet": "Referenced component",
+            "links": [],
+        },
+    ]
+
+    ranked = rank_web_results("100 V MOSFET", results)
+
+    assert ranked[0]["url"] == "https://example.test/a"
+    assert "relevance_score" in ranked[0]
+    assert "page_rank" in ranked[0]
