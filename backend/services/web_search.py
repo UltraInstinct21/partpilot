@@ -94,6 +94,71 @@ ELECTRONICS_TERMS: frozenset[str] = frozenset({
 })
 
 
+def page_rank(
+    results: list[dict[str, Any]],
+    *,
+    damping: float = 0.85,
+    iterations: int = 20,
+) -> dict[str, float]:
+    """Calculate PageRank scores for discovered pages and their known links."""
+    urls = [str(result.get("url") or "").strip() for result in results]
+    nodes = {url for url in urls if url}
+    if not nodes:
+        return {}
+
+    scores = {url: 1.0 / len(nodes) for url in nodes}
+    outgoing: dict[str, set[str]] = {}
+    for result in results:
+        source = str(result.get("url") or "").strip()
+        links = result.get("links") or []
+        outgoing[source] = {
+            str(link).strip() for link in links if str(link).strip() in nodes
+        }
+
+    for _ in range(max(1, iterations)):
+        next_scores = {url: (1.0 - damping) / len(nodes) for url in nodes}
+        dangling = sum(scores[url] for url in nodes if not outgoing.get(url))
+        dangling_share = damping * dangling / len(nodes)
+        for url in nodes:
+            next_scores[url] += dangling_share
+        for source, links in outgoing.items():
+            if not links:
+                continue
+            contribution = damping * scores[source] / len(links)
+            for target in links:
+                next_scores[target] += contribution
+        scores = next_scores
+
+    maximum = max(scores.values()) or 1.0
+    return {url: round(score / maximum, 6) for url, score in scores.items()}
+
+
+def rank_web_results(query: str, results: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Combine lexical relevance with PageRank while preserving result metadata."""
+    if not results:
+        return []
+    query_terms = {term.lower() for term in re.findall(r"[a-z0-9]+", query) if len(term) > 1}
+    raw_relevance: list[float] = []
+    for result in results:
+        text = f"{result.get('title', '')} {result.get('snippet', '')}".lower()
+        matched = sum(term in text for term in query_terms)
+        raw_relevance.append(matched / len(query_terms) if query_terms else 0.0)
+    maximum = max(raw_relevance) or 1.0
+    ranks = page_rank(results)
+    ranked: list[dict[str, Any]] = []
+    for result, relevance in zip(results, raw_relevance, strict=True):
+        page_score = ranks.get(str(result.get("url") or "").strip(), 0.0)
+        enriched = dict(result)
+        enriched["relevance_score"] = round(relevance / maximum, 6)
+        enriched["page_rank"] = page_score
+        enriched["score"] = round(0.7 * enriched["relevance_score"] + 0.3 * page_score, 6)
+        ranked.append(enriched)
+    return sorted(
+        ranked,
+        key=lambda item: (-float(item.get("score", 0.0)), str(item.get("url", ""))),
+    )
+
+
 def is_blocked(text: str) -> bool:
     """Return True if any adult or spam blocked keyword appears in text."""
     lower = text.lower()
@@ -245,7 +310,7 @@ class WebDiscoveryService:
                 if len(results) >= target_limit:
                     break
 
-            return results
+            return rank_web_results(clean_query, results)
         except Exception as exc:
             logger.warning("SearXNG discovery failed: %s", exc)
             return []

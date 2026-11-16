@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 
 from app.dependencies import get_rate_limiter, get_search_service
 from app.rate_limit import FixedWindowRateLimiter
-from services.advisor import AIAdvisory, ComponentAdvisorService
+from services.advisor import AIAdvisory, AIChatMessage, AIChatResponse, ComponentAdvisorService
 from shared.interfaces import SearchService
 from shared.schemas import SearchRequest, SearchResponse
 
@@ -19,6 +19,11 @@ router = APIRouter(prefix="/api", tags=["search"])
 
 class AdviseRequest(BaseModel):
     query: str = Field(min_length=1, description="Question or component to evaluate")
+
+
+class AdviseChatRequest(BaseModel):
+    query: str = Field(min_length=1, description="The component search context")
+    messages: list[AIChatMessage] = Field(min_length=1, max_length=12)
 
 
 @router.post(
@@ -38,6 +43,28 @@ def advise_on_search(
     if not advisory:
         raise HTTPException(status_code=400, detail="Could not generate advisory for this query.")
     return advisory
+
+
+@router.post(
+    "/search/advise/chat",
+    include_in_schema=False,
+    response_model=AIChatResponse,
+    operation_id="chatOnSearchAdvice",
+    summary="Continue an AI engineering advisor conversation",
+)
+def chat_on_search_advice(
+    payload: AdviseChatRequest,
+    service: SearchService = Depends(get_search_service),
+) -> AIChatResponse:
+    """Answer a follow-up question using the current search and recent messages."""
+    repository = getattr(service, "_repository", None) or getattr(service, "_repo", None)
+    if repository is None:
+        raise HTTPException(status_code=500, detail="Advisor repository is unavailable.")
+    advisor = ComponentAdvisorService(repository)
+    reply = advisor.chat(payload.query, payload.messages)
+    if not reply:
+        raise HTTPException(status_code=400, detail="Could not generate an advisor response.")
+    return reply
 
 
 def client_key(request: Request) -> str:

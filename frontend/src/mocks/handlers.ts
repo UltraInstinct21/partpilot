@@ -75,6 +75,17 @@ export const handlers = [
     });
   }),
 
+  http.post(`${API}/search/advise/chat`, async ({ request }) => {
+    const payload = (await request.json()) as {
+      query: string;
+      messages: Array<{ role: string; content: string }>;
+    };
+    const latest = payload.messages.at(-1)?.content ?? payload.query;
+    return HttpResponse.json({
+      reply: `For ${payload.query}, check the datasheet ratings before choosing. Regarding "${latest}", compare the electrical limits, package, thermal conditions, and available stock.`,
+    });
+  }),
+
   http.get(`${API}/parts/:partId`, ({ params }) => {
     const part = findPart(String(params.partId));
     if (!part) {

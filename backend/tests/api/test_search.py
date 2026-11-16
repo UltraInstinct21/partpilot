@@ -56,6 +56,19 @@ def test_search_needs_a_query(client: TestClient) -> None:
     assert client.post("/api/search", json={"query": ""}).status_code == 422
 
 
+def test_advisor_chat_returns_a_follow_up_response(client: TestClient) -> None:
+    response = client.post(
+        "/api/search/advise/chat",
+        json={
+            "query": "MOSFET 100 V",
+            "messages": [{"role": "user", "content": "Which tradeoff matters most?"}],
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["reply"]
+
+
 def test_search_rejects_a_limit_out_of_range(client: TestClient) -> None:
     response = client.post("/api/search", json={"query": "MOSFET", "limit": 0})
     assert response.status_code == 422
